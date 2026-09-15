@@ -45,6 +45,7 @@ function parseArgs(argv) {
     else if (k === '--vad') a.vad = Number(next());
     else if (k === '--idelay') a.idelay = Number(next());
     else if (k === '--tmode') a.tmode = String(next());
+    else if (k === '--vfocus') a.vfocus = String(next());
     else if (k === '--label') a.label = String(next());
     else if (k === '--outdir') a.outdir = String(next());
     else if (k === '--dry-run') a.dryRun = true;
@@ -106,10 +107,39 @@ const turnDetection = {
   interrupt_response: true,
   interruption_delay: args.idelay,
 };
+const order = ordenes.find((o) => o.id === guion.order_id);
+const inputCfg = args.vfocus ? { ...AGENT_CONFIG.input, voice_focus: args.vfocus, voice_focus_threshold: 0.5 } : AGENT_CONFIG.input;
+const systemPrompt = `${AGENT_CONFIG.system_prompt}
+
+CONTEXTO DE SESIÓN: la orden activa YA está asignada por la app: ${guion.order_id} — cliente ${order?.cliente ?? '?'}, equipo: ${order?.equipo ?? '?'}. Llama get_orden SIN argumentos al inicio para cargarla. NUNCA preguntes el número de orden: ya lo tienes.
+
+FLUJO OBLIGATORIO — una cosa por turno, sin excepciones:
+1. Inicio: get_orden() y confirma en UNA frase de qué va la orden.
+2. El usuario describa el síntoma → set_problema con su texto LITERAL (sin parafrasear).
+3. Cada VEZ que el usuario MENCIONE una pieza —aunque sea de pasada o a medias—:
+   buscar_pieza({"consulta": "<lo que dijo, tal cual>"}) INMEDIATAMENTE. NUNCA pidas
+   "el nombre" de una pieza que ya te dijo: BÚSCALA tú. Si el resultado trae
+   confusable_warning, pregunta la desambiguación nombrando ambos candidatos.
+   Si no trae warning: agregar_pieza_a_reporte(sku, qty) y el read-back en voz alta
+   ("X, N piezas, ¿correcto?"). Con su "sí" la pieza queda confirmada.
+4. El usuario diga la solución → set_solucion. El usuario diga el tiempo ("como
+   cincuenta minutos") → get_tiempo_trabajo({"minutos": 50}) con el NÚMERO que
+   declaró. NUNCA inventes ni adivines tiempos.
+5. El usuario pida enviar ("mándalo", "listo", "eso es todo") → enviar_reporte()
+   INMEDIATAMENTE, sin pedir nada más, y despídete en una frase.
+CONFIRMACIONES: cuando el usuario responda "sí/correcto/ese mismo" a tu read-back,
+la pieza YA ESTÁ registrada — NO la vuelvas a agregar, solo agradece y continúa.
+EJEMPLO: usuario: "el capacitor de cuarenta y cinco más cinco se hinchó" → tú llamas
+buscar_pieza({"consulta":"capacitor de cuarenta y cinco más cinco"}) → (llega sku
+CAP-ARR-455) → agregar_pieza_a_reporte({"sku":"CAP-ARR-455","qty":1}) → dices:
+"Capacitor de arranque cuarenta y cinco más cinco, UNA pieza, ¿correcto?" →
+usuario: "correcto, una pieza" → tú: "Anotado" y SIGUES (sin re-agregar).
+Regla de oro: cada dato que te den ES un tool call; tu única libertad es el read-back.`;
+const greeting = `¡Buen día! Ya cargué la orden ${guion.order_id} de ${order?.cliente ?? 'tu cliente'}. Narrame lo que vas haciendo y voy llenando la ficha mientras trabajas.`;
 const catalogSkus = piezas.map((p) => p.sku);
 const tools = buildToolDefinitions(catalogSkus);
 const sessionUpdate = buildSessionUpdate(
-  { ...AGENT_CONFIG, turn_detection: turnDetection, input: { ...AGENT_CONFIG.input, transcription_mode: args.tmode } },
+  { ...AGENT_CONFIG, system_prompt: systemPrompt, greeting, turn_detection: turnDetection, input: { ...inputCfg, transcription_mode: args.tmode } },
   tools,
 );
 if (args.dryRun) {
@@ -134,7 +164,6 @@ async function tempToken() {
 }
 
 /* ------------------------------- sesión engine ----------------------------- */
-const order = ordenes.find((o) => o.id === guion.order_id);
 const noiseCondition = args.noise && args.snr !== 'clean' ? `demand_${args.noise.toLowerCase()}_${args.snr}db` : 'clean';
 const sessionId = `gate_${args.label}_${Date.now().toString(36)}`;
 const store = createStore({ orderId: guion.order_id });
@@ -217,8 +246,8 @@ function onServerMessage(msg) {
       driver.onReplyStarted?.();
       break;
     case 'transcript.agent.delta':
-      lastAgentPartial += msg.delta ?? '';
-      engine.handleEvent('agent_turn_text', { text: msg.delta ?? '' });
+      lastAgentPartial += (msg.delta ?? '') + ' ';
+      engine.handleEvent('agent_turn_text', { text: (msg.delta ?? '') + ' ' });
       break;
     case 'reply.done': {
       const interrupted = msg.status === 'interrupted';
@@ -263,9 +292,10 @@ async function playTurn(t) {
     while (!agentReplyActive && performance.now() - started < 12000) await sleep(80);
     if (!agentReplyActive) console.log(`  ⚠ turno ${t.n}: el agente no abrió reply — reproduciendo igual`);
   } else {
-    // esperar a que el agente termine su reply anterior (o timeout de seguridad)
-    const deadline = performance.now() + 30000;
-    while (agentReplyActive && performance.now() < deadline) await sleep(100);
+    // Ceder el turno COMPLETO al agente: esperar reply.started (≤8 s) y reply.done (≤30 s)
+    const t0w = performance.now();
+    while (!agentReplyActive && performance.now() - t0w < 8000) await sleep(80);
+    while (agentReplyActive && performance.now() - t0w < 30000) await sleep(80);
   }
   await sleep(t.interrupt ? 150 : 400); // respiración (mínima si interrumpimos)
   currentPcm = readWavPcm16(wavPath(t.n));
@@ -314,6 +344,38 @@ async function run() {
 }
 
 let finished = false;
+
+/**
+ * En modo real el loop de confirmación vive en el DIÁLOGO (el agente pregunta
+ * "¿correcto?" y el técnico responde), no en eventos del server. Derivamos
+ * confirm_request/confirm_result del transcript y los inyectamos como eventos
+ * marcados derived:'transcript' — el artefacto queda como fuente única y el
+ * harness de métricas puede medir el loop sin cambios.
+ */
+function deriveConfirmations(artifact) {
+  const tr = artifact.transcript;
+  const norm = (s) => (s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const pieces = artifact.final_form.piezas ?? [];
+  const keyword = (p) => norm(p.nombre).split(/\s+/).find((w) => w.length > 4 && !['laton', 'neopreno', 'reforzada', 'arranque', 'trabajo'].includes(w)) ?? norm(p.sku);
+  for (let i = 0; i < tr.length; i++) {
+    const t = tr[i];
+    if (t.role !== 'agent') continue;
+    const a = norm(t.text);
+    const isReadback = /(correcto|confirmo|va bien|ahora si)\s*\??\s*$/.test(a.trim()) && a.length > 15;
+    if (!isReadback) continue;
+    const next = tr.slice(i + 1).find((x) => x.role === 'user');
+    if (!next) continue;
+    const u = norm(next.text);
+    const yes = /(^|\s)(si|correcto|ese mismo|esa misma|asi es|va|ok|est bien)(\s|,|!|$)/.test(u.slice(0, 60));
+    const corr = /(no,? no|era la|era el|no es|cambiala|cambiela)/.test(u.slice(0, 60));
+    const target = pieces.find((p) => a.includes(keyword(p)?.slice(0, 6)))
+      ?? (pieces.filter((p) => !p.confirmada)[0] ?? null);
+    artifact.events.push({ t_ms: t.t_end_ms ?? t.t_start_ms ?? 0, type: 'confirm_request', field: 'pieza', value: target ? { sku: target.sku, qty: target.qty } : null, derived: 'transcript' });
+    artifact.events.push({ t_ms: next.t_end_ms ?? next.t_start_ms ?? 0, type: 'confirm_result', field: 'pieza', value: target ? { sku: target.sku, qty: target.qty } : null, confirmed: yes && !corr, derived: 'transcript' });
+    if (target && yes && !corr) target.confirmada = true;
+  }
+  artifact.events.sort((x, y) => x.t_ms - y.t_ms);
+}
 function finish(reason) {
   if (finished) return;
   finished = true;
@@ -322,7 +384,8 @@ function finish(reason) {
   try { ws?.readyState === 1 && ws.send(JSON.stringify({ type: 'session.end' })); } catch {}
   setTimeout(() => { try { ws?.close(); } catch {} }, 1500).unref?.();
   const artifact = engine.end();
-  artifact.turn_detection = { ...turnDetection, transcription_mode: args.tmode, label: args.label, reason };
+  artifact.turn_detection = { ...turnDetection, transcription_mode: args.tmode, voice_focus: args.vfocus ?? null, label: args.label, reason };
+  deriveConfirmations(artifact);
   const dir = join(ROOT, args.outdir);
   mkdirSync(dir, { recursive: true });
   const out = join(dir, `artifact-${args.guion}-${noiseCondition}-${args.label}.json`);

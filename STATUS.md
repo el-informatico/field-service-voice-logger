@@ -76,6 +76,26 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
 
 ## Bitácora
 
+- **2026-09-15 (sprint, D2 — GATE ejecutado con audio real → VEREDICTO:
+  PLAN B)** — 16 sesiones reales contra el Voice Agent API (driver
+  `scripts/realgate.mjs`: token temporal de un solo uso, wavs del guion a
+  ritmo real, DEMAND a SNR fijado; evaluador `scripts/gate-eval.mjs`;
+  resultados completos y tabla en `docs/D2-GATE-RESULTS.md`, ~$4.2 de
+  crédito). Resumen: **limpio converge** (C1 0.90, C2 0, WER 0.080; ficha
+  GT-exacta con 7 tool calls y read-back); **ruido 10dB no converge en los
+  guiones de turnos largos**: falsos cierres de turno 2-4 por sesión (splits
+  del VAD en pausas enmascaradas) en TODAS las confirmatorias (criterio ≤1),
+  barge-in provocado 1/3 y 0/3 (criterio ≥2/3), WER 0.17-0.25 en babble;
+  `voice_focus: near-field` no mitigó; tools del LLM colapsan con ruido
+  (7→0-2). Criterios pre-registrados → **GATE FALLA → Plan B activado
+  (Voice Incident Reporter)**: notas cortas post-visita en ambiente tranquilo
+  — ~70% del código se reutiliza (WS, tools, engine, artefacto, métricas,
+  export); el diferencial read-back + accuracy medida sobrevive. Fixes del
+  día que quedan: get_orden sin args (orden activa de sesión), schema
+  get_tiempo_trabajo expone minutos declarados, prompt con máquina de
+  estados + saludo con contexto, derivación de confirmaciones del transcript
+  (eventos marcados derived:'transcript'), corrección de carrera del driver
+  (ceder turno completo al agente).
 - **2026-09-15 (sprint, D4-ruido + GATE D2 staged)** — Harness de ruido
   completo: TTS del guion (29 wavs es-MX, 286 s, 24 kHz mono; incluye
   variante as_heard de s2), DEMAND real (DKITCHEN/SPSQUARE/OOFFICE, 300 s

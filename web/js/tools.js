@@ -42,10 +42,10 @@ export function buildToolDefinitions(catalogSkus = []) {
         properties: {
           orden_id: {
             type: 'string',
-            description: 'Identificador de la orden, formato OT-1xxx (p. ej. "OT-1004"). Si el técnico no lo dice completo, usa el que tengas.',
+            description: 'OPCIONAL — si se omite (o el técnico no dice el número), devuelve la orden ACTIVA de la sesión, que la app ya asignó. Formato OT-1xxx.',
           },
         },
-        required: ['orden_id'],
+        required: [],
       },
       execution_mode: 'interactive',
     },
@@ -131,9 +131,19 @@ export function buildToolDefinitions(catalogSkus = []) {
       type: 'function',
       name: 'get_tiempo_trabajo',
       description:
-        'Devuelve los minutos transcurridos desde el inicio del trabajo. Llámala cuando cierres la ficha (antes de enviar_reporte) ' +
-        'y contrasta en voz alta con lo que diga el técnico ("llevo como cincuenta minutos, ¿es correcto?").',
-      parameters: { type: 'object', properties: {} },
+        'Registra/consulta el tiempo del trabajo. Pásale {minutos: N} con los minutos que DECLARÓ el técnico ' +
+        '(p. ej. "como cincuenta minutos" → 50) — así queda el tiempo real del trabajo, no el de esta llamada. ' +
+        'Sin argumentos devuelve los minutos transcurridos en la sesión. Llámala antes de enviar_reporte.',
+      parameters: {
+        type: 'object',
+        properties: {
+          minutos: {
+            type: 'integer',
+            description: 'Minutos declarados por el técnico (solo el número, p. ej. 50). Omitir = consultar el transcurrido.',
+          },
+        },
+        required: [],
+      },
       execution_mode: 'interactive',
     },
     {

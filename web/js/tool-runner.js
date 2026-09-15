@@ -48,8 +48,15 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
   /* ---------------------------- tools ---------------------------- */
 
   function getOrden({ orden_id } = {}) {
-    const id = String(orden_id ?? '').trim();
-    const orden = ordenes.find((o) => String(o.id).toLowerCase() === id.toLowerCase());
+    const activa = String(store.final_form.order_id ?? '').trim();
+    let id = String(orden_id ?? '').trim();
+    let orden = ordenes.find((o) => String(o.id).toLowerCase() === id.toLowerCase());
+    // Sin id (o id = la orden activa dicha a medias): devolver la orden ACTIVA
+    // de la sesión — la app la asigna al abrir; el técnico no tiene que dictarla.
+    if (!orden && (!id || id.toLowerCase() === activa.toLowerCase())) {
+      orden = ordenes.find((o) => String(o.id).toLowerCase() === activa.toLowerCase());
+      if (orden) id = orden.id;
+    }
     if (!orden) {
       return { ok: false, error: 'orden_no_encontrada', orden_id: id,
         disponibles: ordenes.slice(0, 10).map((o) => o.id) };
