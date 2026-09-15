@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Commit-message gate: rejects AI-tool ATTRIBUTION in commit messages
+# (Co-Authored-By trailers naming an AI vendor, "(generated|written|
+# authored|assisted) with/by <vendor>" credits, robot-emoji signatures)
+# and rejects a message that contains a configured sensitive token
+# (same local list as scripts/guard-sensitive-content.sh — never tracked).
+# Wired via: git config core.hooksPath scripts/hooks
+# (git silently ignores a non-executable hook — keep the exec bit).
+#
+# Honest limits: `git commit --no-verify` bypasses it, and it checks only
+# the message file handed to it. It blocks attribution SHAPES, not
+# subject-matter mentions: a subject like "remove the Anthropic path" and
+# a human Co-Authored-By trailer must keep passing. The token check never
+# prints the token that matched, only that one did; it is disabled
+# (fail-open) when no local token list exists or it is empty (bootstrap
+# precedent, CONTRIBUTING.md); a list that exists but is not a readable
+# regular file (chmod 000, a directory at the path, a dangling symlink)
+# REFUSES the commit — fail-closed parity with
+# scripts/guard-sensitive-content.sh.
+# Rule text and rationale: CONTRIBUTING.md at the repo root.
+
+set -u
+MSG_FILE="${1:-}"
+[ -f "$MSG_FILE" ] || exit 0
+
+VENDOR='(claude|anthropic|chatgpt|openai|copilot|gemini|gpt|llm|ai[- ]assistant)'
+
+if grep -inE "^[[:space:]]*co-authored-by:.*${VENDOR}" "$MSG_FILE" \
+   || grep -inE "(generated|written|authored|assisted)[[:space:]]+(with|by)[[:space:]]+[^.]*${VENDOR}" "$MSG_FILE" \
+   || grep -q '🤖' "$MSG_FILE"; then
+  echo "commit-msg: BLOCKED — AI-tool attribution detected in the commit message." >&2
+  echo "  Rule: CONTRIBUTING.md (no AI-attribution trailers, no generated-with" >&2
+  echo "  credits, no emoji signatures). Remove the attribution line(s) and" >&2
+  echo "  re-commit; do not use --no-verify." >&2
+  exit 1
+fi
+
+# Sensitive tokens in the message itself — the message is permanent
+# history, so the same rule as staged content applies (list lives in the
+# git dir, never tracked; see scripts/guard-sensitive-content.sh).
+TOKENS="$(git rev-parse --absolute-git-dir)/sensitive-tokens"
+if [ -e "$TOKENS" ] || [ -L "$TOKENS" ]; then
+  if [ ! -f "$TOKENS" ] || [ ! -r "$TOKENS" ]; then
+    echo "commit-msg: sensitive-tokens exists but is not a readable file; failing closed per design" >&2
+    exit 2
+  fi
+fi
+if [ -s "$TOKENS" ] && [ -r "$TOKENS" ]; then
+  PATTERNS="$(mktemp)" || {
+    echo "commit-msg: mktemp failed; failing closed per design" >&2
+    exit 2
+  }
+  trap 'rm -f "$PATTERNS"' EXIT
+  if ! tr -d '\r' < "$TOKENS" | sed -e '/^[[:space:]]*$/d' > "$PATTERNS"; then
+    echo "commit-msg: cannot sanitize token list; failing closed per design" >&2
+    exit 2
+  fi
+  if [ -s "$PATTERNS" ] && grep -aFqf "$PATTERNS" "$MSG_FILE"; then
+    echo "commit-msg: BLOCKED — the commit message contains a configured sensitive token." >&2
+    echo "  Use a tokenized/category reference instead, then re-commit; do not" >&2
+    echo "  use --no-verify. Rule: CONTRIBUTING.md; list mechanism:" >&2
+    echo "  scripts/guard-sensitive-content.sh" >&2
+    exit 1
+  fi
+fi
+exit 0

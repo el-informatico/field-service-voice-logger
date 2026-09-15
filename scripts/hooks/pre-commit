@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Pre-commit gate: runs the commit-time guards and refuses the commit
+# when any of them fails:
+#   1. sensitive-content tokens in staged added lines (local list in the
+#      git dir — disabled when the list is absent; see
+#      scripts/guard-sensitive-content.sh)
+# Wired via: git config core.hooksPath scripts/hooks
+#
+# Honest limits: `git commit --no-verify` bypasses these hooks, and the
+# sensitive-content check only looks at STAGED ADDED lines (pre-existing
+# tracked occurrences are out of scope). They are tripwires, not
+# containment — see each guard's header for the full boundary note.
+set -u
+ROOT="$(git rev-parse --show-toplevel)" || {
+  echo "pre-commit: cannot determine repo root" >&2
+  exit 1
+}
+rc=0
+bash "$ROOT/scripts/guard-sensitive-content.sh" || rc=1
+exit "$rc"
