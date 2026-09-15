@@ -1,0 +1,40 @@
+{
+  "scenario_id": "s3-barge-in",
+  "order_id": "OT-1005",
+  "noise_condition": "clean",
+  "expected_form": {
+    "problema": "La torre de enfriamiento no circula agua: no moja el relleno y la bomba trabaja en seco; se cerró la llave general por goteo en una manguera deteriorada y la válvula de paso de la línea no abre bien.",
+    "diagnostico": "Válvula de bola de 1/2\" cuateada, sin empaque y sin reparación; manguera de neopreno de 5/8\" reventada en la conexión de la torre.",
+    "solucion": "Se sustituyeron la válvula de bola de 1/2\" y la manguera de neopreno reforzada de 5/8\"; se restableció la alimentación, la torre volvió a mojar el relleno y la bomba quedó sonando normal.",
+    "piezas": [
+      { "sku": "VLV-012-BR", "qty": 1 },
+      { "sku": "MAN-058-NE", "qty": 1 }
+    ],
+    "tiempo_minutos": 60,
+    "notas": "El motor de la bomba quedó sonando bien al final de la prueba; el técnico tiene otra parada pendiente ese día."
+  },
+  "user_utterances": [
+    { "n": 1, "text": "¿Me escuchas?... bueno, ya estoy en la nave siete, junto a la torre de enfriamiento... traigo la orden de que no circula agua... va, arrancamos." },
+    { "n": 3, "text": "Pos la torre no está mojando el relleno... la bomba anda trabajando en seco y le cerré la llave general porque gotea por una manguera que ya está podrida... y la válvula de paso de la línea no abre bien, va, la válvula esa... la de media pulgada, la chica." },
+    { "n": 5, "text": "Le metí presión con la manguera de servicio y el agua no pasa... el empaque de la válvula ya ni existe, truena al meterle presión... también la manguera de la torre se reventó en la conexión... la válvula se cambia completa, no tiene reparación." },
+    { "n": 7, "text": "¡Va, va — era la de 1/2, no la de 3/4!... la de media pulgada, mira, aquí tengo la vieja en la mano... una pieza de media pulgada es." },
+    { "n": 9, "text": "Sí, esa... una pieza." },
+    { "n": 11, "text": "La manguera es la de neopreno de cinco octavos, reforzada... un tramo de a metro... una pieza, y de una vez apúntame que el motor de la bomba ya sonaba bien al final." },
+    { "n": 13, "text": "Sí, cinco octavos... va." },
+    { "n": 15, "text": "—como una hora te llevo diciendo... va, va... sesenta minutos, apúntale una hora y ya." },
+    { "n": 17, "text": "¡Ya, ya, está perfecto, no repitas todo!... mándalo ya que tengo otra parada." }
+  ],
+  "seeded_errors": [
+    {
+      "field": "pieza",
+      "captured": { "sku": "VLV-034-BR", "qty": 1 },
+      "truth": { "sku": "VLV-012-BR", "qty": 1 },
+      "rescued_by_confirmation": true
+    }
+  ],
+  "provoked_interruptions": [
+    { "during_turn": 6, "expected": "respected" },
+    { "during_turn": 14, "expected": "respected" },
+    { "during_turn": 16, "expected": "respected" }
+  ]
+}

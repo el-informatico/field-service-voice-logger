@@ -1,0 +1,36 @@
+{
+  "scenario_id": "s2-pieza-mal-oida",
+  "order_id": "OT-1003",
+  "noise_condition": "clean",
+  "expected_form": {
+    "problema": "Fuga en la línea de agua enfriada del enfriador de agua: goteo en la sección de válvulas, el manómetro marca dos libras menos de lo normal y el circuito bombea aire porque el vaso de expansión se vacía.",
+    "diagnostico": "Las dos válvulas de bola de 3/4\" están cuateadas y gotean por el vástago, ya no hacen sello; la manguera de neopreno de 1/2\" está cristalizada.",
+    "solucion": "Se sustituyeron las dos válvulas de bola de 3/4\" y el tramo de manguera de neopreno de 1/2\"; se rellenó el circuito con agua y se purgó el aire en el purgador. La fuga quedó resuelta y la presión se estabilizó.",
+    "piezas": [
+      { "sku": "VLV-034-BR", "qty": 2 },
+      { "sku": "MAN-012-NE", "qty": 1 }
+    ],
+    "tiempo_minutos": 45,
+    "notas": "Vigilar la presión del circuito durante la semana y avisar al jefe de mantenimiento del hotel."
+  },
+  "user_utterances": [
+    { "n": 1, "text": "Buenos días... ya estoy en el hotel, en el cuarto de máquinas del sótano... hay un charco bien feo junto al enfriador de agua... arranco con la orden de la fuga, ¿sí?" },
+    { "n": 3, "text": "Pos mira... la línea de agua enfriada está goteando por la sección de las válvulas... el manómetro marca como dos libras menos que lo normal... y el circuito anda bombeando aire porque el vaso de expansión se vacía." },
+    { "n": 5, "text": "Ya cerré la llave de paso general y drené un poco... las dos válvulas de bola están cuateadas y gotean por el vástago, ya no hacen sello... son las de tres cuartos, las dos se cambian... y de una vez la manguera de neopreno, que ya está cristalizada." },
+    { "n": 7, "text": "¡No, no... la de tres cuartos!... la grande, la de tres cuartos de pulgada, la de tres octavos es chiquita y no le llega... son dos piezas de tres cuartos." },
+    { "n": 9, "text": "Ahora sí... dos piezas de tres cuartos, correcto." },
+    { "n": 11, "text": "La manguera es la de neopreno de media pulgada... un tramo de a metro nada más, la de cinco octavos es para la línea del condensado y está bien." },
+    { "n": 13, "text": "Sí, esa... media pulgada, una pieza." },
+    { "n": 15, "text": "Pues cambié las dos válvulas de bola, cambié el tramo de manguera, rellené el circuito con agua y le saqué el aire en el purgador... estuve... como cuarenta y cinco minutos, ya no gotea y la presión se quedó estable." },
+    { "n": 17, "text": "Ponle que hay que vigilar la presión del circuito esta semana y que le avise al jefe de mantenimiento del hotel... listo, mándalo." }
+  ],
+  "seeded_errors": [
+    {
+      "field": "pieza",
+      "captured": { "sku": "VLV-038-BR", "qty": 2 },
+      "truth": { "sku": "VLV-034-BR", "qty": 2 },
+      "rescued_by_confirmation": true
+    }
+  ],
+  "provoked_interruptions": []
+}

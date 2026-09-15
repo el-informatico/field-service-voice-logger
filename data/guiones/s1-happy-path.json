@@ -1,0 +1,140 @@
+{
+  "scenario_id": "s1-happy-path",
+  "order_id": "OT-1004",
+  "description": "Camino feliz: minisplit de escuela que no arranca (breaker brinca). Diagnóstico capacitor de arranque hinchado + contactor traqueteando. Todas las confirmaciones por read-back salen correctas a la primera; sin errores sembrados, sin interrupciones.",
+  "noise_condition": "clean",
+  "turns": [
+    {
+      "n": 1,
+      "role": "user",
+      "text": "Buenas... sí, ya llegué a la escuela, el intendente me abrió el taller de cómputo... inicio con la orden del minisplit que no arranca, ¿verdad?",
+      "expect": "tool:get_orden",
+      "note": "saludo corto; el técnico acomoda herramientas mientras habla"
+    },
+    {
+      "n": 2,
+      "role": "agent",
+      "hint": "get_orden(OT-1004); saluda brevemente, resume el problema reportado y el equipo (minisplit paquete 5 toneladas, HVAC-MCS-5T) y pide que narre qué encuentra."
+    },
+    {
+      "n": 3,
+      "role": "user",
+      "text": "Pos te comento... le doy encendido y nada, o sea, se oye como un clic en el gabinete de afuera pero el ventilador no se mueve... y el compresor ni arranca... ayer sí se fue el breaker como tres veces, los muchachos lo volvieron a subir y a los diez minutos otra vez se fue.",
+      "expect": "tool:set_problema",
+      "note": "ruido leve de llaves al fondo; discurso lento con muletillas"
+    },
+    {
+      "n": 4,
+      "role": "agent",
+      "hint": "set_problema con el texto del técnico (no parafrasear); pide que abra la unidad y describa lo que ve."
+    },
+    {
+      "n": 5,
+      "role": "user",
+      "text": "Espera, déjame quitar la tapa lateral... va... ok, aquí está... el capacitor de arranque está hinchado, bien gordito, y se le salió un poquito el aceite por la terminal... este... y el contactor, cuando le doy corriente, traquetea feo.",
+      "expect": "none",
+      "note": "pausa media mientras desatornilla; destornillador audible"
+    },
+    {
+      "n": 6,
+      "role": "agent",
+      "hint": "Pregunta por el microfaradiaje del capacitor antes de buscar (hay candidatos 35+5 y 45+5 µF en catálogo); no agrega nada todavía."
+    },
+    {
+      "n": 7,
+      "role": "user",
+      "text": "Pues el de fábrica... aquí en la etiqueta dice cuarenta y cinco más cinco, a trescientos setenta volts... el de cuarenta y cinco más cinco es.",
+      "expect": "tool:buscar_pieza",
+      "note": "lee la etiqueta del capacitor en voz alta"
+    },
+    {
+      "n": 8,
+      "role": "agent",
+      "hint": "buscar_pieza('capacitor de arranque 45+5'); agregar_pieza CAP-ARR-455 qty 1 y read-back explícito en voz alta: 'capacitor de arranque de cuarenta y cinco más cinco microfaradios, una pieza, ¿correcto?'.",
+      "add_parts": [
+        {
+          "sku": "CAP-ARR-455",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "role": "user",
+      "text": "Correcto, una pieza... va.",
+      "expect": "readback",
+      "note": "confirmación corta, correcta a la primera"
+    },
+    {
+      "n": 10,
+      "role": "agent",
+      "hint": "Registra confirm_result ok; pregunta si el contactor también se cambia o solo se aprietan terminales."
+    },
+    {
+      "n": 11,
+      "role": "user",
+      "text": "El contactor mejor cámbialo también, anda choqueando... es el de dos polos, de treinta amperios, con bobina de veinticuatro volts... uno nada más.",
+      "expect": "tool:buscar_pieza",
+      "note": "ruido de multímetro al fondo"
+    },
+    {
+      "n": 12,
+      "role": "agent",
+      "hint": "buscar_pieza('contactor 2 polos 30A 24V'); agregar_pieza CNT-030-24 qty 1; read-back: 'contactor de dos polos de treinta amperios, una pieza, ¿confirmo?'.",
+      "add_parts": [
+        {
+          "sku": "CNT-030-24",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "n": 13,
+      "role": "user",
+      "text": "Sí, ese mismo... uno nada más.",
+      "expect": "readback",
+      "note": "ruido de llave inglesa mientras sujeta una terminal"
+    },
+    {
+      "n": 14,
+      "role": "agent",
+      "hint": "Confirmación registrada; pide que reinstale y encienda el equipo para verificar antes de cerrar la ficha."
+    },
+    {
+      "n": 15,
+      "role": "user",
+      "text": "Ya le puse la tapa... va... ya le doy corriente... ahí va... ya arrancó el compresor, el ventilador girando bien, ya está saliendo aire frío... quedó lista la máquina.",
+      "expect": "none",
+      "note": "arranque del equipo audible al fondo; habla mientras la unidad enciende"
+    },
+    {
+      "n": 16,
+      "role": "agent",
+      "hint": "Pide que narre la solución completa y el tiempo que llevó el trabajo."
+    },
+    {
+      "n": 17,
+      "role": "user",
+      "text": "Pues... cambié el capacitor de arranque y el contactor, le di una limpiada al drenaje porque traía lama... apreté todas las terminales... y pues en total estuve... va... como cincuenta minutos.",
+      "expect": "tool:set_solucion | tool:get_tiempo_trabajo",
+      "note": "pausa larga antes de dar el tiempo; está guardando la herramienta"
+    },
+    {
+      "n": 18,
+      "role": "agent",
+      "hint": "set_solucion con la narración del técnico; get_tiempo_trabajo (~50 min); confirma el tiempo en voz alta y pide una nota final si hay."
+    },
+    {
+      "n": 19,
+      "role": "user",
+      "text": "Sí... ponle que el breaker está bien, que le digan a intendencia que no lo anden subiendo tantas veces... eso es todo, mándalo.",
+      "expect": "tool:enviar_reporte",
+      "note": "cierre; el técnico ya está recogiéndose"
+    },
+    {
+      "n": 20,
+      "role": "agent",
+      "hint": "Resumen de la ficha en una frase, confirmación de envío, cerrar sesión. Ningún dato quedó sin confirmar."
+    }
+  ]
+}

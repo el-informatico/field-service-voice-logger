@@ -1,0 +1,136 @@
+{
+  "scenario_id": "s2-pieza-mal-oida",
+  "order_id": "OT-1003",
+  "description": "Pieza mal oída: enfriador de agua de hotel con fuga en la línea de agua enfriada. El técnico pide DOS válvulas de 3/4\", pero la transcripción del turno 5 captura 'tres punto ocho' y buscar_pieza resuelve VLV-038-BR (3/8\"). El read-back de desambiguación ('¿decías la de tres cuartos o de tres octavos?') expone el error, el técnico corrige y la ficha se rescata. La manguera se confirma limpia a la primera, de contraste.",
+  "noise_condition": "clean",
+  "turns": [
+    {
+      "n": 1,
+      "role": "user",
+      "text": "Buenos días... ya estoy en el hotel, en el cuarto de máquinas del sótano... hay un charco bien feo junto al enfriador de agua... arranco con la orden de la fuga, ¿sí?",
+      "expect": "tool:get_orden",
+      "note": "eco de cuarto de máquinas; bomba de fondo"
+    },
+    {
+      "n": 2,
+      "role": "agent",
+      "hint": "get_orden(OT-1003); resume el reporte (fuga en línea de agua enfriada, pérdida de presión) y pide que narre el estado actual."
+    },
+    {
+      "n": 3,
+      "role": "user",
+      "text": "Pos mira... la línea de agua enfriada está goteando por la sección de las válvulas... el manómetro marca como dos libras menos que lo normal... y el circuito anda bombeando aire porque el vaso de expansión se vacía.",
+      "expect": "tool:set_problema",
+      "note": "habla con la cabeza dentro del gabinete de tubería"
+    },
+    {
+      "n": 4,
+      "role": "agent",
+      "hint": "set_problema con el texto del técnico; pide diagnóstico: qué encontró al cerrar y desarmar."
+    },
+    {
+      "n": 5,
+      "role": "user",
+      "text": "Ya cerré la llave de paso general y drené un poco... las dos válvulas de bola están cuateadas y gotean por el vástago, ya no hacen sello... son las de tres cuartos, las dos se cambian... y de una vez la manguera de neopreno, que ya está cristalizada.",
+      "expect": "tool:buscar_pieza",
+      "note": "ERROR SEMBRADO: la transcripción de ESTE turno captura 'válvula de tres punto ocho' (no 'tres cuartos') → buscar_pieza resuelve VLV-038-BR (3/8\") y agregar_pieza lo registra. La verdad es VLV-034-BR (3/4\"). Lo debe atrapar el read-back del turno 6. El audio real del técnico dice 'tres cuartos'.",
+      "as_heard": "Ya cerré la llave de paso general y drené un poco... las dos válvulas de bola están cuateadas y gotean por el vástago, ya no hacen sello... son las de tres punto ocho, las dos se cambian... y de una vez la manguera de neopreno, que ya está cristalizada."
+    },
+    {
+      "n": 6,
+      "role": "agent",
+      "hint": "Agrega lo capturado (VLV-038-BR qty 2) y hace el read-back DE DESAMBIGUACIÓN por el par confundible: '¿decías la válvula de tres cuartos o la de tres octavos?' (confirm_request field=pieza value={VLV-038-BR, qty:2}). No debe dar por buena la pieza sin este paso.",
+      "add_parts": [
+        {
+          "sku": "VLV-038-BR",
+          "qty": 2
+        }
+      ],
+      "note_seeded_error": true
+    },
+    {
+      "n": 7,
+      "role": "user",
+      "text": "¡No, no... la de tres cuartos!... la grande, la de tres cuartos de pulgada, la de tres octavos es chiquita y no le llega... son dos piezas de tres cuartos.",
+      "expect": "readback",
+      "note": "corrección explícita del error sembrado; maquinaria ruidosa de fondo momentánea"
+    },
+    {
+      "n": 8,
+      "role": "agent",
+      "hint": "Corrige la ficha: quita VLV-038-BR, agrega VLV-034-BR qty 2; re-read-back: 'válvula de bola de tres cuartos, dos piezas, ¿ahora sí confirmo?'.",
+      "correct_to": [
+        {
+          "sku": "VLV-034-BR",
+          "qty": 2
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "role": "user",
+      "text": "Ahora sí... dos piezas de tres cuartos, correcto.",
+      "expect": "readback",
+      "note": "confirmación de la corrección"
+    },
+    {
+      "n": 10,
+      "role": "agent",
+      "hint": "Registra confirm_result ok con la corrección; retoma la manguera mencionada en el turno 5 y busca para desambiguar 1/2\" vs 5/8\"."
+    },
+    {
+      "n": 11,
+      "role": "user",
+      "text": "La manguera es la de neopreno de media pulgada... un tramo de a metro nada más, la de cinco octavos es para la línea del condensado y está bien.",
+      "expect": "tool:buscar_pieza",
+      "note": "descarta el confusable 5/8\" por su cuenta; audio claro"
+    },
+    {
+      "n": 12,
+      "role": "agent",
+      "hint": "buscar_pieza('manguera neopreno 1/2'); agregar_pieza MAN-012-NE qty 1; read-back: 'manguera de neopreno de media pulgada, una pieza, ¿correcto?'.",
+      "add_parts": [
+        {
+          "sku": "MAN-012-NE",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "n": 13,
+      "role": "user",
+      "text": "Sí, esa... media pulgada, una pieza.",
+      "expect": "readback",
+      "note": "confirmación limpia a la primera (contraste con el turno 7)"
+    },
+    {
+      "n": 14,
+      "role": "agent",
+      "hint": "Registra confirmación; pide solución completa y tiempo."
+    },
+    {
+      "n": 15,
+      "role": "user",
+      "text": "Pues cambié las dos válvulas de bola, cambié el tramo de manguera, rellené el circuito con agua y le saqué el aire en el purgador... estuve... como cuarenta y cinco minutos, ya no gotea y la presión se quedó estable.",
+      "expect": "tool:set_solucion | tool:get_tiempo_trabajo",
+      "note": "pausa larga mientras aprieta la última abrazadera del retorno"
+    },
+    {
+      "n": 16,
+      "role": "agent",
+      "hint": "set_solucion; get_tiempo_trabajo (~45 min); confirma tiempo en voz alta; pide nota final."
+    },
+    {
+      "n": 17,
+      "role": "user",
+      "text": "Ponle que hay que vigilar la presión del circuito esta semana y que le avise al jefe de mantenimiento del hotel... listo, mándalo.",
+      "expect": "tool:enviar_reporte",
+      "note": "cierre"
+    },
+    {
+      "n": 18,
+      "role": "agent",
+      "hint": "Resumen de ficha (menciona la corrección rescatada), confirmación de envío, cierre de sesión."
+    }
+  ]
+}

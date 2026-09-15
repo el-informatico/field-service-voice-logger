@@ -1,0 +1,227 @@
+[
+  {
+    "sku": "VLV-034-BR",
+    "nombre": "Válvula de bola latón 3/4\"",
+    "alias": ["válvula 3/4", "valvula tres cuartos", "bola 3/4", "llave de paso tres cuartos"],
+    "tipo": "valvula",
+    "compatible_con": ["HVAC-*", "HID-*"],
+    "unidad": "pza",
+    "confundible_con": ["VLV-038-BR"]
+  },
+  {
+    "sku": "VLV-038-BR",
+    "nombre": "Válvula de bola latón 3/8\"",
+    "alias": ["válvula 3/8", "valvula tres octavos", "bola 3/8", "llave de paso tres octavos"],
+    "tipo": "valvula",
+    "compatible_con": ["HVAC-*", "HID-*"],
+    "unidad": "pza",
+    "confundible_con": ["VLV-034-BR"]
+  },
+  {
+    "sku": "VLV-012-BR",
+    "nombre": "Válvula de bola latón 1/2\"",
+    "alias": ["válvula 1/2", "valvula media pulgada", "bola 1/2", "llave de paso media pulgada"],
+    "tipo": "valvula",
+    "compatible_con": ["HVAC-*", "HID-*"],
+    "unidad": "pza",
+    "confundible_con": ["VLV-034-BR"]
+  },
+  {
+    "sku": "CAP-ARR-355",
+    "nombre": "Capacitor de arranque 35+5 µF 370 V",
+    "alias": ["capacitor 35 5", "capacitor de arranque 35", "cápsula de arranque 35 5", "capsula 35 5"],
+    "tipo": "capacitor",
+    "compatible_con": ["HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": ["CAP-ARR-455"]
+  },
+  {
+    "sku": "CAP-ARR-455",
+    "nombre": "Capacitor de arranque 45+5 µF 370 V",
+    "alias": ["capacitor 45 5", "capacitor de arranque 45", "cápsula de arranque 45 5", "capsula 45 5"],
+    "tipo": "capacitor",
+    "compatible_con": ["HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": ["CAP-ARR-355"]
+  },
+  {
+    "sku": "CAP-MAR-125",
+    "nombre": "Capacitor de marcha 12.5 µF 450 V",
+    "alias": ["capacitor de marcha 12", "capacitor permanente 12.5", "cápsula de marcha 12 5", "capsula de marcha"],
+    "tipo": "capacitor",
+    "compatible_con": ["HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "BRK-020-2P",
+    "nombre": "Breaker termomagnético 2P 20 A",
+    "alias": ["breaker 20", "termomagnético 20 amperios", "termomagnetico 20a", "interruptor 20 amperes"],
+    "tipo": "proteccion",
+    "compatible_con": ["ELE-*"],
+    "unidad": "pza",
+    "confundible_con": ["BRK-030-2P"]
+  },
+  {
+    "sku": "BRK-030-2P",
+    "nombre": "Breaker termomagnético 2P 30 A",
+    "alias": ["breaker 30", "termomagnético 30 amperios", "termomagnetico 30a", "interruptor 30 amperes"],
+    "tipo": "proteccion",
+    "compatible_con": ["ELE-*"],
+    "unidad": "pza",
+    "confundible_con": ["BRK-020-2P"]
+  },
+  {
+    "sku": "MAN-012-NE",
+    "nombre": "Manguera de neopreno reforzada 1/2\" (tramo 1 m)",
+    "alias": ["manguera 1/2", "manguera media pulgada", "manguera neopreno media", "huacha 1/2"],
+    "tipo": "manguera",
+    "compatible_con": ["HVAC-*", "HID-*"],
+    "unidad": "pza",
+    "confundible_con": ["MAN-058-NE"]
+  },
+  {
+    "sku": "MAN-058-NE",
+    "nombre": "Manguera de neopreno reforzada 5/8\" (tramo 1 m)",
+    "alias": ["manguera 5/8", "manguera cinco octavos", "manguera neopreno 5 8", "huacha 5/8"],
+    "tipo": "manguera",
+    "compatible_con": ["HVAC-*", "HID-*"],
+    "unidad": "pza",
+    "confundible_con": ["MAN-012-NE"]
+  },
+  {
+    "sku": "CNT-030-24",
+    "nombre": "Contactor 2 polos 30 A bobina 24 VAC",
+    "alias": ["contactor 30", "contactor dos polos", "relevador 30 amperios", "contactor 24v"],
+    "tipo": "contactor",
+    "compatible_con": ["HVAC-*", "ELE-*"],
+    "unidad": "pza",
+    "confundible_con": ["CNT-040-24"]
+  },
+  {
+    "sku": "CNT-040-24",
+    "nombre": "Contactor 3 polos 40 A bobina 24 VAC",
+    "alias": ["contactor 40", "contactor tres polos", "relevador 40 amperios", "contactor 40a 24v"],
+    "tipo": "contactor",
+    "compatible_con": ["HVAC-*", "ELE-*"],
+    "unidad": "pza",
+    "confundible_con": ["CNT-030-24"]
+  },
+  {
+    "sku": "THR-010-DG",
+    "nombre": "Termostato digital programable 1 etapa",
+    "alias": ["termostato digital", "termostato programable", "control de temperatura digital", "termostato 24v"],
+    "tipo": "control",
+    "compatible_con": ["HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "PRE-EST-005",
+    "nombre": "Presostato de alta y baja 5 A 24 V",
+    "alias": ["presostato", "presóstato alta y baja", "switch de presión", "presostato de seguridad"],
+    "tipo": "control",
+    "compatible_con": ["HVAC-CHW-*", "HVAC-TRE-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "ROD-6205-2RS",
+    "nombre": "Rodamiento 6205-2RS sellado",
+    "alias": ["rodamiento 6205", "balero 6205", "chumacera 6205", "balero sellado 25mm"],
+    "tipo": "mecanico",
+    "compatible_con": ["HVAC-*", "ELE-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "EMP-NEO-450",
+    "nombre": "Empaque perimetral de puerta para cámara 450",
+    "alias": ["empaque de puerta", "hule de puerta cámara", "empaque magnético", "sello de puerta refrigerador"],
+    "tipo": "empaque",
+    "compatible_con": ["HVAC-CAM-*"],
+    "unidad": "jgo",
+    "confundible_con": null
+  },
+  {
+    "sku": "BND-A42",
+    "nombre": "Banda V perfil A-42",
+    "alias": ["banda a42", "banda v a 42", "banda de ventilador", "correa a42"],
+    "tipo": "banda",
+    "compatible_con": ["HVAC-*", "ELE-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "FUS-CAR-030",
+    "nombre": "Fusible de cartucho 30 A clase RK5",
+    "alias": ["fusible 30", "fusible cartucho 30a", "fusible rk5", "cartucho 30 amperios"],
+    "tipo": "proteccion",
+    "compatible_con": ["ELE-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "FUS-CER-015",
+    "nombre": "Fusible cerámico 15 A 250 V",
+    "alias": ["fusible 15", "fusible cerámico 15a", "fusible de control 15", "cartucho ceramico"],
+    "tipo": "proteccion",
+    "compatible_con": ["ELE-*", "HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "BRN-012-DIN",
+    "nombre": "Bornera de carril 12 puestos",
+    "alias": ["bornera 12", "bornera din 12", "terminal block 12", "borna de carril"],
+    "tipo": "conexion",
+    "compatible_con": ["ELE-*", "HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "RIEL-DIN-35",
+    "nombre": "Riel DIN 35 mm (1 m)",
+    "alias": ["riel din 35", "riel 35mm", "carril din", "riel montaje"],
+    "tipo": "accesorio",
+    "compatible_con": ["ELE-*", "HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "MOT-VEN-025",
+    "nombre": "Motor de ventilador 1/4 HP 1075 RPM 230 V",
+    "alias": ["motor ventilador 1/4", "motor 1075 rpm", "motor de aspas cuarto", "motor 230v 1/4 hp"],
+    "tipo": "motor",
+    "compatible_con": ["HVAC-EXT-*", "HVAC-MCS-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "PRT-KLI-011",
+    "nombre": "Protector térmico para motocompresor Klixon 11 AM",
+    "alias": ["protector térmico", "klixon", "protector de compresor", "termiklio compresor"],
+    "tipo": "proteccion",
+    "compatible_con": ["HVAC-*"],
+    "unidad": "pza",
+    "confundible_con": null
+  },
+  {
+    "sku": "CAB-THW-12",
+    "nombre": "Cable THW calibre 12 AWG 600 V (por metro)",
+    "alias": ["cable 12", "thw calibre 12", "cable doce", "alambre 12 awg"],
+    "tipo": "cable",
+    "compatible_con": ["ELE-*", "HVAC-*"],
+    "unidad": "m",
+    "confundible_con": ["CAB-THW-14"]
+  },
+  {
+    "sku": "CAB-THW-14",
+    "nombre": "Cable THW calibre 14 AWG 600 V (por metro)",
+    "alias": ["cable 14", "thw calibre 14", "cable catorce", "alambre 14 awg"],
+    "tipo": "cable",
+    "compatible_con": ["ELE-*", "HVAC-*"],
+    "unidad": "m",
+    "confundible_con": ["CAB-THW-12"]
+  }
+]

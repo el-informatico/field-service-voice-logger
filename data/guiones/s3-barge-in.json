@@ -1,0 +1,138 @@
+{
+  "scenario_id": "s3-barge-in",
+  "order_id": "OT-1005",
+  "description": "Barge-in: torre de enfriamiento en planta de plásticos que no circula agua. El técnico pide la válvula de 1/2\" pero lo dice rápido y enterrado en la narración; buscar_pieza resuelve la 3/4\" (la más común) y el agente arranca el read-back con la pieza equivocada: el técnico lo INTERRUMPE a media frase ('¡va, va — era la de 1/2, no la de 3/4!'). Tres interrupciones provocadas en total (turnos 7, 15 y 17); el agente debe ceder en <500 ms, nunca hablar encima ni perder el turno.",
+  "noise_condition": "clean",
+  "turns": [
+    {
+      "n": 1,
+      "role": "user",
+      "text": "¿Me escuchas?... bueno, ya estoy en la nave siete, junto a la torre de enfriamiento... traigo la orden de que no circula agua... va, arrancamos.",
+      "expect": "tool:get_orden",
+      "note": "ruido de planta baja de fondo (ventiladores); técnico con las manos ocupadas"
+    },
+    {
+      "n": 2,
+      "role": "agent",
+      "hint": "get_orden(OT-1005); resume (torre 3V-425 no circula, goteo en la línea de alimentación) y pide el estado actual."
+    },
+    {
+      "n": 3,
+      "role": "user",
+      "text": "Pos la torre no está mojando el relleno... la bomba anda trabajando en seco y le cerré la llave general porque gotea por una manguera que ya está podrida... y la válvula de paso de la línea no abre bien, va, la válvula esa... la de media pulgada, la chica.",
+      "expect": "tool:set_problema",
+      "note": "habla rápido; 'la de media pulgada' va enterrado al final de la frase (dispara el candidato equivocado VLV-034-BR en el turno 6)"
+    },
+    {
+      "n": 4,
+      "role": "agent",
+      "hint": "set_problema con el texto del técnico; pide diagnóstico: qué revisó antes de cerrar."
+    },
+    {
+      "n": 5,
+      "role": "user",
+      "text": "Le metí presión con la manguera de servicio y el agua no pasa... el empaque de la válvula ya ni existe, truena al meterle presión... también la manguera de la torre se reventó en la conexión... la válvula se cambia completa, no tiene reparación.",
+      "expect": "tool:buscar_pieza",
+      "note": "ruido de golpe de llave al fondo; tecleo de herramienta pesada"
+    },
+    {
+      "n": 6,
+      "role": "agent",
+      "hint": "buscar_pieza('válvula de paso') resuelve el candidato top VLV-034-BR (3/4\", el más común en el catálogo); lo agrega y ARRANCA el read-back: 'La válvula de bola de latón de tres cuar—'. DEBE dejarse interrumpir en cuanto el usuario habla.",
+      "add_parts": [
+        {
+          "sku": "VLV-034-BR",
+          "qty": 1
+        }
+      ],
+      "note_seeded_error": true
+    },
+    {
+      "n": 7,
+      "role": "user",
+      "text": "¡Va, va — era la de 1/2, no la de 3/4!... la de media pulgada, mira, aquí tengo la vieja en la mano... una pieza de media pulgada es.",
+      "expect": "readback",
+      "note": "INTERRUPCIÓN 1: corta al agente a media palabra (agente_text_cut esperado: '¿Decías la válvula de bola de tres cuar—'); el agente debe callar <500 ms y NO terminar la frase",
+      "interrupt": true
+    },
+    {
+      "n": 8,
+      "role": "agent",
+      "hint": "Cede de inmediato; corrige la ficha (quita VLV-034-BR, agrega VLV-012-BR qty 1); re-confirma en voz alta, corto: 'válvula de media pulgada, una pieza, ¿confirmo?'.",
+      "correct_to": [
+        {
+          "sku": "VLV-012-BR",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "n": 9,
+      "role": "user",
+      "text": "Sí, esa... una pieza.",
+      "expect": "readback",
+      "note": "confirmación de la corrección post-interrupción"
+    },
+    {
+      "n": 10,
+      "role": "agent",
+      "hint": "Registra confirmación (y el barge_in en el artefacto); pregunta por la manguera reventada: calibre y largo."
+    },
+    {
+      "n": 11,
+      "role": "user",
+      "text": "La manguera es la de neopreno de cinco octavos, reforzada... un tramo de a metro... una pieza, y de una vez apúntame que el motor de la bomba ya sonaba bien al final.",
+      "expect": "tool:buscar_pieza",
+      "note": "pide la pieza y suelta una nota extra sin que el agente pregunte"
+    },
+    {
+      "n": 12,
+      "role": "agent",
+      "hint": "buscar_pieza('manguera neopreno 5/8'); agregar_pieza MAN-058-NE qty 1; read-back: 'manguera de neopreno de cinco octavos, una pieza, ¿correcto?' — y anota lo de la bomba en notas (texto libre, sin confirm_request).",
+      "add_parts": [
+        {
+          "sku": "MAN-058-NE",
+          "qty": 1
+        }
+      ]
+    },
+    {
+      "n": 13,
+      "role": "user",
+      "text": "Sí, cinco octavos... va.",
+      "expect": "readback",
+      "note": "confirmación limpia"
+    },
+    {
+      "n": 14,
+      "role": "agent",
+      "hint": "Registra confirmación; empieza a preguntar cuánto tiempo— (frase que no termina)."
+    },
+    {
+      "n": 15,
+      "role": "user",
+      "text": "—como una hora te llevo diciendo... va, va... sesenta minutos, apúntale una hora y ya.",
+      "expect": "tool:get_tiempo_trabajo",
+      "note": "INTERRUPCIÓN 2: responde la pregunta antes de que el agente termine de hacerla; impaciencia natural",
+      "interrupt": true
+    },
+    {
+      "n": 16,
+      "role": "agent",
+      "hint": "Cede, get_tiempo_trabajo (~60 min), set_solucion propuesta; empieza el resumen final en voz alta: 'Te resumo la ficha: cambiamos válvula de media pulgada, manguera de cinco octavos, una hora de trabajo, y la nota del motor de la—'."
+    },
+    {
+      "n": 17,
+      "role": "user",
+      "text": "¡Ya, ya, está perfecto, no repitas todo!... mándalo ya que tengo otra parada.",
+      "expect": "tool:enviar_reporte",
+      "note": "INTERRUPCIÓN 3: corta el resumen final; ordena envío inmediato",
+      "interrupt": true
+    },
+    {
+      "n": 18,
+      "role": "agent",
+      "hint": "Corta el resumen SIN terminarlo, confirma en tres palabras ('ficha enviada, buenas vibras') y cierra. Las 3 interrupciones quedan registradas como barge_in en el artefacto."
+    }
+  ]
+}
