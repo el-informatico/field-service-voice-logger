@@ -1,0 +1,16 @@
+# secrets
+.env
+.env.local
+.vercel
+
+# runtime artifacts (session JSONs con transcript de personas reales)
+.data/
+sessions-out/
+*.session.json
+
+# node
+node_modules/
+
+# os/editor
+.DS_Store
+*.swp
