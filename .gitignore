@@ -14,3 +14,4 @@ node_modules/
 # os/editor
 .DS_Store
 *.swp
+metrics/report.json
