@@ -76,6 +76,17 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
 
 ## Bitácora
 
+- **2026-09-15 (sprint, D4-ruido + GATE D2 staged)** — Harness de ruido
+  completo: TTS del guion (29 wavs es-MX, 286 s, 24 kHz mono; incluye
+  variante as_heard de s2), DEMAND real (DKITCHEN/SPSQUARE/OOFFICE, 300 s
+  c/u, provenance con md5), mezclador RMS con SNR post-mix verificado
+  (261 mezclas a 10/5/0 dB, peor desvío 0.09 dB, sin clipping). 176 MB en
+  `.data/` (gitignored). **`docs/D2-GATE.md` = runbook del gate**: matriz
+  T0-T6 + confirmatorias C1-C4 con early-exit, criterios cuantificados
+  (turnos ≥90%, falsos cierres ≤1, barge-in ≥2/3, WER limpio ≤0.10),
+  presupuesto ~15 sesiones (≈$8-10 de los $50), y camino explícito a Plan B.
+  **ÚNICO bloqueo restante para D1-real y el GATE: `ASSEMBLYAI_API_KEY`
+  en `.env`** — con la key, el gate corre en minutos sin cambios de código.
 - **2026-09-15 (sprint, D3 — UI de sesión, FREEZE de alcance)** — Pantalla de
   sesión completa: barra sticky (orden+estado+cronómetro mm:ss), transcripción
   viva con parciales del técnico en gris, FICHA de una tarjeta por campo con
