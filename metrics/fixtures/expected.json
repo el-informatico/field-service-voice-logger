@@ -1,0 +1,82 @@
+{
+  "_comment": "Hand-computed oracle for the two fixtures. Every number below was derived manually from the fixture event timelines; selftest asserts the harness reproduces them exactly (floats to 1e-6).",
+  "fx-clean": {
+    "latency": {
+      "tool": { "n": 9, "p50": 430, "p95": 904, "min": 380, "max": 1200 },
+      "agent": { "n": 10, "p50": 695, "p95": 1016, "min": 650, "max": 1250 },
+      "skipped_tool": 1,
+      "skipped_agent": 0
+    },
+    "accuracy": {
+      "overall": 1.0,
+      "correct_fields": 5,
+      "evaluated_fields": 5,
+      "problema": { "similarity": 1.0, "correct": true },
+      "diagnostico": { "similarity": 1.0, "correct": true },
+      "solucion": { "similarity": 1.0, "correct": true },
+      "piezas": { "tp": 2, "fp": 0, "fn": 0, "precision": 1.0, "recall": 1.0, "f1": 1.0, "exact_set": true, "correct": true },
+      "tiempo_minutos": { "pred": 45, "gt": 45, "correct": true }
+    },
+    "confirmation": {
+      "n_requests": 2,
+      "n_corrections": 0,
+      "n_false_alarms": 2,
+      "precision": 0.0,
+      "recall": null,
+      "n_seeded_errors": 0,
+      "n_rescued": 0
+    },
+    "bargein": { "n_provoked": 1, "n_respected": 1, "n_stolen": 0, "pct_respected": 1.0 },
+    "wer": { "wer": 0.0, "sub": 0, "ins": 0, "del": 0, "hits": 60, "n_ref": 60 }
+  },
+  "fx-messy": {
+    "latency": {
+      "tool": { "n": 7, "p50": 550, "p95": 1610, "min": 480, "max": 2000 },
+      "agent": { "n": 7, "p50": 910, "p95": 1134, "min": 850, "max": 1200 },
+      "skipped_tool": 1,
+      "skipped_agent": 1
+    },
+    "accuracy": {
+      "overall": 0.4,
+      "correct_fields": 2,
+      "evaluated_fields": 5,
+      "problema": { "similarity": 0.1111111111111111, "correct": false },
+      "diagnostico": { "similarity": 1.0, "correct": true },
+      "solucion": { "similarity": 1.0, "correct": true },
+      "piezas": { "tp": 2, "fp": 1, "fn": 1, "precision": 0.6666666666666666, "recall": 0.6666666666666666, "f1": 0.6666666666666666, "exact_set": false, "correct": false },
+      "tiempo_minutos": { "pred": 62, "gt": 50, "correct": false }
+    },
+    "confirmation": {
+      "n_requests": 2,
+      "n_corrections": 1,
+      "n_false_alarms": 1,
+      "precision": 0.5,
+      "recall": 1.0,
+      "n_seeded_errors": 1,
+      "n_rescued": 1
+    },
+    "bargein": { "n_provoked": 1, "n_respected": 0, "n_stolen": 1, "pct_respected": 0.0 },
+    "wer": { "wer": 0.05357142857142857, "sub": 2, "ins": 0, "del": 1, "hits": 53, "n_ref": 56 }
+  },
+  "aggregate": {
+    "latency": {
+      "tool": { "n": 16, "p50": 470, "p95": 1400, "min": 380, "max": 2000 },
+      "agent": { "n": 17, "p50": 730, "p95": 1210, "min": 650, "max": 1250 }
+    },
+    "wer": { "wer": 0.02586206896551724, "sub": 2, "ins": 0, "del": 1, "hits": 113, "n_ref": 116 },
+    "extraction": {
+      "overall": 0.7,
+      "correct_fields": 7,
+      "evaluated_fields": 10,
+      "per_field": {
+        "problema": { "correct": 1, "n": 2 },
+        "diagnostico": { "correct": 2, "n": 2 },
+        "solucion": { "correct": 2, "n": 2 },
+        "tiempo_minutos": { "correct": 1, "n": 2 }
+      },
+      "piezas": { "tp": 4, "fp": 1, "fn": 1, "precision": 0.8, "recall": 0.8, "f1": 0.8, "exact_set_pct": 0.5, "n_sessions_with_piezas_gt": 2 }
+    },
+    "confirmation": { "n_requests": 4, "n_corrections": 1, "n_false_alarms": 3, "precision": 0.25, "recall": 1.0, "n_seeded": 1, "n_rescued": 1 },
+    "bargein": { "n_provoked": 2, "n_respected": 1, "n_stolen": 1, "pct_respected": 0.5 }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "scenario_id": "fx-clean",
+  "order_id": "OT-1001",
+  "expected_form": {
+    "problema": "la campana no extrae; el motor zumba pero no gira el ventilador",
+    "diagnostico": "capacitor de marcha agotado; el motor no mantiene velocidad",
+    "solucion": "se reemplazo el capacitor de marcha y se limpiaron las aspas del ventilador",
+    "piezas": [
+      { "sku": "CAP-45-UF", "qty": 1 },
+      { "sku": "REL-24V-10A", "qty": 1 }
+    ],
+    "tiempo_minutos": 45
+  },
+  "seeded_errors": [],
+  "reference_user_turns": [
+    "la campana no extrae el motor zumba pero no gira",
+    "creo que es el capacitor de marcha",
+    "pon el capacitor nuevo de cuarenta y cinco microfaradios",
+    "prueba el ventilador",
+    "tambien cambia el relevador",
+    "el compresor arranca bien ahora",
+    "baja un poco la banda",
+    "espera era la valvula de tres cuartos",
+    "si esa era",
+    "prueba el ventilador y cierra la orden"
+  ]
+}

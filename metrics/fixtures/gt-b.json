@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "scenario_id": "fx-messy",
+  "order_id": "OT-1002",
+  "expected_form": {
+    "problema": "el compresor no arranca y el interruptor termico se dispara constantemente",
+    "diagnostico": "capacitor de marcha agotado provoca sobrecorriente en el compresor",
+    "solucion": "se reemplazo el capacitor de marcha de 45 microfaradios y se ajusto el relevador",
+    "piezas": [
+      { "sku": "VLV-034-BR", "qty": 1 },
+      { "sku": "CAP-45-UF", "qty": 1 },
+      { "sku": "REL-24V-10A", "qty": 1 }
+    ],
+    "tiempo_minutos": 50
+  },
+  "seeded_errors": [
+    { "field": "pieza", "wrong_value": { "sku": "VLV-038-BR", "qty": 1 } }
+  ],
+  "reference_user_turns": [
+    "el compresor no arranca y salta el termico",
+    "creo que es el capacitor de marcha",
+    "era la valvula de tres punto ocho",
+    "no la de tres octavos la de tres cuartos",
+    "cambia el capacitor de marcha de cuarenta y cinco microfaradios",
+    "ya quedo listo prueba el arranque",
+    "pon dos fusibles de treinta amperios",
+    "cierra la orden"
+  ]
+}
