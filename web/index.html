@@ -39,8 +39,22 @@
       </div>
     </section>
 
-    <!-- ============ Pantalla 2: orden + guion ============ -->
+    <!-- ============ Pantalla 2: panel (dashboard) ============ -->
+    <section id="screen-dashboard" class="screen" hidden aria-labelledby="dash-title">
+      <h2 id="dash-title">Panel de órdenes</h2>
+      <div class="card">
+        <h3>Órdenes de trabajo</h3>
+        <ul id="dash-orders" class="dash-orders"><li class="muted">Cargando órdenes…</li></ul>
+      </div>
+      <div class="card">
+        <h3>Sesiones completadas</h3>
+        <ul id="dash-sessions" class="dash-sessions"><li class="muted">Cargando sesiones…</li></ul>
+      </div>
+    </section>
+
+    <!-- ============ Pantalla 3: orden + guion ============ -->
     <section id="screen-setup" class="screen" hidden aria-labelledby="setup-title">
+      <button id="btn-setup-back" class="ghost back" type="button">← Panel</button>
       <h2 id="setup-title">Elige orden y escenario</h2>
       <div class="setup-grid">
         <div class="card">
@@ -57,8 +71,13 @@
       <p class="hint" id="setup-error" hidden></p>
     </section>
 
-    <!-- ============ Pantalla 3: sesión ============ -->
+    <!-- ============ Pantalla 4: sesión ============ -->
     <section id="screen-session" class="screen" hidden aria-labelledby="session-title">
+      <div class="session-bar">
+        <span id="session-ot" class="mono">—</span>
+        <span id="session-estado" class="chip chip-wip">—</span>
+        <span id="cronometro" class="crono" title="Tiempo de trabajo desde el inicio">00:00</span>
+      </div>
       <div class="session-grid">
         <!-- columna izquierda: transcripción -->
         <div class="card transcript-card">
@@ -69,8 +88,8 @@
               <input type="checkbox" id="chk-autoreplay" checked>
               auto-replay
             </label>
-            <button id="btn-next-turn" class="ghost">Siguiente turno del guion ▸</button>
-            <button id="btn-bargein" class="warn">✋ ¡Espera!</button>
+            <button id="btn-next-turn" class="ghost" type="button">Siguiente turno del guion ▸</button>
+            <button id="btn-bargein" class="bargein" type="button">✋ ¡Espera!</button>
           </div>
           <form id="free-input-form" class="free-input">
             <input id="free-input" type="text" placeholder="Escribe como si lo dijeras…"
@@ -83,30 +102,106 @@
         <div class="card form-card">
           <div class="form-head">
             <h2>Ficha de la orden</h2>
-            <span id="cronometro" class="crono" title="Tiempo de trabajo">0 min</span>
+            <span class="hint">toca un valor para editarlo</span>
           </div>
-          <div id="readback-banner" class="readback" hidden>
-            <strong>Read-back pendiente:</strong> <span id="readback-text"></span>
+          <div id="readback-banner" class="readback" hidden role="alert">
+            <p id="readback-text" class="readback-text"></p>
+            <div class="readback-actions">
+              <button id="btn-confirm-yes" class="confirm" type="button">✅ Confirmar</button>
+              <button id="btn-confirm-edit" class="ghost" type="button">✏️ Corregir</button>
+            </div>
           </div>
-          <dl id="ficha" class="ficha">
-            <div data-field="order_id"><dt>Orden</dt><dd>—</dd></div>
-            <div data-field="problema"><dt>Problema</dt><dd>—</dd></div>
-            <div data-field="diagnostico"><dt>Diagnóstico</dt><dd>—</dd></div>
-            <div data-field="solucion"><dt>Solución</dt><dd>—</dd></div>
-            <div data-field="piezas"><dt>Piezas</dt><dd>—</dd></div>
-            <div data-field="tiempo_minutos"><dt>Tiempo</dt><dd>—</dd></div>
-            <div data-field="notas"><dt>Notas</dt><dd>—</dd></div>
-            <div data-field="estado"><dt>Estado</dt><dd>—</dd></div>
-          </dl>
+          <div id="ficha" class="ficha">
+            <section class="field-card" data-field="problema">
+              <header class="field-head">
+                <span class="field-name">Problema</span>
+                <span class="field-audit muted" data-audit="problema">esperando…</span>
+              </header>
+              <p class="field-value" data-value="problema">—</p>
+            </section>
+            <section class="field-card" data-field="diagnostico">
+              <header class="field-head">
+                <span class="field-name">Diagnóstico</span>
+                <span class="field-audit muted" data-audit="diagnostico">esperando…</span>
+              </header>
+              <p class="field-value" data-value="diagnostico">—</p>
+            </section>
+            <section class="field-card" data-field="solucion">
+              <header class="field-head">
+                <span class="field-name">Solución</span>
+                <span class="field-audit muted" data-audit="solucion">esperando…</span>
+              </header>
+              <p class="field-value" data-value="solucion">—</p>
+            </section>
+            <section class="field-card" data-field="piezas">
+              <header class="field-head">
+                <span class="field-name">Piezas</span>
+                <span class="field-audit muted" data-audit="piezas">esperando…</span>
+              </header>
+              <ul class="pieza-list" data-value="piezas">
+                <li class="muted">— sin piezas todavía —</li>
+              </ul>
+            </section>
+            <section class="field-card" data-field="tiempo_minutos">
+              <header class="field-head">
+                <span class="field-name">Tiempo</span>
+                <span class="field-audit muted" data-audit="tiempo_minutos">esperando…</span>
+              </header>
+              <p class="field-value" data-value="tiempo_minutos">—</p>
+            </section>
+            <section class="field-card" data-field="notas">
+              <header class="field-head">
+                <span class="field-name">Notas</span>
+                <span class="field-audit muted" data-audit="notas">esperando…</span>
+              </header>
+              <p class="field-value" data-value="notas">—</p>
+            </section>
+          </div>
           <details class="audit">
-            <summary>Auditoría por campo</summary>
+            <summary>Auditoría completa</summary>
             <ol id="audit-trail" class="audit-trail"></ol>
           </details>
           <div class="end-row">
-            <button id="btn-end-session" class="danger">Terminar sesión</button>
+            <button id="btn-end-session" class="danger" type="button">Terminar sesión</button>
           </div>
           <p id="session-status" class="hint" hidden></p>
         </div>
+      </div>
+    </section>
+
+    <!-- ============ Pantalla 5: cierre + export ============ -->
+    <section id="screen-end" class="screen" hidden aria-labelledby="end-title">
+      <h2 id="end-title">Sesión cerrada</h2>
+      <p id="end-stats" class="hint"></p>
+      <div class="card">
+        <div class="form-head">
+          <h3>Ficha final</h3>
+          <span id="end-estado" class="chip chip-wip">—</span>
+        </div>
+        <dl class="summary">
+          <div><dt>Orden</dt><dd data-s="orden" class="mono">—</dd></div>
+          <div><dt>Cliente</dt><dd data-s="cliente">—</dd></div>
+          <div><dt>Equipo</dt><dd data-s="equipo">—</dd></div>
+          <div><dt>Problema</dt><dd data-s="problema">—</dd></div>
+          <div><dt>Diagnóstico</dt><dd data-s="diagnostico">—</dd></div>
+          <div><dt>Solución</dt><dd data-s="solucion">—</dd></div>
+          <div><dt>Piezas</dt><dd>
+            <ul class="pieza-list" data-s="piezas"><li class="muted">—</li></ul>
+          </dd></div>
+          <div><dt>Tiempo</dt><dd data-s="tiempo_minutos">—</dd></div>
+          <div><dt>Notas</dt><dd data-s="notas">—</dd></div>
+        </dl>
+      </div>
+      <div class="card export-card">
+        <h3>Exportar / enviar</h3>
+        <div class="export-grid">
+          <button id="btn-export-csv" type="button" class="ghost">Exportar CSV</button>
+          <button id="btn-export-pdf" type="button" class="ghost">Exportar PDF</button>
+          <button id="btn-download-artifact" type="button" class="primary">Descargar artefacto (JSON)</button>
+          <button id="btn-send-fsm" type="button" class="ghost">Enviar a FSM</button>
+        </div>
+        <div id="export-status" class="hint" role="status"></div>
+        <button id="btn-back-dashboard" class="ghost back" type="button">← Volver al panel</button>
       </div>
     </section>
   </main>

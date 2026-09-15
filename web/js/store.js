@@ -139,6 +139,24 @@ export function createStore({ orderId, now } = {}) {
   }
 
   /**
+   * EDICIÓN LIGERA: cambio manual del técnico sobre la ficha antes de enviar.
+   * Misma garantía de auditoría que las tools: queda registrado como
+   * 'edicion_manual' con su(s) campo(s). `value` para 'piezas' es el arreglo
+   * completo ya modificado (se copia en limpio). Devuelve {changed:[campos]}.
+   */
+  function applyManualEdit(field, value) {
+    if (!FORM_FIELDS.includes(field) || field === 'order_id' || field === 'estado') {
+      return { changed: [] };
+    }
+    const next = field === 'piezas' ? structuredCopy(value ?? []) : value;
+    if (JSON.stringify(final_form[field]) === JSON.stringify(next)) return { changed: [] };
+    final_form[field] = next;
+    version++;
+    logAudit('edicion_manual', { changed: [field] });
+    return { changed: [field] };
+  }
+
+  /**
    * Resultado del loop de confirmación hablada.
    * ok=true  → pieza confirmada.
    * ok=false → pieza RECHAZADA por el técnico (se retira de la ficha; el
@@ -191,6 +209,7 @@ export function createStore({ orderId, now } = {}) {
     startWork,
     updateForm,
     applyToolResult,
+    applyManualEdit,
     markConfirmada,
     snapshot,
     exportFinal,

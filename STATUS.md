@@ -76,6 +76,18 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
 
 ## Bitácora
 
+- **2026-09-15 (sprint, D3 — UI de sesión, FREEZE de alcance)** — Pantalla de
+  sesión completa: barra sticky (orden+estado+cronómetro mm:ss), transcripción
+  viva con parciales del técnico en gris, FICHA de una tarjeta por campo con
+  traza de auditoría (tool+t_ms / confirmación por voz / edición manual),
+  piezas con badge ✓/⏳ y qty editable, banner ámbar de read-back con
+  Confirmar/Corregir, botón ¡Espera! destacado, pantalla final con los 4
+  botones de export (contract con export.js) y DASHBOARD de órdenes+sesiones.
+  Edición ligera vía `store.applyManualEdit` (audit 'edicion_manual' →
+  artefacto). Verificado: selftest + smoke:mock verdes + 2 pasadas
+  headless-browser (32 aserciones) en claro/oscuro 360px. **Alcance congelado
+  tras D3: nada nuevo después de esto** (solo D4 métricas/ruido, D5 deploy,
+  D6 video).
 - **2026-09-15 (sprint, D4-export)** — Export y conector FSM: `web/js/export.js`
   (CSV con BOM + PDF vía vista de impresión A4 `css/print.css` + descarga de
   artefacto + envío a FSM, contract `initExportPanel`), `api/fsm.js`
