@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Bitácora de voz — Órdenes de trabajo</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>🔧 Bitácora de voz</h1>
+    <span id="mode-badge" class="badge badge-mock" hidden>modo</span>
+  </header>
+
+  <main>
+    <!-- ============ Pantalla 1: consentimiento ============ -->
+    <section id="screen-consent" class="screen" aria-labelledby="consent-title">
+      <h2 id="consent-title">Antes de empezar</h2>
+      <div class="card consent">
+        <dl class="privacy">
+          <div>
+            <dt>🎙️ Qué se graba</dt>
+            <dd>Tu <strong>voz durante la sesión</strong>, en memoria del navegador, mientras
+              llenamos la ficha de la orden. Nada más.</dd>
+          </div>
+          <div>
+            <dt>🗂️ Qué se guarda</dt>
+            <dd><strong>Solo texto y eventos</strong>: transcripción, resultados de las tools
+              y la ficha final. <strong>El audio NUNCA se sube ni se guarda.</strong></dd>
+          </div>
+          <div>
+            <dt>🗑️ Cómo se borra</dt>
+            <dd>Al <strong>cerrar la sesión</strong> el audio se descarta de memoria (no hay
+              copia en ningún lado). El artefacto de texto puedes descargarlo tú.</dd>
+          </div>
+        </dl>
+        <button id="btn-consent" class="primary big">Doy consentimiento y comienzo</button>
+      </div>
+    </section>
+
+    <!-- ============ Pantalla 2: orden + guion ============ -->
+    <section id="screen-setup" class="screen" hidden aria-labelledby="setup-title">
+      <h2 id="setup-title">Elige orden y escenario</h2>
+      <div class="setup-grid">
+        <div class="card">
+          <h3>Orden de trabajo</h3>
+          <ul id="order-list" class="pick-list"><li class="muted">Cargando órdenes…</li></ul>
+        </div>
+        <div class="card">
+          <h3>Escenario (guion)</h3>
+          <ul id="scenario-list" class="pick-list"><li class="muted">Cargando guiones…</li></ul>
+          <p class="hint" id="scenario-desc" hidden></p>
+        </div>
+      </div>
+      <button id="btn-start-session" class="primary big" disabled>Iniciar sesión</button>
+      <p class="hint" id="setup-error" hidden></p>
+    </section>
+
+    <!-- ============ Pantalla 3: sesión ============ -->
+    <section id="screen-session" class="screen" hidden aria-labelledby="session-title">
+      <div class="session-grid">
+        <!-- columna izquierda: transcripción -->
+        <div class="card transcript-card">
+          <h2 id="session-title">Transcripción en vivo</h2>
+          <div id="transcript" class="transcript" aria-live="polite"></div>
+          <div class="controls">
+            <label class="chk">
+              <input type="checkbox" id="chk-autoreplay" checked>
+              auto-replay
+            </label>
+            <button id="btn-next-turn" class="ghost">Siguiente turno del guion ▸</button>
+            <button id="btn-bargein" class="warn">✋ ¡Espera!</button>
+          </div>
+          <form id="free-input-form" class="free-input">
+            <input id="free-input" type="text" placeholder="Escribe como si lo dijeras…"
+                   autocomplete="off" maxlength="280">
+            <button type="submit" class="ghost">Enviar</button>
+          </form>
+        </div>
+
+        <!-- columna derecha: ficha viva -->
+        <div class="card form-card">
+          <div class="form-head">
+            <h2>Ficha de la orden</h2>
+            <span id="cronometro" class="crono" title="Tiempo de trabajo">0 min</span>
+          </div>
+          <div id="readback-banner" class="readback" hidden>
+            <strong>Read-back pendiente:</strong> <span id="readback-text"></span>
+          </div>
+          <dl id="ficha" class="ficha">
+            <div data-field="order_id"><dt>Orden</dt><dd>—</dd></div>
+            <div data-field="problema"><dt>Problema</dt><dd>—</dd></div>
+            <div data-field="diagnostico"><dt>Diagnóstico</dt><dd>—</dd></div>
+            <div data-field="solucion"><dt>Solución</dt><dd>—</dd></div>
+            <div data-field="piezas"><dt>Piezas</dt><dd>—</dd></div>
+            <div data-field="tiempo_minutos"><dt>Tiempo</dt><dd>—</dd></div>
+            <div data-field="notas"><dt>Notas</dt><dd>—</dd></div>
+            <div data-field="estado"><dt>Estado</dt><dd>—</dd></div>
+          </dl>
+          <details class="audit">
+            <summary>Auditoría por campo</summary>
+            <ol id="audit-trail" class="audit-trail"></ol>
+          </details>
+          <div class="end-row">
+            <button id="btn-end-session" class="danger">Terminar sesión</button>
+          </div>
+          <p id="session-status" class="hint" hidden></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p>Hackathon AssemblyAI · audio nunca persistido · artefacto JSON auditable</p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
