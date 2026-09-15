@@ -64,3 +64,65 @@ En browser: `npm run dev` (o cualquier server estático en la raíz del repo).
    canal real se deriva del read-back hablado (clasificador compartido `dialog-act`).
 4. Las tools internas `set_diagnostico`/`set_notas` (solo mock hoy) pueden
    promoverse a definiciones públicas si el LLM las necesita.
+
+## Export del cierre (D4): `js/export.js` + `css/print.css`
+
+En la pantalla de cierre, `app.js` llama:
+
+```js
+import { initExportPanel } from './export.js';
+initExportPanel({ artifact, statusEl }); // artifact §6 completo + HTMLElement de estado
+```
+
+`export.js` cablea los cuatro botones (`#btn-export-csv`, `#btn-export-pdf`,
+`#btn-download-artifact`, `#btn-send-fsm`) y escribe líneas de estado en español
+en `statusEl`. Si un botón aún no existe en el DOM, se cablea en su primer click
+(delegación en captura); re-llamar `initExportPanel` con otro artefacto actualiza
+el artefacto activo. Todos los textos del técnico se insertan con
+`textContent` (nunca HTML). `scripts/export.mjs` (CLI de métricas/CI) importa los
+mismos builders puros (`buildOrdenCsv`, `buildOrdenMarkdown`), así el CSV del
+navegador y el del CLI son byte a byte el mismo formato.
+
+### Formato del CSV de la orden (`orden-<id>-<yyyymmdd-hhmm>.csv`)
+
+Dos bloques separados por una línea vacía:
+
+1. **Ficha**: una fila de encabezado + UNA fila de valores con los campos
+   escalares de `final_form` — `order_id, cliente, problema, diagnostico,
+   solucion, tiempo_minutos, notas, estado` (columnas extra al final si
+   `final_form` trae campos nuevos).
+2. **Piezas**: encabezado `sku,nombre,qty,confirmada` + una fila por pieza.
+
+```csv
+order_id,cliente,problema,diagnostico,solucion,tiempo_minutos,notas,estado
+"OT-1004","Escuela Primaria Benito Juárez","Pos te comento...","...","...",50,"el breaker está bien...","enviada"
+
+sku,nombre,qty,confirmada
+"CAP-ARR-455","Capacitor de arranque 45+5 µF 370 V",1,true
+"CNT-030-24","Contactor 2 polos 30 A bobina 24 VAC",1,true
+```
+
+Reglas: BOM UTF-8 (Excel), finales de línea CRLF, TODAS las celdas entrecomilladas
+con `""` escapado (RFC 4180, seguro ante comas/comillas/saltos). `cliente` se
+rellena desde `final_form.cliente` o del último `get_orden` en `events[]` (vacío
+si no existe). `confirmada` es `true|false`; `tiempo_minutos` vacío si es null.
+Sin piezas, el bloque 2 queda solo con su encabezado.
+
+### PDF (impresión) — `css/print.css`
+
+`#btn-export-pdf` construye (o reconstruye) un `#print-view` oculto con la ficha
+formateada —encabezado de orden, datos generales, problema/diagnóstico/solución,
+tabla de piezas con bordes y SKUs monoespaciados, y el pie de auditoría
+"Documento generado por sesión de voz — el audio no fue retenido." con sesión y
+fecha—, inyecta una sola vez la hoja `css/print.css` y llama `window.print()`.
+Al imprimir, la app completa se oculta y sale solo la ficha (A4); en el diálogo,
+"Guardar como PDF" produce el PDF sin dependencias.
+
+### Envío al FSM (conector simulado)
+
+`#btn-send-fsm` hace `POST /api/fsm/report` con
+`{order_id, final_form, session_id, sent_at}` y muestra el ack devuelto
+(`fsm_id`, `received_at`) en `statusEl`; si no hay red, muestra la pista de
+reintento (modo mock: mantener `npm run dev` corriendo). Contrato completo del
+endpoint en `api/README.md`.
+

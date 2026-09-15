@@ -76,6 +76,14 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
 
 ## Bitácora
 
+- **2026-09-15 (sprint, D4-export)** — Export y conector FSM: `web/js/export.js`
+  (CSV con BOM + PDF vía vista de impresión A4 `css/print.css` + descarga de
+  artefacto + envío a FSM, contract `initExportPanel`), `api/fsm.js`
+  (POST /api/fsm/report valida ficha, rechaza audio, persiste ack en `.data/fsm/`),
+  `scripts/export.mjs` (CLI CSV+MD, mismos builders que el browser → CSV
+  byte-idéntico). Validado con dev-server ([::1]) y selftest verde. PENDIENTE
+  USUARIO: `ASSEMBLYAI_API_KEY` en `.env` — sin ella no hay sesión de voz real
+  (D1-real) ni evaluación del GATE D2.
 - **2026-09-15 (calidad de repo)** — Triple validación pre-commit activada y
   verificada con bloqueos de prueba: sin atribución de IA en mensajes de
   commit; sin tokens sensibles (paths del host / proyectos hermanos) en

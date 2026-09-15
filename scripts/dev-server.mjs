@@ -9,7 +9,8 @@
 //                  req.body arrives pre-parsed, both paths are handled)
 //
 // Env: PORT (default 3000), HOST (default 127.0.0.1), SESSIONS_DIR (default
-// .data/sessions), ASSEMBLYAI_API_KEY (from .env, see .env.example).
+// .data/sessions), FSM_DIR (default .data/fsm), ASSEMBLYAI_API_KEY (from .env,
+// see .env.example).
 
 import { existsSync, readFileSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -19,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 import tokenHandler from '../api/token.js';
 import sessionsHandler from '../api/sessions.js';
+import fsmHandler from '../api/fsm.js';
 import { sendJson } from '../api/_lib/http.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -89,6 +91,7 @@ const FSVL_404_PAGE = `<!doctype html>
 <li><code>/data/*</code> — JSONs de <code>data/</code></li>
 <li><code>GET|POST /api/token</code></li>
 <li><code>GET|POST /api/sessions</code></li>
+<li><code>GET|POST /api/fsm/report</code></li>
 </ul></body></html>`;
 
 function notFoundHtml(res, pathname) {
@@ -146,12 +149,15 @@ const server = createServer(async (req, res) => {
   try {
     if (pathname === '/api' || pathname.startsWith('/api/')) {
       const route = pathname.length > 1 && pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
-      const handler = route === '/api/token' ? tokenHandler : route === '/api/sessions' ? sessionsHandler : null;
+      const handler = route === '/api/token' ? tokenHandler
+        : route === '/api/sessions' ? sessionsHandler
+        : route === '/api/fsm/report' ? fsmHandler
+        : null;
       if (!handler) {
         return sendJson(res, 404, {
           ok: false,
           error: 'not_found',
-          message: `No API route ${route}. Available: GET|POST /api/token, GET|POST /api/sessions.`,
+          message: `No API route ${route}. Available: GET|POST /api/token, GET|POST /api/sessions, GET|POST /api/fsm/report.`,
         });
       }
       const method = (req.method || 'GET').toUpperCase();
@@ -195,7 +201,7 @@ const probeHost = HOST === '::' ? '[::1]' : HOST === '0.0.0.0' ? '127.0.0.1' : i
 
 server.listen(PORT, HOST, () => {
   console.log(`[dev-server] repo root : ${ROOT}`);
-  console.log(`[dev-server] routes    : / -> web/ , /data/* -> data/ , /api/token , /api/sessions`);
+  console.log(`[dev-server] routes    : / -> web/ , /data/* -> data/ , /api/token , /api/sessions , /api/fsm/report`);
   console.log(`[dev-server] listening : http://${displayHost}:${PORT}  (bind ${HOST}; HOST=0.0.0.0 for LAN)`);
   (async () => {
     try {

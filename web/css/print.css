@@ -1,0 +1,150 @@
+/*
+ * print.css — ficha imprimible de la orden (#print-view).
+ *
+ * En pantalla #print-view está oculto (lo construye web/js/export.js al pulsar
+ * #btn-export-pdf y esta hoja —que export.js inyecta con id fsvl-print-css—
+ * lo revela SOLO al imprimir: toda la app desaparece y sale únicamente la
+ * ficha, pensada para A4 y para "Guardar como PDF" en el diálogo de impresión.
+ */
+
+#print-view {
+  display: none;
+}
+
+@page {
+  size: A4;
+  margin: 14mm 12mm;
+}
+
+@media print {
+  html,
+  body {
+    background: #fff !important;
+    color: #111 !important;
+  }
+
+  /* Se oculta la app completa y solo se imprime la ficha. */
+  body > *:not(#print-view) {
+    display: none !important;
+  }
+
+  #print-view {
+    display: block !important;
+    font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif;
+    font-size: 10pt;
+    line-height: 1.45;
+    color: #111;
+  }
+
+  /* Encabezado de la orden */
+  #print-view .pv-head {
+    border-bottom: 1.5pt solid #111;
+    padding-bottom: 4pt;
+    margin-bottom: 8pt;
+  }
+
+  #print-view .pv-head h1 {
+    font-size: 15pt;
+    margin: 0;
+    letter-spacing: 0.2pt;
+  }
+
+  #print-view .pv-sub {
+    font-size: 10.5pt;
+    font-weight: 600;
+    margin: 2pt 0 0;
+    color: #333;
+  }
+
+  /* Datos generales (dl en dos columnas) */
+  #print-view .pv-meta {
+    display: grid;
+    grid-template-columns: 34mm 1fr;
+    row-gap: 1.5pt;
+    column-gap: 4mm;
+    margin: 0 0 8pt;
+    font-size: 9.5pt;
+  }
+
+  #print-view .pv-meta dt {
+    font-weight: 700;
+    color: #444;
+  }
+
+  #print-view .pv-meta dd {
+    margin: 0;
+  }
+
+  /* Secciones narrativas (problema / diagnóstico / solución / notas) */
+  #print-view .pv-sec {
+    margin-top: 8pt;
+    page-break-inside: avoid;
+  }
+
+  #print-view .pv-sec h2 {
+    font-size: 9pt;
+    text-transform: uppercase;
+    letter-spacing: 0.8pt;
+    border-bottom: 0.5pt solid #999;
+    padding-bottom: 1.5pt;
+    margin: 0 0 3pt;
+    page-break-after: avoid;
+  }
+
+  #print-view .pv-text {
+    margin: 0;
+    white-space: pre-wrap; /* respeta las pausas "..." del habla original */
+  }
+
+  /* Tabla de piezas */
+  #print-view .pv-piezas {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9.5pt;
+    margin-top: 3pt;
+  }
+
+  #print-view .pv-piezas th,
+  #print-view .pv-piezas td {
+    border: 0.5pt solid #555;
+    padding: 3pt 5pt;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  #print-view .pv-piezas th {
+    background: #eee !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-weight: 700;
+  }
+
+  #print-view .pv-piezas tr {
+    page-break-inside: avoid;
+  }
+
+  #print-view .pv-sku {
+    font-family: "Cascadia Mono", Consolas, "Courier New", monospace;
+    font-size: 8.5pt;
+    white-space: nowrap;
+  }
+
+  #print-view .pv-qty {
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  /* Pie de auditoría */
+  #print-view .pv-foot {
+    margin-top: 12pt;
+    border-top: 0.5pt dashed #888;
+    padding-top: 4pt;
+  }
+
+  #print-view .pv-audit {
+    font-size: 8pt;
+    font-style: italic;
+    color: #444;
+    margin: 0 0 1.5pt;
+  }
+}
