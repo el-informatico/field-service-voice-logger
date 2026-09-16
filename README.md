@@ -46,33 +46,51 @@ Technicians ask for exactly this ([r/FieldService](https://www.reddit.com/r/Fiel
 ## Metrics
 
 Produced by [metrics/](metrics/README.md) from session artifacts; definitions are
-exact and reproducible. **First 5 REAL voice sessions** (Voice Incident Reporter,
-post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API,
-prompt v3; artifacts under `.data/gate/`):
+exact and reproducible. **10 REAL voice sessions** (Voice Incident Reporter,
+post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API;
+5 sessions on interview prompt v3 + 5 on prompt v4, the narrative-capture fix
+documented in [STATUS.md](STATUS.md) METRICS-N10; artifacts under `.data/gate/`):
 
 | Metric | Value | N | Condition |
 |---|---|---|---|
-| Turn completion (scripted turns transcribed) | 8–10 of 10–11 per session | 5 sessions | quiet dictation |
-| WER, matched pairs | **0.231** (0.164–0.382/session) | 1,081 ref words | quiet dictation |
-| End-of-speech → tool call, p50 / p95 | 1,775 ms / 6,192 ms | 23 tool turns | real API |
-| Severidad exacta | 2/5 sessions | 5 | read-back loop |
-| Servicios afectados set precision | 100% (3 TP / 0 FP) | 5 | catalog enum |
-| Servicios afectados set recall | 37.5% (5 FN) | 5 | see notes |
-| Timeline eventos (hora+evento) | 3/3 in both sessions that ran the timeline flow; 0 in the rest | 5 | see notes |
-| Confirmation-loop precision (read-backs → correction) | 61.5% | 13 read-backs | real dialogue |
+| Turn completion (scripted turns transcribed) | 7–10 of 9–11 per session | 10 sessions | quiet dictation |
+| WER, matched pairs | **0.231** (0.164–0.382/session) | 2,134 ref words | quiet dictation |
+| End-of-speech → tool call, p50 / p95 | 1,554 ms / 4,810 ms | 53 tool turns | real API |
+| Severidad exacta | 6/10 sessions | 10 | read-back loop |
+| Servicios afectados set precision | 100% (12 TP / 0 FP) | 10 | catalog enum |
+| Servicios afectados set recall | 70.6% (5 FN) | 10 | see notes |
+| Timeline horas exactas | 19/35 GT events (54.3%) | 10 | hora exacta; see notes |
+| Confirmation-loop precision (read-backs → correction) | 62.1% | 29 read-backs | real dialogue |
 
-Honest notes: (1) high run-to-run variance of the interview agent — 2 of 5
-sessions (the pure-narrative script i1) collapsed to 1 tool call and were
-scored at zero extraction; sessions that engaged (i2/i3) reached 100% service
-precision, 3/3 timeline events and correct severity. (2) One session timed out
-(watchdog 300 s, documented). (3) Aggregate chronological WER (1.05) and
-agent-first-word latency are excluded as pairing/event-ordering artifacts of
-the driver — matched-pair WER is the reported figure. (4) Numbers will be
-re-published with a larger N as the interview prompt converges.
+Prompt-v4 sessions alone (same scripts, same conditions): service set
+precision/recall **100%/100%** (9 TP / 0 FP / 0 FN), timeline hours **13/18
+(72.2%)**, severity 4/5, EOS→tool p50 **1,139 ms** — vs 37.5% recall, 35.3%
+timeline hours, 2/5 severity, 1,775 ms for the v3 half. WER is 0.231 in both
+halves: the fix changed tool-call discipline, not hearing. The pure-narrative
+script that used to collapse to 1 tool call (v3) now registers 10–15 tool
+calls and 7/8 timeline hours across its two v4 sessions.
+
+Honest notes: (1) run-to-run variance of the interview agent persists — the
+v3 narrative collapse is fixed, but one v4 session (R5b) still spoke
+read-backs without registering the timeline (0/3 hours); v4 mitigates, does
+not eliminate. (2) Two sessions hit the 300 s driver watchdog (R2a, R5b) and
+lost their final turns — R5b's severity miss is the correction turn that
+never played. (3) Turn-completion misses are VAD splits of long turns and
+empty final transcripts (driver artifacts), not agent refusals. (4) Strict
+timeline (hour + event text sim ≥ 0.6) is 0 TP in every session: the agent
+captures the operator's verbatim phrasing while the ground truth stores clean
+phrases — hour-exact match is the reported signal. (5) The designed
+capture-error rescue (rack A8 heard → corrected to A3) completed in real
+session R5d; derived rescue counts undercount when the operator answers with
+content ("producción") instead of yes/no. (6) No session (v3 or v4) reached
+`enviar_reporte` — the rig closes the socket after the last scripted reply,
+so `estado` stays `en_proceso` in every artifact. (7) Aggregate chronological
+WER and agent-first-word latency stay excluded as driver artifacts —
+matched-pair WER is the reported figure.
 
 CI-proven in mock mode (`npm run smoke:mock`, deterministic, no API key): the
 session artifacts match the seeded ground truth exactly — services/timeline/
-action-items/severidad P/R 100%, all 3 seeded capture errors rescued by the
+action-items/severidad P/R 100%, all 4 seeded capture errors rescued by the
 spoken confirmation loop, WER 0.006. The earlier field-service (work-order)
 product's live-interview route failed its noise gate at 10 dB (see
 [docs/D2-GATE-RESULTS.md](docs/D2-GATE-RESULTS.md)) — that evidence drove the

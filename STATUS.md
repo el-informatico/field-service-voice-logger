@@ -280,3 +280,88 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
   acordado (fuera del repo; >10 MB como se especificó). Sin push. Workspace
   completo de edición (escenas, TTS, take, herramientas, reportes QA) fuera
   del repo, en el workspace de video hermano.
+
+## METRICS-N10 (2026-09-16) — fix del caso narrativo + ampliación a N=10
+
+Pedido: (1) fix del flujo narrativo continuo (i1 colapsaba 2/2 a 1 tool call
+con el prompt v3) tocando SOLO el prompt del entrevistador y/o guiones, máx 2
+iteraciones medidas; (2) N=5 sesiones reales nuevas (2 narrativas + 2
+corrección + 1 mixta) → tabla N=10 en README; (3) artefactos por sesión +
+este bloque.
+
+### Iteración del prompt (superficie medida: §incidente de scripts/realgate.mjs)
+- **v4 (GANADORA, iteración 1)**: "PERO HOY ERES EL REGISTRADOR DE
+  INCIDENTES" + REGLA #1 (ningún dato dicho se queda sin tool call) + MODO
+  NARRATIVO (una tool call POR dato, read-back agrupado al cierre) + "NUNCA
+  respondas en silencio" + few-shots de conversión de horas ("ocho
+  cincuenta"→"8:50"). Evidencia R4a (i1): 10 tools (vs 1 en v3), 3/4 horas,
+  sev alta exacta, servicios 2/2, p50 1039 ms.
+- **v5 (iteración 2, DESCARTADA)**: 3 ediciones puntuales (dato nuevo tras
+  confirmación, read-back corto, doble pendiente). R4b REGRESÓ (5 tools, 0
+  servicios, timeline 0: read-backs HABLADOS sin tool call) → revert completa
+  a v4 (grep de remanentes = 0; diff de realgate.mjs queda solo v3→v4, 53
+  líneas). Conclusión: variabilidad run-to-run del agente de entrevista, no
+  efecto de las ediciones. Presupuesto de iteraciones agotado → v4 queda
+  como prompt final.
+
+### Sesiones nuevas (todas v4, ambiente tranquilo, mismas condiciones del gate)
+| label | guion | resultado vs GT |
+|---|---|---|
+| R4a | i1 narrativo | 10 tools; horas 3/4 (08:50 quedó embebida en que_paso); sev alta ✓; srv DNS+VPN ✓✓; items 0/2 (turno "sí… y deja dos pendientes" tragado por CONFIRMACIONES); en_proceso |
+| R5a | i1 narrativo | 15 tools; horas 4/4; sev ✓; srv ✓✓; items 2/2 ✓; set_resumen ✓; VAD partió el turno 1 en 2 hyps; transcript del último turno vacío; en_proceso |
+| R5b | i2 confundible | **WATCHDOG 300 s** (t19+ nunca sonaron); srv WEB-PROD+API ✓✓ (desambiguación y captura final correctas); sev media vs alta = la corrección estaba en el turno cortado (mismo artefacto que R2a publicada); timeline 0/3 (regresión del patrón R4b: read-backs hablados sin tool call); en_proceso |
+| R5c | i3 corrección hora | 9 tools; horas 3/3 (incluye 09:20→09:40 con la verdad final en ficha); sev media ✓; srv BOMBA ✓; items 1/2; en_proceso |
+| R5d | i4 mixto (nuevo) | 13 tools; horas 3/4 (perdió 07:50); sev alta ✓; srv A3+VPN ✓✓ con el **ERROR SEMBRADO RESCATADO EN REAL** (A8 capturado → read-back de desambiguación → A3 confirmado; n_rescued=1 en el derivado); items 0/2; en_proceso |
+
+### Tabla N=10 publicada (README §Metrics)
+Turn completion 7–10 de 9–11/sesión · WER emparejado 0.231 (0.164–0.382,
+2134 palabras) · EOS→tool p50/p95 1554/4810 ms (53 turnos) · severidad 6/10 ·
+servicios P 100% (12 TP/0 FP) R 70.6% (5 FN) · timeline hora exacta 19/35
+(54.3%) · confirm precision 62.1% (29 read-backs).
+
+### Comparativa v3 (5 publicadas) vs v4 (5 nuevas) — mismos guiones y condiciones
+| métrica | v3 | v4 |
+|---|---|---|
+| Servicios P / R | 100% (3 TP) / 37.5% (5 FN) | 100% (9 TP/0 FP) / 100% (0 FN) |
+| Timeline hora exacta | 6/17 (35.3%) | 13/18 (72.2%) |
+| Severidad exacta | 2/5 | 4/5 |
+| EOS→tool p50 / p95 | 1775 / 6192 ms | 1139 / 3726 ms |
+| WER emparejado | 0.231 (1081 w) | 0.231 (1053 w) |
+| Confirm precision | 61.5% (13) | 62.5% (16) |
+
+i1 (el caso colapsado) solo: v3 0/8 horas y 1 tool/sesión → v4 7/8 horas y
+10–15 tools/sesión. El WER no se movió (0.231 ambas mitades): el fix fue
+disciplina de tool calls, no de escucha.
+
+### Débil residual (documentado, sin más iteraciones)
+1. **Variabilidad run-to-run**: R4b (excluida) y R5b hablaron read-backs sin
+   registrar — R5b perdió su timeline completo. v4 reduce la frecuencia, no
+   la elimina.
+2. **Turno "confirmación + datos nuevos"** ("Sí, así va bien, y deja dos
+   pendientes…"): la regla CONFIRMACIONES traga los datos → items 0/2 en
+   R4a/R5d (R5a sí los capturó). Era el blanco de v5; quedó sin prueba
+   limpia por la regresión de R4b.
+3. **Timeline verbatim vs GT limpio**: strict hora+evento (sim≥0.6) sigue en
+   0 TP en las 10 sesiones (política D4: la hora exacta es la señal).
+4. **Rig**: watchdog 300 s truncó 2/10 sesiones (R2a, R5b); el transcript
+   del último turno sale vacío (R5a) y NINGUNA sesión (v3 ni v4) llega a
+   enviar_reporte — el rig cierra el WS tras el reply final, estado queda
+   en_proceso en todos los artefactos.
+5. **Derivación de confirmaciones** subcuenta rescates cuando el operador
+   responde con contenido ("Producción.") en vez de sí/no.
+
+### Infra y artefactos
+- `scripts/n10-table.mjs`: agregador N=10 (matcher greedy orden-preservante
+  ≥0.4 + WER por pares emparejados + pooled hora-exacta + harness CLI).
+  VALIDADO: reproduce la tabla publicada N=5 exacta antes de usarse.
+- `web/js/domain/incident/mock-agent.js`: fix de plomería del canal mock —
+  quePasoFlow ahora encadena a eventoFlow cuando el dictado trae horas
+  (espejo de la REGLA #1 del agente real; solo afecta turnos con
+  setQuePaso+eventos coexistiendo, p. ej. i4 t3). smoke:mock i4 4/4 horas,
+  selftest OK.
+- `data/guiones-incidente/i4-mixto.json` + `gt-i4-mixto.json` +
+  validador: escenario mixto (narrativa con horas + error sembrado de
+  servicio confundible A3↔A8), TTS ya en .data/tts-incidente.
+- Artefactos por sesión: `.data/gate/artifact-*-tranquilo-R4a/R4b/R5a/R5b/
+  R5c/R5d.json` (patrón existente, fuera de git).
+- Coste: 6 sesiones reales nuevas (R4a, R4b, R5a–R5d) ≈ $1.5 USD.

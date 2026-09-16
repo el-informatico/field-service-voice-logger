@@ -1,0 +1,46 @@
+{
+  "scenario_id": "i4-mixto",
+  "incidente_id": "IC-2002",
+  "ambiente": "tranquilo",
+  "expected_form": {
+    "incidente_id": "IC-2002",
+    "resumen": "Cuarto de redes recalentado: gabinete rack A3 a 36 °C por minisplit sin enfriar, estabilizado a 28 °C con ventilación forzada; VPN caída temporalmente para los contadores remotos.",
+    "que_paso": "Llegó al cuarto de redes con olor a recalentado: el gabinete rack A3 marcaba 36 grados y el minisplit solo soplaba aire tibio; se le dio mantenimiento y se limpiaron los filtros sin mejora; con un abanico industrial en la puerta el gabinete bajó a 28 grados y quedó estable. La VPN se cayó un rato mientras el rack sufría y los contadores de fuera no podían entrar a sacar sus reportes.",
+    "timeline": [
+      { "hora": "07:50", "evento": "Llegada al cuarto de redes; olor a recalentado desde la puerta" },
+      { "hora": "08:15", "evento": "Gabinete rack A3 marcando 36 °C; minisplit soplando aire tibio" },
+      { "hora": "08:45", "evento": "Ventilación forzada con abanico industrial en la puerta del cuarto" },
+      { "hora": "10:30", "evento": "Gabinete enfriado a 28 °C, temperatura estable" }
+    ],
+    "servicios_afectados": [
+      { "id": "SRV-RACK-A3", "confirmado": true },
+      { "id": "SRV-VPN-REMOTO", "confirmado": true }
+    ],
+    "action_items": [
+      "Reparar el minisplit del cuarto de redes (mantenimiento, esta misma semana)",
+      "Comprar un abanico industrial de repuesto para el cuarto de redes"
+    ],
+    "severidad": "alta",
+    "estado": "enviada"
+  },
+  "user_utterances": [
+    { "n": 1, "text": "¿Me oyes bien?... ya salí del despacho de los contadores, era lo del cuarto de redes que olía a recalentado... échame el reporte del incidente antes de que se me vaya el detalle." },
+    { "n": 3, "text": "Pos llegué como a las siete cincuenta y ya se sentía el olor a quemado desde la puerta... a las ocho y cuarto el gabinete del rack A tres marcaba treinta y seis grados y el minisplit nomás soplaba tibio, le di mantenimiento, le limpié los filtros y nada." },
+    { "n": 5, "text": "Esa... luego a las ocho cuarenta y cinco le metí un abanico industrial a la puerta del cuarto... y como a las diez y media ya tenía el gabinete en veintiocho grados, ya estable." },
+    { "n": 7, "text": "El que estaba sufriendo era el rack A tres, el del cuarto de redes... el A ocho, el de telecomunicaciones, ese ni se inmutó, sigue sano." },
+    { "n": 9, "text": "El A tres, el del cuarto de redes... el A ocho ni lo toqué, te digo que ese está sano." },
+    { "n": 11, "text": "Ese... y la vpn también se cayó un rato, los contadores de fuera no podían entrar a sacar sus reportes... eso fue todo lo que se afectó." },
+    { "n": 13, "text": "Sí, esa... y ponle alta, si ese rack se llega a apagar se paran las declaraciones de once clientes, mejor alta." },
+    { "n": 15, "text": "Alta, sí... y apunta dos pendientes: que mantenimiento revise el minisplit esta misma semana, y que compren un abanico industrial de repuesto para el cuarto." },
+    { "n": 17, "text": "Así está bien... mándalo ya, que traigo el siguiente servicio encima." }
+  ],
+  "seeded_errors": [
+    {
+      "field": "servicio",
+      "captured": { "id": "SRV-RACK-A8" },
+      "truth": { "id": "SRV-RACK-A3" },
+      "rescued_by_confirmation": true
+    }
+  ],
+  "provoked_interruptions": []
+}

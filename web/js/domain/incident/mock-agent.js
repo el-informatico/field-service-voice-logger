@@ -418,7 +418,7 @@ export function createIncidentMockAgentChannel({
     const nItems = await applySideQuests(d);
     if (pendingConfirm) return confirmFlow(text, d, nextTurn, depth);       // 1. read-back pendiente
     if (!st.incidenteCargado || d.getIncidente) return incidenteFlow(text, d, nextTurn); // 2. incidente
-    if (!st.quePasoSet || d.setQuePaso) return quePasoFlow(text, nextTurn); // 3. dictado
+    if (!st.quePasoSet || d.setQuePaso) return quePasoFlow(text, d, nextTurn); // 3. dictado
     if (d.eventos.length || horasNuevas(text).length) {
       return eventoFlow(text, d, nextTurn);                                 // 4. timeline
     }
@@ -477,9 +477,13 @@ export function createIncidentMockAgentChannel({
     return { interrupted: false };
   }
 
-  async function quePasoFlow(text, nextTurn) {
+  async function quePasoFlow(text, d, nextTurn) {
     await callTool('set_que_paso', { texto: text });
     st.quePasoSet = true;
+    /* narrativa con horas EN el dictado (guion mixto): registrarlas aquí
+     * mismo y leerlas agrupadas — el operador no las repite. Espejo del
+     * MODO NARRATIVO del prompt real (REGLA #1). */
+    if (d.eventos.length) return eventoFlow(text, d, nextTurn);
     await speakChunks('Anotado tal cual lo dijiste. ¿A qué hora empezó todo? Dime la hora y qué pasó.',
       { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: false };

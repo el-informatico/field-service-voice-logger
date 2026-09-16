@@ -95,16 +95,18 @@ if (servicios) {
 }
 
 // ---------- guiones + ground-truth (dominio incidente) ----------
-const escenarios = ["i1-dictado-feliz", "i2-servicio-confundido", "i3-correccion-hora"];
+const escenarios = ["i1-dictado-feliz", "i2-servicio-confundido", "i3-correccion-hora", "i4-mixto"];
 const userTurnosRango = {
   "i1-dictado-feliz": [10, 12],
   "i2-servicio-confundido": [9, 11],
   "i3-correccion-hora": [9, 11],
+  "i4-mixto": [9, 11],
 };
 const erroresPorEscenario = {
   "i1-dictado-feliz": 0,
   "i2-servicio-confundido": 2,
   "i3-correccion-hora": 1,
+  "i4-mixto": 1,
 };
 
 for (const sid of escenarios) {
@@ -226,6 +228,10 @@ for (const sid of escenarios) {
       ok(se.some((e) => e.field === "hora" && e.captured === "09:20" && e.truth === "09:40"),
         `gt-${sid}: falta el error sembrado de hora 09:20→09:40`);
     }
+    if (sid === "i4-mixto") {
+      ok(se.some((e) => e.field === "servicio" && e.captured?.id === "SRV-RACK-A8" && e.truth?.id === "SRV-RACK-A3"),
+        `gt-${sid}: falta el error sembrado RACK-A8→RACK-A3`);
+    }
   }
 
   // provoked_interruptions: calzan con los turnos interrupt:true del guion
@@ -257,4 +263,4 @@ if (errors.length) {
   for (const e of errors) console.error("  - " + e);
   process.exit(1);
 }
-console.log("OK — data/ incidente íntegra: 8 incidentes, 15 servicios (4 pares confundibles), 3 guiones, 3 GT, integridad referencial, user_utterances y errores sembrados verificados");
+console.log("OK — data/ incidente íntegra: 8 incidentes, 15 servicios (4 pares confundibles), 4 guiones, 4 GT, integridad referencial, user_utterances y errores sembrados verificados");

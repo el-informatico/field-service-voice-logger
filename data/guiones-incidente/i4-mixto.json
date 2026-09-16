@@ -1,0 +1,128 @@
+{
+  "scenario_id": "i4-mixto",
+  "incidente_id": "IC-2002",
+  "description": "Mixto: dictado post-visita del despacho contable en flujo narrativo continuo (dos horas por turno, servicios y severidad entremezclados) CON un error sembrado de servicio confundible. El operador dice 'el rack A tres, el del cuarto de redes' pero la captura puede quedarse con el A ocho de telecomunicaciones (par confundible SRV-RACK-A3↔SRV-RACK-A8); el read-back de desambiguación lo rescata. La vpn se confirma limpia a la primera y la severidad alta se confirma sin corrección. Presión narrativa del i1 + rescate del i2 en una sola sesión.",
+  "ambiente": "tranquilo",
+  "turns": [
+    {
+      "n": 1,
+      "role": "user",
+      "text": "¿Me oyes bien?... ya salí del despacho de los contadores, era lo del cuarto de redes que olía a recalentado... échame el reporte del incidente antes de que se me vaya el detalle.",
+      "expect": "tool:get_incidente",
+      "note": "dictado post-visita en el estacionamiento del despacho; ambiente tranquilo"
+    },
+    {
+      "n": 2,
+      "role": "agent",
+      "hint": "get_incidente(IC-2002); resume el reporte (olor a recalentado en el cuarto de redes, gabinete rack a 36 grados, minisplit que no enfría) y pide que narre qué pasó desde el principio."
+    },
+    {
+      "n": 3,
+      "role": "user",
+      "text": "Pos llegué como a las siete cincuenta y ya se sentía el olor a quemado desde la puerta... a las ocho y cuarto el gabinete del rack A tres marcaba treinta y seis grados y el minisplit nomás soplaba tibio, le di mantenimiento, le limpié los filtros y nada.",
+      "expect": "tool:set_que_paso|tool:agregar_evento_timeline",
+      "note": "narrativa literal con DOS horas incrustadas (7:50 y 8:15); el guion mixto exige registrarlas en el momento o pedirlas después, pero ninguna se pierde"
+    },
+    {
+      "n": 4,
+      "role": "agent",
+      "hint": "set_que_paso con el texto literal de la técnica; agregar_evento_timeline(hora '07:50', evento 'Llegada al cuarto de redes; olor a recalentado desde la puerta') y ('08:15', 'Gabinete rack A3 marcando 36 °C; minisplit soplando aire tibio'); read-back agrupado: 'siete cincuenta la llegada, ocho y cuarto los treinta y seis grados, ¿correcto?'."
+    },
+    {
+      "n": 5,
+      "role": "user",
+      "text": "Esa... luego a las ocho cuarenta y cinco le metí un abanico industrial a la puerta del cuarto... y como a las diez y media ya tenía el gabinete en veintiocho grados, ya estable.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "confirmación a la primera y DOS horas más en un solo turno"
+    },
+    {
+      "n": 6,
+      "role": "agent",
+      "hint": "agregar_evento_timeline('08:45', 'Ventilación forzada con abanico industrial en la puerta del cuarto') y ('10:30', 'Gabinete enfriado a 28 °C, temperatura estable'); read-back agrupado de ambas; pregunta por los servicios afectados."
+    },
+    {
+      "n": 7,
+      "role": "user",
+      "text": "El que estaba sufriendo era el rack A tres, el del cuarto de redes... el A ocho, el de telecomunicaciones, ese ni se inmutó, sigue sano.",
+      "expect": "tool:buscar_servicio",
+      "note": "ERROR SEMBRADO: la transcripción de ESTE turno puede perder el calificativo 'del cuarto de redes' y/o trocar el número (habla rápido, A tres/A ocho suenan parecido) → buscar_servicio resuelve SRV-RACK-A8 y agregar_servicio_afectado lo registra. La verdad es SRV-RACK-A3. Lo debe atrapar el read-back de desambiguación del turno 8. El audio real del operador dice 'A tres'.",
+      "as_heard": "El que estaba sufriendo era el rack A ocho... ese ni se inmutó, sigue sano."
+    },
+    {
+      "n": 8,
+      "role": "agent",
+      "hint": "buscar_servicio('rack') emite confusable_warning por el par SRV-RACK-A3↔SRV-RACK-A8; la captura inicial resuelve SRV-RACK-A8; agregar_servicio_afectado(SRV-RACK-A8) y read-back DE DESAMBIGUACIÓN nombrando AMBOS: '¿el rack A3 del cuarto de redes o el A8 de telecomunicaciones?' (confirm_request field=servicio value=SRV-RACK-A8). No debe dar por bueno el servicio sin este paso.",
+      "add_servicios": [
+        {
+          "id": "SRV-RACK-A8"
+        }
+      ],
+      "note_seeded_error": true
+    },
+    {
+      "n": 9,
+      "role": "user",
+      "text": "El A tres, el del cuarto de redes... el A ocho ni lo toqué, te digo que ese está sano.",
+      "expect": "readback",
+      "note": "corrección explícita del error sembrado, apoyada en lo que ya dijo"
+    },
+    {
+      "n": 10,
+      "role": "agent",
+      "hint": "Corrige la ficha: quita SRV-RACK-A8, agrega SRV-RACK-A3; re-read-back: 'rack A3 del cuarto de redes, ¿ahora sí confirmo?'.",
+      "correct_to": [
+        {
+          "id": "SRV-RACK-A3"
+        }
+      ]
+    },
+    {
+      "n": 11,
+      "role": "user",
+      "text": "Ese... y la vpn también se cayó un rato, los contadores de fuera no podían entrar a sacar sus reportes... eso fue todo lo que se afectó.",
+      "expect": "tool:buscar_servicio",
+      "note": "segundo servicio, sin confundibles; confirmación limpia a la primera (contraste con el turno 9)"
+    },
+    {
+      "n": 12,
+      "role": "agent",
+      "hint": "buscar_servicio('vpn') resuelve SRV-VPN-REMOTO sin confusable_warning; agregar_servicio_afectado(SRV-VPN-REMOTO); read-back: 'vpn de acceso remoto, ¿correcto?'; pregunta la severidad."
+    },
+    {
+      "n": 13,
+      "role": "user",
+      "text": "Sí, esa... y ponle alta, si ese rack se llega a apagar se paran las declaraciones de once clientes, mejor alta.",
+      "expect": "tool:set_severidad",
+      "note": "confirmación del servicio y severidad con justificación de negocio, sin corrección"
+    },
+    {
+      "n": 14,
+      "role": "agent",
+      "hint": "set_severidad(alta); read-back SIEMPRE: 'severidad alta, ¿correcto?'; tras confirmar pide los pendientes."
+    },
+    {
+      "n": 15,
+      "role": "user",
+      "text": "Alta, sí... y apunta dos pendientes: que mantenimiento revise el minisplit esta misma semana, y que compren un abanico industrial de repuesto para el cuarto.",
+      "expect": "tool:agregar_action_item",
+      "note": "confirma severidad a la primera y dicta dos action items"
+    },
+    {
+      "n": 16,
+      "role": "agent",
+      "hint": "agregar_action_item('Reparar el minisplit del cuarto de redes (mantenimiento, esta misma semana)') y ('Comprar un abanico industrial de repuesto para el cuarto de redes'); read-back breve de ambos; arma set_resumen de una línea y pregunta si envía."
+    },
+    {
+      "n": 17,
+      "role": "user",
+      "text": "Así está bien... mándalo ya, que traigo el siguiente servicio encima.",
+      "expect": "tool:enviar_reporte",
+      "note": "cierre"
+    },
+    {
+      "n": 18,
+      "role": "agent",
+      "hint": "enviar_reporte(); confirma en voz alta 'ficha de incidente enviada' (menciona la corrección del rack rescatada) y cierra la sesión."
+    }
+  ]
+}
