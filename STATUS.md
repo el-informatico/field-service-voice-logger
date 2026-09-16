@@ -76,6 +76,20 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
 
 ## Bitácora
 
+- **2026-09-15 (D6 — guion y plan de grabación LISTOS; grabación pendiente)**
+  — `docs/video-script-en.md` (EN, beat a beat con timestamps 0:00–5:00,
+  números reales del README, varianza declarada, regla de no citar modelo),
+  `docs/video-recording-plan.md` (checklist equipo + captura por beat + notas
+  de edición + checklist de submit con re-auditoría de galería ANTES de
+  grabar la línea de diferenciación), `docs/video-demo-setup.md` +
+  `scripts/demo-video.sh` (demo self-contained en un comando: selftest-gate,
+  dev-server en 3199, runbook de grabación, cleanup reforzado — verificado
+  boot + banner; modo mock determinista $0 / real ~$0.2/take). README lleva
+  la sección video con el pitch del diferencial. **PENDIENTE**: grabar,
+  editar <5:00, subir, submit con margen (cierre 30-sep 15:00 UTC).
+- **2026-09-15 (D5 — gate de publicación AUTORIZADO por el usuario; en
+  ejecución)** — Auditoría pre-push obligatoria en curso + deploy Vercel;
+  resultado y URL se documentan en el siguiente bloque cuando cierren.
 - **2026-09-15 (PLAN-B-D2 — 5+1 sesiones REALES tranquilas del incidente,
   tabla publicada en README)** — Sesiones reales contra el API con
   `realgate --domain incident` (prompt v3: máquina de estados + few-shot de

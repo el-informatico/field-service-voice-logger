@@ -78,6 +78,26 @@ product's live-interview route failed its noise gate at 10 dB (see
 [docs/D2-GATE-RESULTS.md](docs/D2-GATE-RESULTS.md)) — that evidence drove the
 pivot to post-visit quiet dictation, which designs the failure mode out.
 
+## Demo video (D6)
+
+Script beat-by-beat with timestamps: [docs/video-script-en.md](docs/video-script-en.md) ·
+recording plan: [docs/video-recording-plan.md](docs/video-recording-plan.md) ·
+one-command demo: `bash scripts/demo-video.sh` ([docs/video-demo-setup.md](docs/video-demo-setup.md)).
+
+The 5-minute pitch in one paragraph: field teams lose up to an hour a day
+writing visits up from memory; dictation alone can't tell a report from a
+guess. Our agent interviews the operator after the visit (quiet environment —
+by design, see the [noise-gate evidence](docs/D2-GATE-RESULTS.md) that drove
+this), structures the incident live, and **reads the critical values back out
+loud** — service PROD vs STAGING, severities, timeline hours — until the
+record is provably right. vs **Relay** (same event, field-ops lane): they say
+it themselves — *"Relay is not a voice form filler"*; they execute operations,
+we are the documentary layer with the confirmation loop and the **published,
+reproducible metrics** (failures included). vs **QuoteReady**: read-back on
+inbound phone quotes — pre-work intake, not the post-visit record; their own
+page marks real-speaker evaluation as future work, our numbers are on the
+table.
+
 ## How we differ from Relay (and the field)
 
 Based on the gallery audit of 2026-09-15 (61 submissions; full evidence in
