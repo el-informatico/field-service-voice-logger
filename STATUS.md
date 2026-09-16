@@ -1,6 +1,6 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-15** (fase pre-sprint COMPLETA).
+Bitácora por bloque. Última actualización: **2026-09-16** (D6-video generado, QA 9/9 y entregado).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
@@ -226,3 +226,57 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
   verde end-to-end. Todo lo que NO requiere audio real está hecho y verificado.
   Veredicto PASO 0: **seguir, no Plan B** — la accuracy medida/publicada sigue
   libre en todo el evento.
+- **2026-09-15/16 (D6-video — GENERADO, QA 9/9, ENTREGADO)** —
+  (1) **Voz**: `CARTESIA_API_KEY` NO existe en `.env` y la regla del proyecto
+  es no crear keys del usuario → fallback aprobado **edge-tts
+  `en-US-AndrewNeural` rate +8%** (12 segmentos, 143.86 s de locución,
+  12/12 caben en sus ventanas). Cartesia Sonic queda pendiente de la key del
+  usuario: insertarla en `.env` y regenerar `tts/` es un swap de 1 comando.
+  (2) **Grabación**: app REAL en `scripts/demo-video.sh` (dev-server :3199)
+  forzada a modo mock determinista (boot con `ASSEMBLYAI_API_KEY=` vacío,
+  badge "modo mock" visible a propósito); incidente i2 "servicio confundido"
+  contra IC-2001 en unattended auto-replay (101.2 s medidos con probe);
+  interacciones reales de Playwright (consent→setup→sesión→ficha→CSV→PDF).
+  Etiqueta "DETERMINISTIC REPLAY — scripted session (mock channel)" quemada
+  en los beats de roleplay (drawtext, esquina sup-der).
+  (3) **Re-auditoría de galería** (pre-línea-de-diferenciación, según plan):
+  KiaOra Dispatch confirmado como submission del hackathon (triage autónomo
+  inbound, sin read-back, sin accuracy publicada) → wedge intacto; línea
+  aprobada: "every voice demo we could find either fills a form or dispatches
+  autonomously — none of them publish accuracy, none rescue capture errors by
+  speaking them back."
+  (4) **Edición**: ffmpeg xfade/acrossfade (12 segmentos: 4 escenas estáticas
+  + 8 cortes del take), captions quemadas con aserción dura narración==cues
+  (47 cues / 377 palabras, verificada en SRT y en el .ass quemado), loudnorm
+  I=−14 LUFS (−14.1 medido), 1080p30 H264+AAC.
+  (5) **QA determinista** (`tools/qa-lanes.mjs`, 9 lanes) — **9/9 PASS**:
+  duración 193.0 s · word-count SRT==ASS==narración (377) · decode 0 errores ·
+  0 blank frames >0.5 s · 15 valores del README §Metrics verbatim en la escena
+  · 14/14 assertions del take · −14.1 LUFS · streams video+audio ·
+  captions-visible (Δluma 18–20 en banda inferior, Δ=0 sobre contenido).
+  Dos defectos encontrados y corregidos DURANTE el QA, con causa raíz:
+  (a) el reloj del recorder acumuló drift +1.4..+6.3 s tras t≈46 s (saltos de
+  reloj WSL2 + clamp monotónico; print_reveal→print_hide colapsó a 10 ms) →
+  cortes de r7/e-exports re-anclados a tiempos REALES de video vía SSIM vs
+  keyframes + detección de cambio de escena (`tools/anchor-scan.mjs`);
+  (b) captions quemadas invisibles: `subtitles`+SRT escala ×3.75 (PlayRes
+  384×288) y `BorderStyle=3,Outline=0` no dibuja caja en este build de libass
+  → gemelo **.ass con PlayRes 1920×1080** (estilo en píxeles reales, caja
+  opaca y980–1060, nada sobre y930) + lane `captions-visible` anti-regresión.
+  (6) **QA visual residual GLM-5.3-Flash** (secundario): 3 runs. Run 1 (4
+  FAIL) detectó 1 defecto real (ventana e-exports por el drift, corregido);
+  run 2 (8 FAIL) **invirtió veredictos sobre píxeles idénticos** → inestable
+  en frames borderline, se documentó sin iterar; run 3 sobre el final (post
+  -fix): **7/11 PASS** y GLM ahora LEE el texto del caption (confirma el
+  fix). Los 4 FAIL restantes analizados contra evidencia determinista = 0
+  defectos accionables: 2 son límites naturales entre cues encadenadas
+  ("The agent reads"→"it back, naming both catalog services."; "…entries.
+  Tool"→"calls at…"), 1 pregunta del check sobre-especificaba el color del
+  banner (el read-back legible está), 1 footer del print sheet bajo el
+  pliegue (comportamiento real de la app, no del encode). Gate = lanes
+  deterministas. Reporte: `build/qa-report.md` dentro del workspace externo de video.
+  (7) **Entregable**: `demo-video-d6.mp4` (12.1 MB, 193.0 s = 3:13 < 5:00) +
+  `demo-video-d6.srt` (captions EN) en el directorio de entregables externo
+  acordado (fuera del repo; >10 MB como se especificó). Sin push. Workspace
+  completo de edición (escenas, TTS, take, herramientas, reportes QA) fuera
+  del repo, en el workspace de video hermano.
