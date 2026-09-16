@@ -1,0 +1,153 @@
+{
+  "scenario_id": "i2-servicio-confundido",
+  "incidente_id": "IC-2001",
+  "description": "Servicio confundido: caída de la tienda en línea de Uniformes Delta dictada post-visita desde la oficina tranquila del cliente. El operador dice 'el servidor web de producción... el de staging ni se enteró', pero va rápido y se traga el calificativo: la transcripción pierde el 'de producción' y buscar_servicio se queda con la única pista que oyó ('staging'), resolviendo SRV-WEB-STG. El read-back de desambiguación del par confundible ('¿producción o staging?') rescata la ficha. Además el operador pide severidad media, el read-back la repite y se corrige a alta. La api de pagos se confirma limpia a la primera, de contraste.",
+  "ambiente": "tranquilo",
+  "turns": [
+    {
+      "n": 1,
+      "role": "user",
+      "text": "Va, ya voy saliendo del cliente... fue lo de la tienda en línea caída, échame el reporte del incidente antes de que se me olvide todo.",
+      "expect": "tool:get_incidente",
+      "note": "dictado post-visita en la oficina del cliente, ya vacía; ambiente tranquilo"
+    },
+    {
+      "n": 2,
+      "role": "agent",
+      "hint": "get_incidente(IC-2001); resume el reporte (tienda en línea caída desde la madrugada en Uniformes Delta) y pide que narre qué pasó."
+    },
+    {
+      "n": 3,
+      "role": "user",
+      "text": "Pos el monitoreo les marcó como a las cinco cuarenta de la mañana que el sitio no respondía... cuando llegué, el servidor web estaba arriba pero atorado, con el disco casi al tope... le limpié las bitácoras viejas, le ajusté la memoria y volvió.",
+      "expect": "tool:set_que_paso",
+      "note": "narrativa literal; el timeline se pide aparte"
+    },
+    {
+      "n": 4,
+      "role": "agent",
+      "hint": "set_que_paso con el texto literal del operador; pide las horas en orden para el timeline, empezando por la caída."
+    },
+    {
+      "n": 5,
+      "role": "user",
+      "text": "La caída la marcó el monitoreo a las cinco cuarenta... esa es la primera.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "hora dicha en palabras, clara"
+    },
+    {
+      "n": 6,
+      "role": "agent",
+      "hint": "agregar_evento_timeline(hora '05:40', evento 'Caída del sitio detectada por el monitoreo'); read-back de la hora en voz alta: 'cinco cuarenta, ¿confirmo?'."
+    },
+    {
+      "n": 7,
+      "role": "user",
+      "text": "Esa... yo llegué a las siete y media al cuarto de servidores... y a las ocho cuarenta y cinco quedó el sitio respondiendo otra vez.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "dos eventos en un turno; horas en palabras"
+    },
+    {
+      "n": 8,
+      "role": "agent",
+      "hint": "agregar_evento_timeline('07:30', 'Llegada del técnico al cuarto de servidores') y ('08:45', 'Sitio respondiendo de nuevo tras limpieza y ajuste'); read-back de las dos horas; pregunta por los servicios afectados."
+    },
+    {
+      "n": 9,
+      "role": "user",
+      "text": "Pues el que se cayó fue el servidor web de producción... y el de staging ni se enteró, ese se quedó arriba toda la noche.",
+      "expect": "tool:buscar_servicio",
+      "note": "ERROR SEMBRADO: la transcripción de ESTE turno pierde el 'de producción' (habla rápido y se traga el calificativo; el audio suena ambiguo en ese punto) y buscar_servicio se queda con la única pista que oye, 'staging' de la segunda frase → resuelve SRV-WEB-STG y agregar_servicio_afectado lo registra. La verdad es SRV-WEB-PROD. Lo debe atrapar el read-back de desambiguación del turno 10. El audio real del operador dice 'de producción'.",
+      "as_heard": "Pues el que se cayó fue el servidor web... y el de staging ni se enteró, ese se quedó arriba toda la noche."
+    },
+    {
+      "n": 10,
+      "role": "agent",
+      "hint": "buscar_servicio('servidor web') emite confusable_warning por el par SRV-WEB-PROD↔SRV-WEB-STG; la captura inicial resuelve SRV-WEB-STG; agregar_servicio_afectado(SRV-WEB-STG) y read-back DE DESAMBIGUACIÓN: '¿el servidor web de producción o el de staging?' (confirm_request field=servicio value=SRV-WEB-STG). No debe dar por bueno el servicio sin este paso.",
+      "add_servicios": [
+        {
+          "id": "SRV-WEB-STG"
+        }
+      ],
+      "note_seeded_error": true
+    },
+    {
+      "n": 11,
+      "role": "user",
+      "text": "¡Producción!... el de producción es el que se cayó, el de staging se quedó arriba, por eso digo que ni se enteró.",
+      "expect": "readback",
+      "note": "corrección explícita del error sembrado, apoyada en lo que ya dijo"
+    },
+    {
+      "n": 12,
+      "role": "agent",
+      "hint": "Corrige la ficha: quita SRV-WEB-STG, agrega SRV-WEB-PROD; re-read-back: 'servidor web de producción, ¿ahora sí confirmo?'.",
+      "correct_to": [
+        {
+          "id": "SRV-WEB-PROD"
+        }
+      ]
+    },
+    {
+      "n": 13,
+      "role": "user",
+      "text": "Eso, producción... y también se encoló la api de pagos, porque los pagos no pasaban aunque el sitio subiera... ya la probé con una compra de prueba y quedó bien.",
+      "expect": "tool:buscar_servicio",
+      "note": "segundo servicio, sin confundibles; audio claro"
+    },
+    {
+      "n": 14,
+      "role": "agent",
+      "hint": "buscar_servicio('api de pagos') resuelve SRV-API-PAGOS sin confusable_warning; agregar_servicio_afectado(SRV-API-PAGOS); read-back: 'api de pasarela de pagos, ¿correcto?'."
+    },
+    {
+      "n": 15,
+      "role": "user",
+      "text": "Sí, esa... la de pagos.",
+      "expect": "readback",
+      "note": "confirmación limpia a la primera (contraste con el turno 11)"
+    },
+    {
+      "n": 16,
+      "role": "agent",
+      "hint": "Registra la confirmación; pregunta la severidad del incidente."
+    },
+    {
+      "n": 17,
+      "role": "user",
+      "text": "Ponle... media, digo, porque al final ya quedó.",
+      "expect": "tool:set_severidad",
+      "note": "ERROR SEMBRADO: el operador pide media por inercia de cierre; la justificación real del incidente es alta. La rescata el read-back del turno 18."
+    },
+    {
+      "n": 18,
+      "role": "agent",
+      "hint": "set_severidad(media); read-back SIEMPRE: 'severidad media, ¿correcto?'.",
+      "note_seeded_error": true
+    },
+    {
+      "n": 19,
+      "role": "user",
+      "text": "No, es alta, no media... tres horas caídos en horario de ventas, esa es alta... y apúntame dos pendientes: que le pidamos al proveedor más disco para el servidor, y que el monitoreo avise por sms y no nomás por correo.",
+      "expect": "readback",
+      "note": "corrección de severidad en el read-back + dictado de action items"
+    },
+    {
+      "n": 20,
+      "role": "agent",
+      "hint": "Corrige la ficha: set_severidad(alta) y re-read-back 'severidad alta, ¿confirmo?'; agregar_action_item('Pedir al proveedor más disco para el servidor web') y ('Configurar el monitoreo para avisar por sms y no solo por correo'); read-back breve de ambos; propone el resumen y pregunta si envía."
+    },
+    {
+      "n": 21,
+      "role": "user",
+      "text": "Sí, alta... así está bien, mándalo.",
+      "expect": "tool:enviar_reporte",
+      "note": "cierre; confirma la severidad corregida y ordena envío"
+    },
+    {
+      "n": 22,
+      "role": "agent",
+      "hint": "enviar_reporte(); confirma 'ficha de incidente enviada' (menciona las dos correcciones rescatadas) y cierra la sesión."
+    }
+  ]
+}

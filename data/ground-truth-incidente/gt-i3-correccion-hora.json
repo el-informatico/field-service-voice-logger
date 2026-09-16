@@ -1,0 +1,48 @@
+{
+  "scenario_id": "i3-correccion-hora",
+  "incidente_id": "IC-2005",
+  "ambiente": "tranquilo",
+  "expected_form": {
+    "incidente_id": "IC-2005",
+    "resumen": "Bomba de agua primaria del edificio parada por relevador de arranque carbonizado; sustituido el relevador y restablecida la presión en todos los pisos.",
+    "que_paso": "La bomba primaria andaba tripeando desde temprano: arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión; al llegar al cuarto de bombas estaba parada del todo; el relevador de arranque estaba carbonizado y se sustituyó por uno nuevo.",
+    "timeline": [
+      { "hora": "08:10", "evento": "Primer síntoma: la bomba arrancaba y se paraba, reportado por intendencia" },
+      { "hora": "09:40", "evento": "Llegada al cuarto de bombas; bomba primaria parada del todo" },
+      { "hora": "11:05", "evento": "Arranque correcto con relevador nuevo; presión estabilizada en todos los pisos" }
+    ],
+    "servicios_afectados": [
+      { "id": "SRV-BOMBA-PRIMARIA", "confirmado": true }
+    ],
+    "action_items": [
+      "Pedir el relevador de arranque de repuesto (el que quedaba ya se usó)",
+      "Recabar la firma del intendente del edificio en la hoja de servicio al día siguiente"
+    ],
+    "severidad": "media",
+    "estado": "enviada"
+  },
+  "user_utterances": [
+    { "n": 1, "text": "¿Aló?... ya acabé con lo de la bomba del edificio, voy en la camioneta, todo tranquilo por acá... échame el reporte del incidente." },
+    { "n": 3, "text": "Pos la bomba primaria andaba tripeando desde temprano... arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión... le revisé el relevador de arranque y ya estaba carbonizado, eso era." },
+    { "n": 5, "text": "El primer síntoma fue como a las ocho diez, que la intendencia me marcó que andaba arrancando y parando... apúntale esa." },
+    { "n": 7, "text": "Luego a las nueve cuarenta llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada." },
+    { "n": 9, "text": "¿Nueve veinte?... no, era nueve cuarenta... casi las diez era cuando llegué, las nueve cuarenta." },
+    { "n": 11, "text": "Eso... y como a las once cero cinco quedó la bomba arrancando ya bien, con el relevador nuevo, y la presión se estabilizó en todos los pisos." },
+    { "n": 13, "text": "Pues la bomba primaria, esa fue la que se paró... la secundaria ni la arrancamos, esa es manual y nomás es para emergencias." },
+    { "n": 15, "text": "Así es, la primaria... la secundaria ni se tocó." },
+    { "n": 17, "text": "Media... porque ya quedó funcionando, pero hay que echarle ojo unos días." },
+    { "n": 19, "text": "Espera—... me faltó un pendiente: que pidan el relevador de arranque de repuesto, el que quedaba ya se usó... y que el intendente del edificio firme la hoja de servicio mañana." },
+    { "n": 21, "text": "Ya con eso queda bien... mándala." }
+  ],
+  "seeded_errors": [
+    {
+      "field": "hora",
+      "captured": "09:20",
+      "truth": "09:40",
+      "rescued_by_confirmation": true
+    }
+  ],
+  "provoked_interruptions": [
+    { "during_turn": 18, "expected": "respected" }
+  ]
+}

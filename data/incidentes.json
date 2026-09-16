@@ -1,0 +1,90 @@
+[
+  {
+    "id": "IC-2001",
+    "cliente": "Uniformes Delta",
+    "sitio": "Oficinas y cuarto de servidores, Calzada del Valle 402, Col. Del Valle, Monterrey, N.L.",
+    "equipo": "Servidor web de la tienda en línea (VPS administrado)",
+    "reporte_inicial": "La tienda en línea no responde desde la madrugada; los clientes no pueden comprar y el monitoreo marca el sitio caído",
+    "tecnico": "Raúl Cepeda",
+    "categoria": "TI",
+    "estado": "abierta",
+    "creada": "2026-09-15T06:05:00-06:00"
+  },
+  {
+    "id": "IC-2002",
+    "cliente": "Despacho Contable Sifuentes y Asociados",
+    "sitio": "Oficina piso 6, Av. Paseo de la Reforma 488, Col. Juárez, CDMX",
+    "equipo": "Gabinete de servidores rack A3 del cuarto de redes",
+    "reporte_inicial": "El cuarto de redes huele a recalentado; el gabinete rack marca 36 grados y el minisplit del cuarto no enfría",
+    "tecnico": "Alan Robles",
+    "categoria": "TI",
+    "estado": "abierta",
+    "creada": "2026-09-15T09:45:00-06:00"
+  },
+  {
+    "id": "IC-2003",
+    "cliente": "Envíos y Mensajería Kimsa",
+    "sitio": "Oficinas generales, Av. Juárez 455, Col. Moderna, Guadalajara, Jal.",
+    "equipo": "Red LAN de oficinas y switch de salida (core)",
+    "reporte_inicial": "Corte de red general en las oficinas: sin internet ni telefonía IP desde temprano",
+    "tecnico": "Marisol Trujillo",
+    "categoria": "TI",
+    "estado": "abierta",
+    "creada": "2026-09-15T08:55:00-06:00"
+  },
+  {
+    "id": "IC-2004",
+    "cliente": "Mueblerías Rosales del Centro",
+    "sitio": "Matriz y almacén, Blvd. Juan Alonso de Torres 1210, Col. Industrial, León, Gto.",
+    "equipo": "Servidor del punto de venta y respaldo nocturno",
+    "reporte_inicial": "El respaldo nocturno de la base del punto de venta terminó con error por segunda vez; no hay copia de anoche",
+    "tecnico": "Ulises Barba",
+    "categoria": "TI",
+    "estado": "abierta",
+    "creada": "2026-09-15T07:40:00-06:00"
+  },
+  {
+    "id": "IC-2005",
+    "cliente": "Condominio Torre Horizonte",
+    "sitio": "Cuarto de bombas en planta baja, Av. Cumbres 3101, Col. Cumbres 2o Sector, Monterrey, N.L.",
+    "equipo": "Sistema de bombeo de agua potable SB-02 (bomba primaria y secundaria)",
+    "reporte_inicial": "La bomba de agua del edificio se para sola; los tinacos de la azotea no se llenan y los pisos altos pierden presión",
+    "tecnico": "Jesús Cavazos",
+    "categoria": "facilities",
+    "estado": "abierta",
+    "creada": "2026-09-15T08:20:00-06:00"
+  },
+  {
+    "id": "IC-2006",
+    "cliente": "Consultorios Médicos Del Prado",
+    "sitio": "Edificio Del Prado, Calle 62 número 415, Col. Centro, Mérida, Yuc.",
+    "equipo": "Elevador de 6 paradas para pacientes y público",
+    "reporte_inicial": "El elevador de pacientes se detuvo entre el piso 2 y el 3 y ya no responde; el panel marca error 21",
+    "tecnico": "Fabio Rendón",
+    "categoria": "facilities",
+    "estado": "abierta",
+    "creada": "2026-09-15T10:15:00-06:00"
+  },
+  {
+    "id": "IC-2007",
+    "cliente": "Tortillería La Perla de Occidente",
+    "sitio": "Local propio, Calzada Independencia Norte 889, Col. El Santuario, Guadalajara, Jal.",
+    "equipo": "Tablero principal TB-01 con interruptor diferencial",
+    "reporte_inicial": "El diferencial del tablero principal dispara al arrancar la molienda y se siente olor a recalentado en la canalización",
+    "tecnico": "Nereida Quintero",
+    "categoria": "facilities",
+    "estado": "abierta",
+    "creada": "2026-09-15T11:30:00-06:00"
+  },
+  {
+    "id": "IC-2008",
+    "cliente": "Almacenes Avelar de Occidente",
+    "sitio": "Bodega nave 2, Calle 11 Sur 2107, Col. Industrial Benito Juárez, Puebla, Pue.",
+    "equipo": "Techumbre de lámina galvanizada del área de embarques",
+    "reporte_inicial": "Se filtra agua de la techumbre sobre el área de embarques cuando llueve; ya mojó pacas de cartón y gotea sobre un contacto",
+    "tecnico": "Antonio Guzmán",
+    "categoria": "facilities",
+    "estado": "abierta",
+    "creada": "2026-09-15T13:05:00-06:00"
+  }
+]

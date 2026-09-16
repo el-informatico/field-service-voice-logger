@@ -1,0 +1,53 @@
+{
+  "scenario_id": "i2-servicio-confundido",
+  "incidente_id": "IC-2001",
+  "ambiente": "tranquilo",
+  "expected_form": {
+    "incidente_id": "IC-2001",
+    "resumen": "Caída de la tienda en línea por disco casi al tope en el servidor web de producción; sitio restablecido tras limpiar bitácoras y ajustar memoria, con unas tres horas de impacto en horario de ventas.",
+    "que_paso": "El monitoreo marcó como a las cinco cuarenta de la mañana que el sitio no respondía; al llegar, el servidor web de producción estaba arriba pero atorado, con el disco casi al tope; se limpiaron las bitácoras viejas, se ajustó la memoria y el sitio volvió. La api de pagos se encoló mientras el sitio estuvo caído y quedó bien tras una compra de prueba.",
+    "timeline": [
+      { "hora": "05:40", "evento": "Caída del sitio detectada por el monitoreo" },
+      { "hora": "07:30", "evento": "Llegada del técnico al cuarto de servidores" },
+      { "hora": "08:45", "evento": "Sitio respondiendo de nuevo tras limpieza y ajuste" }
+    ],
+    "servicios_afectados": [
+      { "id": "SRV-WEB-PROD", "confirmado": true },
+      { "id": "SRV-API-PAGOS", "confirmado": true }
+    ],
+    "action_items": [
+      "Pedir al proveedor más disco para el servidor web",
+      "Configurar el monitoreo para avisar por sms y no solo por correo"
+    ],
+    "severidad": "alta",
+    "estado": "enviada"
+  },
+  "user_utterances": [
+    { "n": 1, "text": "Va, ya voy saliendo del cliente... fue lo de la tienda en línea caída, échame el reporte del incidente antes de que se me olvide todo." },
+    { "n": 3, "text": "Pos el monitoreo les marcó como a las cinco cuarenta de la mañana que el sitio no respondía... cuando llegué, el servidor web estaba arriba pero atorado, con el disco casi al tope... le limpié las bitácoras viejas, le ajusté la memoria y volvió." },
+    { "n": 5, "text": "La caída la marcó el monitoreo a las cinco cuarenta... esa es la primera." },
+    { "n": 7, "text": "Esa... yo llegué a las siete y media al cuarto de servidores... y a las ocho cuarenta y cinco quedó el sitio respondiendo otra vez." },
+    { "n": 9, "text": "Pues el que se cayó fue el servidor web de producción... y el de staging ni se enteró, ese se quedó arriba toda la noche." },
+    { "n": 11, "text": "¡Producción!... el de producción es el que se cayó, el de staging se quedó arriba, por eso digo que ni se enteró." },
+    { "n": 13, "text": "Eso, producción... y también se encoló la api de pagos, porque los pagos no pasaban aunque el sitio subiera... ya la probé con una compra de prueba y quedó bien." },
+    { "n": 15, "text": "Sí, esa... la de pagos." },
+    { "n": 17, "text": "Ponle... media, digo, porque al final ya quedó." },
+    { "n": 19, "text": "No, es alta, no media... tres horas caídos en horario de ventas, esa es alta... y apúntame dos pendientes: que le pidamos al proveedor más disco para el servidor, y que el monitoreo avise por sms y no nomás por correo." },
+    { "n": 21, "text": "Sí, alta... así está bien, mándalo." }
+  ],
+  "seeded_errors": [
+    {
+      "field": "servicio",
+      "captured": { "id": "SRV-WEB-STG" },
+      "truth": { "id": "SRV-WEB-PROD" },
+      "rescued_by_confirmation": true
+    },
+    {
+      "field": "severidad",
+      "captured": "media",
+      "truth": "alta",
+      "rescued_by_confirmation": true
+    }
+  ],
+  "provoked_interruptions": []
+}

@@ -1,0 +1,150 @@
+{
+  "scenario_id": "i3-correccion-hora",
+  "incidente_id": "IC-2005",
+  "description": "Corrección de hora: bomba de agua primaria del Condominio Torre Horizonte parada por relevador carbonizado, dictada post-visita desde el estacionamiento tranquilo. El operador dice 'a las nueve cuarenta llegué al cuarto de bombas' pero la transcripción captura 'nueve veinte': agregar_evento_timeline registra 09:20 y el read-back de la hora lo expone; el operador corrige y la ficha queda con 09:40. El par bomba primaria/secundaria se resuelve a la primera porque el operador lo aclara por su cuenta. Al final corta el resumen del agente con una interrupción provocada ('espera—') para agregar un pendiente que le faltaba.",
+  "ambiente": "tranquilo",
+  "turns": [
+    {
+      "n": 1,
+      "role": "user",
+      "text": "¿Aló?... ya acabé con lo de la bomba del edificio, voy en la camioneta, todo tranquilo por acá... échame el reporte del incidente.",
+      "expect": "tool:get_incidente",
+      "note": "dictado post-visita en el estacionamiento, motor apagado; ambiente tranquilo"
+    },
+    {
+      "n": 2,
+      "role": "agent",
+      "hint": "get_incidente(IC-2005); resume el reporte (la bomba de agua del edificio se paraba sola y los tinacos no se llenan) y pide que narre qué pasó."
+    },
+    {
+      "n": 3,
+      "role": "user",
+      "text": "Pos la bomba primaria andaba tripeando desde temprano... arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión... le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+      "expect": "tool:set_que_paso",
+      "note": "narrativa literal del operador; el timeline se pide aparte"
+    },
+    {
+      "n": 4,
+      "role": "agent",
+      "hint": "set_que_paso con el texto literal del operador; pide el timeline desde el primer síntoma."
+    },
+    {
+      "n": 5,
+      "role": "user",
+      "text": "El primer síntoma fue como a las ocho diez, que la intendencia me marcó que andaba arrancando y parando... apúntale esa.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "hora dicha en palabras, clara"
+    },
+    {
+      "n": 6,
+      "role": "agent",
+      "hint": "agregar_evento_timeline(hora '08:10', evento 'Primer síntoma: la bomba arrancaba y se paraba, reportado por intendencia'); read-back de la hora en voz alta: 'ocho diez, ¿confirmo?'."
+    },
+    {
+      "n": 7,
+      "role": "user",
+      "text": "Luego a las nueve cuarenta llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "ERROR SEMBRADO: la transcripción de ESTE turno oye 'nueve veinte' en lugar de 'nueve cuarenta' → agregar_evento_timeline registra 09:20 ('Llegada al cuarto de bombas, bomba parada del todo'). La verdad es 09:40. Lo debe atrapar el read-back de la hora del turno 8. El audio real del operador dice 'nueve cuarenta'.",
+      "as_heard": "Luego a las nueve veinte llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada."
+    },
+    {
+      "n": 8,
+      "role": "agent",
+      "hint": "agregar_evento_timeline(hora '09:20', evento 'Llegada al cuarto de bombas; bomba primaria parada del todo') y read-back de la hora: 'nueve veinte, ¿confirmo?'.",
+      "add_evento": {
+        "hora": "09:20",
+        "evento": "Llegada al cuarto de bombas; bomba primaria parada del todo"
+      },
+      "note_seeded_error": true
+    },
+    {
+      "n": 9,
+      "role": "user",
+      "text": "¿Nueve veinte?... no, era nueve cuarenta... casi las diez era cuando llegué, las nueve cuarenta.",
+      "expect": "readback",
+      "note": "corrección explícita del error sembrado de hora"
+    },
+    {
+      "n": 10,
+      "role": "agent",
+      "hint": "Corrige el evento: quita el registro de 09:20 y fija la hora en 09:40; re-read-back: 'nueve cuarenta, ¿ahora sí confirmo?'.",
+      "correct_to": {
+        "hora": "09:40"
+      }
+    },
+    {
+      "n": 11,
+      "role": "user",
+      "text": "Eso... y como a las once cero cinco quedó la bomba arrancando ya bien, con el relevador nuevo, y la presión se estabilizó en todos los pisos.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "evento de cierre; hora en palabras, clara"
+    },
+    {
+      "n": 12,
+      "role": "agent",
+      "hint": "agregar_evento_timeline('11:05', 'Arranque correcto con relevador nuevo; presión estabilizada en todos los pisos'); read-back de la hora; pregunta por los servicios afectados."
+    },
+    {
+      "n": 13,
+      "role": "user",
+      "text": "Pues la bomba primaria, esa fue la que se paró... la secundaria ni la arrancamos, esa es manual y nomás es para emergencias.",
+      "expect": "tool:buscar_servicio",
+      "note": "resuelve el par confundible por su cuenta al mencionar que la secundaria ni se tocó"
+    },
+    {
+      "n": 14,
+      "role": "agent",
+      "hint": "buscar_servicio('bomba primaria') emite confusable_warning por el par SRV-BOMBA-PRIMARIA↔SRV-BOMBA-SECUNDARIA; agregar_servicio_afectado(SRV-BOMBA-PRIMARIA) con read-back de desambiguación breve: '¿la bomba primaria, y la secundaria queda fuera, cierto?'."
+    },
+    {
+      "n": 15,
+      "role": "user",
+      "text": "Así es, la primaria... la secundaria ni se tocó.",
+      "expect": "readback",
+      "note": "confirmación limpia a la primera pese al par confundible"
+    },
+    {
+      "n": 16,
+      "role": "agent",
+      "hint": "Registra la confirmación; pregunta la severidad del incidente."
+    },
+    {
+      "n": 17,
+      "role": "user",
+      "text": "Media... porque ya quedó funcionando, pero hay que echarle ojo unos días.",
+      "expect": "tool:set_severidad",
+      "note": "severidad con justificación de seguimiento"
+    },
+    {
+      "n": 18,
+      "role": "agent",
+      "hint": "set_severidad(media); read-back SIEMPRE: 'severidad media, ¿correcto?'; tras confirmar ARMA la ficha y arranca la lectura del resumen final en voz alta: 'Te resumo: bomba primaria del edificio parada por relevador carbonizado, sustituido a las once cero cinco, severidad media, y los pendientes que faltan—'. DEBE dejarse interrumpir en cuanto el usuario habla."
+    },
+    {
+      "n": 19,
+      "role": "user",
+      "text": "Espera—... me faltó un pendiente: que pidan el relevador de arranque de repuesto, el que quedaba ya se usó... y que el intendente del edificio firme la hoja de servicio mañana.",
+      "expect": "tool:agregar_action_item",
+      "note": "INTERRUPCIÓN 1: corta el resumen final del agente a media frase (agente_text_cut esperado: '...y los pendientes que faltan—'); el agente debe ceder <500 ms y no terminar la frase",
+      "interrupt": true
+    },
+    {
+      "n": 20,
+      "role": "agent",
+      "hint": "Cede de inmediato (barge_in registrado); agregar_action_item('Pedir el relevador de arranque de repuesto, el que quedaba ya se usó') y ('Recabar la firma del intendente del edificio en la hoja de servicio al día siguiente'); read-back corto; resume en una línea y pregunta si envía."
+    },
+    {
+      "n": 21,
+      "role": "user",
+      "text": "Ya con eso queda bien... mándala.",
+      "expect": "tool:enviar_reporte",
+      "note": "cierre"
+    },
+    {
+      "n": 22,
+      "role": "agent",
+      "hint": "enviar_reporte(); confirma 'ficha de incidente enviada' (menciona la corrección de hora rescatada) y cierra la sesión."
+    }
+  ]
+}

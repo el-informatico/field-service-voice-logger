@@ -1,0 +1,128 @@
+{
+  "scenario_id": "i1-dictado-feliz",
+  "incidente_id": "IC-2003",
+  "description": "Dictado feliz: corte de red general en las oficinas de la mensajería, dictado post-visita desde la camioneta con el motor apagado. La técnica narra el incidente con horas en palabras, agrega tres eventos al timeline, dos servicios (dns interno y vpn), severidad alta y dos pendientes. Ambiente tranquilo, habla clara y pausada: todas las confirmaciones pasan a la primera, sin errores sembrados.",
+  "ambiente": "tranquilo",
+  "turns": [
+    {
+      "n": 1,
+      "role": "user",
+      "text": "¿Me oyes bien?... va, ya voy de salida, en la camioneta, ya terminé lo de la red en Kimsa... échame la mano con el reporte del incidente, ¿sí?",
+      "expect": "tool:get_incidente",
+      "note": "dictado post-visita en la camioneta, motor apagado; ambiente tranquilo"
+    },
+    {
+      "n": 2,
+      "role": "agent",
+      "hint": "get_incidente(IC-2003); resume el reporte (corte de red general en las oficinas de Envíos y Mensajería Kimsa) y pide que narre qué pasó desde el principio."
+    },
+    {
+      "n": 3,
+      "role": "user",
+      "text": "Pos el corte empezó temprano... como a las ocho cincuenta me llamaron de recepción que no había internet en toda la oficina, ni los teléfonos de ip... entré a checar y el switch de salida no respondía, nomás tenía el led de estatus en naranja.",
+      "expect": "tool:set_que_paso",
+      "note": "narrativa literal del operador; hora mencionada de paso, el timeline se pide aparte"
+    },
+    {
+      "n": 4,
+      "role": "agent",
+      "hint": "set_que_paso con el texto literal de la técnica; pide las horas en orden para armar el timeline."
+    },
+    {
+      "n": 5,
+      "role": "user",
+      "text": "Va... la llamada de recepción fue a las ocho cincuenta, apúntale esa primero.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "hora dicha en palabras, clara"
+    },
+    {
+      "n": 6,
+      "role": "agent",
+      "hint": "agregar_evento_timeline(hora '08:50', evento 'Llamada de recepción reportando el corte de red general'); read-back de la hora en voz alta: 'ocho cincuenta, ¿confirmo?'."
+    },
+    {
+      "n": 7,
+      "role": "user",
+      "text": "Esa... luego como a las nueve y cuarto ya tenía yo que era el switch de salida, porque lo probé con el equipo de diagnóstico y no contestaba.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "confirmación a la primera y evento nuevo"
+    },
+    {
+      "n": 8,
+      "role": "agent",
+      "hint": "agregar_evento_timeline(hora '09:15', evento 'Identificado el switch de salida como causa tras prueba de diagnóstico'); read-back de la hora; pide lo que sigue."
+    },
+    {
+      "n": 9,
+      "role": "user",
+      "text": "A las diez diez le puse el switch nuevo de repuesto que traía... y a las diez veinte ya tenía toda la red arriba, correos y teléfonos.",
+      "expect": "tool:agregar_evento_timeline",
+      "note": "dos eventos en un solo turno; horas en palabras"
+    },
+    {
+      "n": 10,
+      "role": "agent",
+      "hint": "agregar_evento_timeline('10:10', 'Sustitución del switch de salida por uno de repuesto') y ('10:20', 'Red restablecida: correos y telefonía ip arriba'); read-back de las dos horas juntas; pregunta por los servicios afectados."
+    },
+    {
+      "n": 11,
+      "role": "user",
+      "text": "Pues se cayó el dns interno, ese fue el primero... y la vpn también, porque la gente de reparto no podía entrar al sistema desde la calle.",
+      "expect": "tool:buscar_servicio",
+      "note": "dos servicios, ninguno confundible; habla clara"
+    },
+    {
+      "n": 12,
+      "role": "agent",
+      "hint": "buscar_servicio('dns interno') resuelve SRV-DNS-INTERNO sin confundibles; agregar_servicio_afectado(SRV-DNS-INTERNO); read-back: 'servidor dns interno, ¿correcto?'."
+    },
+    {
+      "n": 13,
+      "role": "user",
+      "text": "Sí, ese.",
+      "expect": "readback",
+      "note": "confirmación limpia a la primera"
+    },
+    {
+      "n": 14,
+      "role": "agent",
+      "hint": "buscar_servicio('vpn') resuelve SRV-VPN-REMOTO; agregar_servicio_afectado(SRV-VPN-REMOTO); read-back: 'vpn de acceso remoto, ¿correcto?'; pregunta la severidad."
+    },
+    {
+      "n": 15,
+      "role": "user",
+      "text": "Ponle alta... estuvieron como hora y media sin facturar y sin despachar, eso les dolió.",
+      "expect": "tool:set_severidad",
+      "note": "severidad con justificación de negocio"
+    },
+    {
+      "n": 16,
+      "role": "agent",
+      "hint": "set_severidad(alta); read-back SIEMPRE: 'severidad alta, ¿correcto?'; tras confirmar propone el resumen en una línea y pide pendientes."
+    },
+    {
+      "n": 17,
+      "role": "user",
+      "text": "Sí, así va bien... y deja dos pendientes: que me compren otro switch de repuesto para el almacén, y que le avisen al jefe de sistemas cuando hagan el mantenimiento del nodo.",
+      "expect": "tool:agregar_action_item",
+      "note": "confirma severidad a la primera y dicta dos action items"
+    },
+    {
+      "n": 18,
+      "role": "agent",
+      "hint": "agregar_action_item('Comprar otro switch de repuesto para el almacén') y ('Avisar al jefe de sistemas cuando hagan el mantenimiento del nodo'); read-back breve de ambos; lee el resumen: 'corte de red por falla del switch de salida, restablecida en hora y media'; pregunta si envía."
+    },
+    {
+      "n": 19,
+      "role": "user",
+      "text": "Así está bien... mándalo ya, que traigo otro pendiente.",
+      "expect": "tool:enviar_reporte",
+      "note": "cierre"
+    },
+    {
+      "n": 20,
+      "role": "agent",
+      "hint": "enviar_reporte(); confirma en voz alta 'ficha de incidente enviada' y cierra la sesión."
+    }
+  ]
+}

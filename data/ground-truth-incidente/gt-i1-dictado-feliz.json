@@ -1,0 +1,40 @@
+{
+  "scenario_id": "i1-dictado-feliz",
+  "incidente_id": "IC-2003",
+  "ambiente": "tranquilo",
+  "expected_form": {
+    "incidente_id": "IC-2003",
+    "resumen": "Corte de red general en las oficinas por falla del switch de salida; red restablecida en una hora y media con un switch de repuesto.",
+    "que_paso": "El corte empezó temprano: como a las ocho cincuenta llamaron de recepción porque no había internet en toda la oficina ni los teléfonos de ip; al revisar, el switch de salida no respondía y el led de estatus quedaba en naranja.",
+    "timeline": [
+      { "hora": "08:50", "evento": "Llamada de recepción reportando el corte de red general" },
+      { "hora": "09:15", "evento": "Identificado el switch de salida como causa tras prueba de diagnóstico" },
+      { "hora": "10:10", "evento": "Sustitución del switch de salida por uno de repuesto" },
+      { "hora": "10:20", "evento": "Red restablecida: correos y telefonía ip arriba" }
+    ],
+    "servicios_afectados": [
+      { "id": "SRV-DNS-INTERNO", "confirmado": true },
+      { "id": "SRV-VPN-REMOTO", "confirmado": true }
+    ],
+    "action_items": [
+      "Comprar otro switch de repuesto para el almacén",
+      "Avisar al jefe de sistemas cuando hagan el mantenimiento del nodo"
+    ],
+    "severidad": "alta",
+    "estado": "enviada"
+  },
+  "user_utterances": [
+    { "n": 1, "text": "¿Me oyes bien?... va, ya voy de salida, en la camioneta, ya terminé lo de la red en Kimsa... échame la mano con el reporte del incidente, ¿sí?" },
+    { "n": 3, "text": "Pos el corte empezó temprano... como a las ocho cincuenta me llamaron de recepción que no había internet en toda la oficina, ni los teléfonos de ip... entré a checar y el switch de salida no respondía, nomás tenía el led de estatus en naranja." },
+    { "n": 5, "text": "Va... la llamada de recepción fue a las ocho cincuenta, apúntale esa primero." },
+    { "n": 7, "text": "Esa... luego como a las nueve y cuarto ya tenía yo que era el switch de salida, porque lo probé con el equipo de diagnóstico y no contestaba." },
+    { "n": 9, "text": "A las diez diez le puse el switch nuevo de repuesto que traía... y a las diez veinte ya tenía toda la red arriba, correos y teléfonos." },
+    { "n": 11, "text": "Pues se cayó el dns interno, ese fue el primero... y la vpn también, porque la gente de reparto no podía entrar al sistema desde la calle." },
+    { "n": 13, "text": "Sí, ese." },
+    { "n": 15, "text": "Ponle alta... estuvieron como hora y media sin facturar y sin despachar, eso les dolió." },
+    { "n": 17, "text": "Sí, así va bien... y deja dos pendientes: que me compren otro switch de repuesto para el almacén, y que le avisen al jefe de sistemas cuando hagan el mantenimiento del nodo." },
+    { "n": 19, "text": "Así está bien... mándalo ya, que traigo otro pendiente." }
+  ],
+  "seeded_errors": [],
+  "provoked_interruptions": []
+}

@@ -1,0 +1,107 @@
+[
+  {
+    "id": "SRV-WEB-PROD",
+    "nombre": "Servidor web de la tienda en línea (producción)",
+    "alias": ["servidor web de producción", "página web de producción", "portal de ventas", "web de producción"],
+    "tipo": "web",
+    "confundible_con": ["SRV-WEB-STG"]
+  },
+  {
+    "id": "SRV-WEB-STG",
+    "nombre": "Servidor web de pruebas (staging)",
+    "alias": ["servidor web de staging", "página de pruebas", "web de staging", "servidor de pruebas"],
+    "tipo": "web",
+    "confundible_con": ["SRV-WEB-PROD"]
+  },
+  {
+    "id": "SRV-RACK-A3",
+    "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+    "alias": ["rack a3", "gabinete a3", "rack del cuarto de redes", "rack chico"],
+    "tipo": "infraestructura",
+    "confundible_con": ["SRV-RACK-A8"]
+  },
+  {
+    "id": "SRV-RACK-A8",
+    "nombre": "Gabinete de servidores rack A8 (cuarto de telecomunicaciones)",
+    "alias": ["rack a8", "gabinete a8", "rack de telecomunicaciones", "rack grande"],
+    "tipo": "infraestructura",
+    "confundible_con": ["SRV-RACK-A3"]
+  },
+  {
+    "id": "SRV-BOMBA-PRIMARIA",
+    "nombre": "Bomba de agua primaria del edificio",
+    "alias": ["bomba primaria", "bomba principal", "bomba uno", "bomba de agua principal"],
+    "tipo": "hidraulico",
+    "confundible_con": ["SRV-BOMBA-SECUNDARIA"]
+  },
+  {
+    "id": "SRV-BOMBA-SECUNDARIA",
+    "nombre": "Bomba de agua secundaria (respaldo manual)",
+    "alias": ["bomba secundaria", "bomba de respaldo", "bomba dos", "bomba de emergencia"],
+    "tipo": "hidraulico",
+    "confundible_con": ["SRV-BOMBA-PRIMARIA"]
+  },
+  {
+    "id": "SRV-CORREO-PROD",
+    "nombre": "Servidor de correo de la empresa (producción)",
+    "alias": ["correo de producción", "servidor de correo", "correo de la empresa", "mail de producción"],
+    "tipo": "correo",
+    "confundible_con": ["SRV-CORREO-BACKUP"]
+  },
+  {
+    "id": "SRV-CORREO-BACKUP",
+    "nombre": "Servidor de correo de respaldo",
+    "alias": ["correo de respaldo", "servidor de correo secundario", "mail de respaldo", "correo backup"],
+    "tipo": "correo",
+    "confundible_con": ["SRV-CORREO-PROD"]
+  },
+  {
+    "id": "SRV-VPN-REMOTO",
+    "nombre": "VPN de acceso remoto del personal",
+    "alias": ["vpn", "vpn remota", "acceso remoto", "vpn de la empresa"],
+    "tipo": "red",
+    "confundible_con": null
+  },
+  {
+    "id": "SRV-API-PAGOS",
+    "nombre": "API de pasarela de pagos de la tienda",
+    "alias": ["api de pagos", "pasarela de pagos", "servicio de pagos", "api de cobros"],
+    "tipo": "aplicacion",
+    "confundible_con": null
+  },
+  {
+    "id": "SRV-DNS-INTERNO",
+    "nombre": "Servidor DNS interno de oficinas",
+    "alias": ["dns", "dns interno", "servidor de nombres", "dns de la oficina"],
+    "tipo": "red",
+    "confundible_con": null
+  },
+  {
+    "id": "SRV-CCTV-NAVE1",
+    "nombre": "Circuito cerrado de cámaras (nave 1)",
+    "alias": ["cámaras", "cctv", "circuito cerrado", "cámaras de la nave"],
+    "tipo": "seguridad",
+    "confundible_con": null
+  },
+  {
+    "id": "SRV-ILUM-PLANTA",
+    "nombre": "Iluminación LED de planta y nave",
+    "alias": ["iluminación de planta", "luces de la planta", "lámparas de la nave", "luces led"],
+    "tipo": "electrico",
+    "confundible_con": null
+  },
+  {
+    "id": "SRV-COMPRESOR-AIRE",
+    "nombre": "Compresor de aire del taller",
+    "alias": ["compresor", "compresor de aire", "compresora del taller", "turbina de aire"],
+    "tipo": "mecanico",
+    "confundible_con": null
+  },
+  {
+    "id": "SRV-ACCESO-PUERTAS",
+    "nombre": "Sistema de control de acceso y chapas electrónicas",
+    "alias": ["control de acceso", "chapas electrónicas", "lectoras de tarjetas", "acceso de puertas"],
+    "tipo": "seguridad",
+    "confundible_con": null
+  }
+]
