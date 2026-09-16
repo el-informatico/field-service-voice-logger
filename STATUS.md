@@ -76,6 +76,36 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
 
 ## Bitácora
 
+- **2026-09-15 (PLAN-B-D1 — pivote ejecutado: Voice Incident Reporter)** —
+  Dominio incidente completo sobre el 70% compartido (ws-agent, session-engine,
+  artefacto §6, canal mock/real, métricas, export — INTACTOS, `git diff`
+  limpio): (1) datos: 8 incidentes IC-2001..2008 (TI+facilities), 15 servicios
+  con 4 pares confundibles (PROD↔STG, RACK-A3↔A8, BOMBA-PRIM↔SEC,
+  CORREO-PROD↔BACKUP), 3 guiones+GT (i2: servicio confundido + severidad
+  rescatados por read-back; i3: hora 09:20→09:40 + 1 interrupción);
+  (2) flujo voice→ficha re-apuntado: 9 tools (get_incidente sin args, enum de
+  servicios, severidad enum, hora con pattern, read-back en horas/servicios/
+  severidad), runner/store de incidente, mock entrevistador post-visita con
+  directivas de guion, UI con selector de modo (Incidente por DEFECTO, Orden
+  legado intacto como evidencia del 70% compartido), export CSV/print con rama
+  incidente (CSV orden byte-idéntico), `realgate --domain incident` (prompt
+  post-visita, wavs limpios en `.data/tts-incidente/` — 34 wavs, 272 s),
+  métricas por campo de incidente (servicios/timeline/action-items/severidad)
+  con fixtures y oráculo; (3) **selftest + smoke:mock VERDES en ambos
+  dominios** (6 sesiones mock, fichas exactas vs GT, errores sembrados
+  rescatados 3/3, WER 0.006). Limitación conocida: en modo real desde el
+  browser las confirmaciones de servicios se derivan solo al enviar (el
+  derivador del driver real sí las marca en vivo).
+  **QUEDA PARA D5 (deploy)**: Vercel + storage durable para /api/sessions y
+  /api/fsm (hoy /tmp efímero) + prueba móvil con auriculares — requiere tu YES
+  para push/deploy. **QUEDA PARA D6 (video+submit)**: re-auditar galería
+  (AutoCopilot/KiaOra/nuevas), guion de video EN (<5 min: dolor → dictado en
+  vivo con read-back → ficha+export → métricas medidas → 40 s arquitectura),
+  README re-apuntado a Incident Reporter con la tabla de métricas, submit con
+  margen (cierre 30-sep 15:00 UTC). Sesiones reales del gate de incidente
+  (ambiente tranquilo, sin ruido — el modo de fallo está diseñado fuera):
+  correr 5+ sesiones con `realgate --domain incident` + métricas para poblar
+  la tabla publicable.
 - **2026-09-15 (sprint, D2 — GATE ejecutado con audio real → VEREDICTO:
   PLAN B)** — 16 sesiones reales contra el Voice Agent API (driver
   `scripts/realgate.mjs`: token temporal de un solo uso, wavs del guion a

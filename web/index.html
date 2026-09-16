@@ -52,14 +52,31 @@
       </div>
     </section>
 
-    <!-- ============ Pantalla 3: orden + guion ============ -->
+    <!-- ============ Pantalla 3: modo + orden/incidente + guion ============ -->
     <section id="screen-setup" class="screen" hidden aria-labelledby="setup-title">
       <button id="btn-setup-back" class="ghost back" type="button">← Panel</button>
-      <h2 id="setup-title">Elige orden y escenario</h2>
+      <h2 id="setup-title">Elige modo, caso y escenario</h2>
+      <div class="card">
+        <h3>Tipo de sesión</h3>
+        <ul id="mode-list" class="pick-list">
+          <li>
+            <button type="button" id="btn-mode-incidente" aria-pressed="true">
+              <strong>Incidente (Plan B)</strong>
+              <small>Dictado post-visita en ambiente tranquilo, con read-back de horas, servicios y severidad — el pivote del sprint.</small>
+            </button>
+          </li>
+          <li>
+            <button type="button" id="btn-mode-orden" aria-pressed="false">
+              <strong>Orden de trabajo (legado)</strong>
+              <small>Bitácora llenada mientras se trabaja — el flujo original que comparte el 70% del código.</small>
+            </button>
+          </li>
+        </ul>
+      </div>
       <div class="setup-grid">
         <div class="card">
-          <h3>Orden de trabajo</h3>
-          <ul id="order-list" class="pick-list"><li class="muted">Cargando órdenes…</li></ul>
+          <h3 id="picker-case-title">Incidente</h3>
+          <ul id="order-list" class="pick-list"><li class="muted">Cargando…</li></ul>
         </div>
         <div class="card">
           <h3>Escenario (guion)</h3>
@@ -157,6 +174,56 @@
               <p class="field-value" data-value="notas">—</p>
             </section>
           </div>
+          <div id="ficha-incidente" class="ficha" hidden>
+            <section class="field-card" data-field="resumen">
+              <header class="field-head">
+                <span class="field-name">Resumen</span>
+                <span class="field-audit muted" data-audit="resumen">esperando…</span>
+              </header>
+              <p class="field-value" data-value="resumen">—</p>
+            </section>
+            <section class="field-card" data-field="que_paso">
+              <header class="field-head">
+                <span class="field-name">Qué pasó</span>
+                <span class="field-audit muted" data-audit="que_paso">esperando…</span>
+              </header>
+              <p class="field-value" data-value="que_paso">—</p>
+            </section>
+            <section class="field-card" data-field="timeline">
+              <header class="field-head">
+                <span class="field-name">Timeline</span>
+                <span class="field-audit muted" data-audit="timeline">esperando…</span>
+              </header>
+              <ul class="pieza-list" data-value="timeline">
+                <li class="muted">— sin eventos todavía —</li>
+              </ul>
+            </section>
+            <section class="field-card" data-field="servicios_afectados">
+              <header class="field-head">
+                <span class="field-name">Servicios afectados</span>
+                <span class="field-audit muted" data-audit="servicios_afectados">esperando…</span>
+              </header>
+              <ul class="pieza-list" data-value="servicios_afectados">
+                <li class="muted">— sin servicios todavía —</li>
+              </ul>
+            </section>
+            <section class="field-card" data-field="action_items">
+              <header class="field-head">
+                <span class="field-name">Pendientes (action items)</span>
+                <span class="field-audit muted" data-audit="action_items">esperando…</span>
+              </header>
+              <ul class="pieza-list" data-value="action_items">
+                <li class="muted">— sin pendientes —</li>
+              </ul>
+            </section>
+            <section class="field-card" data-field="severidad">
+              <header class="field-head">
+                <span class="field-name">Severidad</span>
+                <span class="field-audit muted" data-audit="severidad">esperando…</span>
+              </header>
+              <p class="field-value" data-value="severidad">—</p>
+            </section>
+          </div>
           <details class="audit">
             <summary>Auditoría completa</summary>
             <ol id="audit-trail" class="audit-trail"></ol>
@@ -178,7 +245,7 @@
           <h3>Ficha final</h3>
           <span id="end-estado" class="chip chip-wip">—</span>
         </div>
-        <dl class="summary">
+        <dl class="summary" id="end-summary-orden">
           <div><dt>Orden</dt><dd data-s="orden" class="mono">—</dd></div>
           <div><dt>Cliente</dt><dd data-s="cliente">—</dd></div>
           <div><dt>Equipo</dt><dd data-s="equipo">—</dd></div>
@@ -190,6 +257,22 @@
           </dd></div>
           <div><dt>Tiempo</dt><dd data-s="tiempo_minutos">—</dd></div>
           <div><dt>Notas</dt><dd data-s="notas">—</dd></div>
+        </dl>
+        <dl class="summary" id="end-summary-incidente" hidden>
+          <div><dt>Incidente</dt><dd data-i="incidente" class="mono">—</dd></div>
+          <div><dt>Cliente</dt><dd data-i="cliente">—</dd></div>
+          <div><dt>Resumen</dt><dd data-i="resumen">—</dd></div>
+          <div><dt>Qué pasó</dt><dd data-i="que_paso">—</dd></div>
+          <div><dt>Timeline</dt><dd>
+            <ul class="pieza-list" data-i="timeline"><li class="muted">—</li></ul>
+          </dd></div>
+          <div><dt>Servicios afectados</dt><dd>
+            <ul class="pieza-list" data-i="servicios"><li class="muted">—</li></ul>
+          </dd></div>
+          <div><dt>Pendientes</dt><dd>
+            <ul class="pieza-list" data-i="items"><li class="muted">—</li></ul>
+          </dd></div>
+          <div><dt>Severidad</dt><dd data-i="severidad">—</dd></div>
         </dl>
       </div>
       <div class="card export-card">

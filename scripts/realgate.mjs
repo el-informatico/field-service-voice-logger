@@ -4,14 +4,20 @@
  *
  * Sustituye el rig manual (altavoz+micrófono) por audio sintetizado controlado:
  * abre el WebSocket real (token temporal de un solo uso), construye session.update
- * con el prompt/turn-detection del proyecto y las 7 tools con enum de catálogo,
+ * con el prompt/turn-detection del proyecto y las tools con enum de catálogo,
  * transmite los WAV del guion (limpio o con ruido DEMAND a SNR fijo) a ritmo real
  * como si fuera el micrófono, ejecuta las tool calls contra el MISMO engine que el
  * browser (artefacto §6) y devuelve el artefacto para el harness de métricas.
  *
+ * Dominios (--domain):
+ *   orden    (default, back-compat): data/guiones, wavs en .data/tts[+ruido].
+ *   incident (Plan B): data/guiones-incidente, wavs en .data/tts-incidente
+ *            (dictado post-visita en AMBIENTE TRANQUILO, sin mezclas de ruido).
+ *
  * Uso:
  *   node scripts/realgate.mjs --guion s1-happy-path [--noise DKITCHEN --snr 10]
  *        [--vad 0.4] [--idelay 0] [--tmode balanced] [--label T0] [--outdir .data/gate]
+ *   node scripts/realgate.mjs --domain incident --guion i1-dictado-feliz
  *   node scripts/realgate.mjs --dry-run --guion s1-happy-path   # sin key: valida plomería
  *
  * Requiere ASSEMBLYAI_API_KEY en .env (jamás se imprime ni se envía al browser).
@@ -26,20 +32,18 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const { buildSessionUpdate, buildToolResult, bytesToBase64 } = await import(
   new URL('../web/js/ws-agent.js', import.meta.url).href
 );
-const { buildToolDefinitions } = await import(new URL('../web/js/tools.js', import.meta.url).href);
-const { createToolRunner } = await import(new URL('../web/js/tool-runner.js', import.meta.url).href);
-const { createStore } = await import(new URL('../web/js/store.js', import.meta.url).href);
 const { createSessionEngine } = await import(new URL('../web/js/session-engine.js', import.meta.url).href);
 const { realClock } = await import(new URL('../web/js/clock.js', import.meta.url).href);
 const { AGENT_CONFIG } = await import(new URL('../web/js/agent-config.js', import.meta.url).href);
 
 /* ---------------------------------- args ---------------------------------- */
 function parseArgs(argv) {
-  const a = { outdir: '.data/gate', vad: 0.4, idelay: 0, tmode: 'balanced', label: 'run' };
+  const a = { domain: 'orden', outdir: '.data/gate', vad: 0.4, idelay: 0, tmode: 'balanced', label: 'run' };
   for (let i = 2; i < argv.length; i++) {
     const k = argv[i];
     const next = () => argv[++i];
-    if (k === '--guion') a.guion = next();
+    if (k === '--domain') a.domain = String(next());
+    else if (k === '--guion') a.guion = next();
     else if (k === '--noise') a.noise = next();
     else if (k === '--snr') a.snr = String(next());
     else if (k === '--vad') a.vad = Number(next());
@@ -56,8 +60,33 @@ function parseArgs(argv) {
 }
 const args = parseArgs(process.argv);
 if (args.help || !args.guion) {
-  console.log('uso: node scripts/realgate.mjs --guion s1-happy-path [--noise DKITCHEN --snr 10] [--vad 0.4] [--idelay 0] [--tmode balanced] [--label T0] [--outdir .data/gate] [--dry-run]');
+  console.log('uso: node scripts/realgate.mjs [--domain orden|incident] --guion <id> [--noise DKITCHEN --snr 10] [--vad 0.4] [--idelay 0] [--tmode balanced] [--label T0] [--outdir .data/gate] [--dry-run]');
   process.exit(args.help ? 0 : 2);
+}
+if (!['orden', 'incident'].includes(args.domain)) {
+  console.error(`--domain inválido: ${args.domain} (orden|incident)`);
+  process.exit(2);
+}
+const INCIDENT = args.domain === 'incident';
+
+/* -------- módulos del dominio (orden compartido | incidente Plan B) -------- */
+let buildToolDefinitions;
+let createToolRunner;
+let createStore;
+if (INCIDENT) {
+  ({ buildIncidentToolDefinitions: buildToolDefinitions } = await import(
+    new URL('../web/js/domain/incident/tools.js', import.meta.url).href
+  ));
+  ({ createIncidentToolRunner: createToolRunner } = await import(
+    new URL('../web/js/domain/incident/tool-runner.js', import.meta.url).href
+  ));
+  ({ createIncidentStore: createStore } = await import(
+    new URL('../web/js/domain/incident/store.js', import.meta.url).href
+  ));
+} else {
+  ({ buildToolDefinitions } = await import(new URL('../web/js/tools.js', import.meta.url).href));
+  ({ createToolRunner } = await import(new URL('../web/js/tool-runner.js', import.meta.url).href));
+  ({ createStore } = await import(new URL('../web/js/store.js', import.meta.url).href));
 }
 
 /* ------------------------------- carga .env ------------------------------- */
@@ -69,17 +98,37 @@ function loadKey() {
 }
 
 /* --------------------------------- datos ---------------------------------- */
-const ordenes = JSON.parse(readFileSync(join(ROOT, 'data/ordenes.json'), 'utf8'));
-const piezas = JSON.parse(readFileSync(join(ROOT, 'data/piezas.json'), 'utf8'));
-const guion = JSON.parse(readFileSync(join(ROOT, 'data/guiones', `${args.guion}.json`), 'utf8'));
+const guionDir = INCIDENT ? 'guiones-incidente' : 'guiones';
+const gtDir = INCIDENT ? 'ground-truth-incidente' : 'ground-truth';
+const guion = JSON.parse(readFileSync(join(ROOT, 'data', guionDir, `${args.guion}.json`), 'utf8'));
 const userTurns = guion.turns.filter((t) => t.role === 'user');
 
-const noiseDir = args.noise && args.snr && args.snr !== 'clean'
+/* catálogo + caso activo del dominio */
+let casos;
+let catalogo;
+let casoId;
+if (INCIDENT) {
+  casos = JSON.parse(readFileSync(join(ROOT, 'data/incidentes.json'), 'utf8'));
+  catalogo = JSON.parse(readFileSync(join(ROOT, 'data/servicios.json'), 'utf8'));
+  casoId = guion.incidente_id;
+} else {
+  casos = JSON.parse(readFileSync(join(ROOT, 'data/ordenes.json'), 'utf8'));
+  catalogo = JSON.parse(readFileSync(join(ROOT, 'data/piezas.json'), 'utf8'));
+  casoId = guion.order_id;
+}
+const caso = casos.find((c) => c.id === casoId);
+
+/* wavs: incidente SIEMPRE de .data/tts-incidente (ambiente tranquilo, sin
+ * mezclas de ruido); orden igual que siempre (tts limpio o noisy a SNR). */
+const noiseDir = !INCIDENT && args.noise && args.snr && args.snr !== 'clean'
   ? join('.data', 'noisy', args.guion, args.noise, `${args.snr}db`)
-  : join('.data', 'tts', args.guion);
+  : join(INCIDENT ? '.data/tts-incidente' : '.data/tts', args.guion);
 const wavPath = (n, variant = '') => join(ROOT, noiseDir, `turn-${String(n).padStart(2, '0')}${variant}.wav`);
 for (const t of userTurns) {
   if (!existsSync(wavPath(t.n))) { console.error(`FALTA wav del turno ${t.n}: ${wavPath(t.n)}`); process.exit(1); }
+  if (t.as_heard && !existsSync(wavPath(t.n, '-as-heard'))) {
+    console.warn(`  ⚠ turno ${t.n} tiene as_heard sin wav (${wavPath(t.n, '-as-heard')}) — el gate reproduce el audio limpio`);
+  }
 }
 if (!args.dryRun && !existsSync(join(ROOT, '.data/noise'))) {
   /* no bloquea: ruido es opcional para clean */
@@ -107,9 +156,42 @@ const turnDetection = {
   interrupt_response: true,
   interruption_delay: args.idelay,
 };
-const order = ordenes.find((o) => o.id === guion.order_id);
 const inputCfg = args.vfocus ? { ...AGENT_CONFIG.input, voice_focus: args.vfocus, voice_focus_threshold: 0.5 } : AGENT_CONFIG.input;
-const systemPrompt = `${AGENT_CONFIG.system_prompt}
+
+let systemPrompt;
+let greeting;
+let tools;
+if (INCIDENT) {
+  systemPrompt = `${AGENT_CONFIG.system_prompt}
+
+PERO HOY ERES EL ENTREVISTADOR DE INCIDENTES (post-visita). El operador YA terminó
+su visita y te DICTA lo que pasó desde un lugar tranquilo (camioneta, oficina
+vacía): habla pausado, en una sola narrativa de 60-120 segundos. El incidente
+activo YA está asignado por la app: ${casoId} — cliente ${caso?.cliente ?? '?'}, reporte inicial: ${caso?.reporte_inicial ?? '?'}. Llama get_incidente SIN argumentos al inicio. NUNCA preguntes el número.
+
+FLUJO OBLIGATORIO — una cosa por turno:
+1. get_incidente() y confirma en UNA frase de qué va el incidente.
+2. El operador narra → set_que_paso con su texto LITERAL (sin parafrasear). Pide
+   las horas del timeline DESPUÉS, una por una ("¿a qué hora empezó todo?").
+3. Cada hora dicha → agregar_evento_timeline({"hora":"H:MM","evento":"..."}) y
+   READ-BACK DE LA HORA EN VOZ ALTA: "a las nueve veinte, ¿correcto?". Si corrige
+   ("no, era las nueve cuarenta"), corrígela y re-confirma.
+4. Cada servicio/equipo mencionado → buscar_servicio({"consulta":"<tal cual>"})
+   INMEDIATAMENTE. Si trae confusable_warning, DESAMBIGÚA nombrando AMBOS:
+   "¿el servidor web de producción o el de staging?". Si no: agregar_servicio_
+   afectado(id) + read-back del nombre.
+5. Severidad → set_severidad SOLO con la que declaró, y SIEMPRE read-back:
+   "anoto severidad alta, ¿correcto?".
+6. Pendientes ("hay que...", "queda pendiente...") → agregar_action_item, uno por
+   llamada. Al final arma set_resumen de UNA línea.
+7. El operador pida enviar ("mándalo", "listo") → enviar_reporte() y despídete.
+CONFIRMACIONES: con su "sí/correcto/ese mismo" el dato YA queda — no lo re-agregues.
+Regla de oro: cada dato que te den ES un tool call; tu única libertad es el read-back.`;
+  greeting = `¡Buen día! Ya cargué el incidente ${casoId} de ${caso?.cliente ?? 'tu cliente'}. Cuéntame con calma qué pasó y armo la ficha.`;
+  tools = buildToolDefinitions(catalogo.map((s) => s.id));
+} else {
+  const order = casos.find((o) => o.id === guion.order_id);
+  systemPrompt = `${AGENT_CONFIG.system_prompt}
 
 CONTEXTO DE SESIÓN: la orden activa YA está asignada por la app: ${guion.order_id} — cliente ${order?.cliente ?? '?'}, equipo: ${order?.equipo ?? '?'}. Llama get_orden SIN argumentos al inicio para cargarla. NUNCA preguntes el número de orden: ya lo tienes.
 
@@ -135,16 +217,16 @@ CAP-ARR-455) → agregar_pieza_a_reporte({"sku":"CAP-ARR-455","qty":1}) → dice
 "Capacitor de arranque cuarenta y cinco más cinco, UNA pieza, ¿correcto?" →
 usuario: "correcto, una pieza" → tú: "Anotado" y SIGUES (sin re-agregar).
 Regla de oro: cada dato que te den ES un tool call; tu única libertad es el read-back.`;
-const greeting = `¡Buen día! Ya cargué la orden ${guion.order_id} de ${order?.cliente ?? 'tu cliente'}. Narrame lo que vas haciendo y voy llenando la ficha mientras trabajas.`;
-const catalogSkus = piezas.map((p) => p.sku);
-const tools = buildToolDefinitions(catalogSkus);
+  greeting = `¡Buen día! Ya cargué la orden ${guion.order_id} de ${order?.cliente ?? 'tu cliente'}. Narrame lo que vas haciendo y voy llenando la ficha mientras trabajas.`;
+  tools = buildToolDefinitions(catalogo.map((p) => p.sku));
+}
 const sessionUpdate = buildSessionUpdate(
   { ...AGENT_CONFIG, system_prompt: systemPrompt, greeting, turn_detection: turnDetection, input: { ...inputCfg, transcription_mode: args.tmode } },
   tools,
 );
 if (args.dryRun) {
   console.log('[dry-run] session.update OK — claves:', Object.keys(sessionUpdate).join(','), '| session:', Object.keys(sessionUpdate.session ?? {}).join(','));
-  console.log('[dry-run] tools:', tools.length, '| turn_detection:', JSON.stringify(turnDetection), '| tmode:', args.tmode);
+  console.log('[dry-run] domain:', args.domain, '| tools:', tools.length, '| turn_detection:', JSON.stringify(turnDetection), '| tmode:', args.tmode);
   console.log('[dry-run] wavs verificados:', userTurns.length, 'en', noiseDir);
   console.log('[dry-run] PLomería OK — falta solo la key para una sesión real.');
   process.exit(0);
@@ -164,10 +246,16 @@ async function tempToken() {
 }
 
 /* ------------------------------- sesión engine ----------------------------- */
-const noiseCondition = args.noise && args.snr !== 'clean' ? `demand_${args.noise.toLowerCase()}_${args.snr}db` : 'clean';
+const noiseCondition = INCIDENT
+  ? (args.noise && args.snr && args.snr !== 'clean' ? `demand_${args.noise.toLowerCase()}_${args.snr}db` : 'tranquilo')
+  : (args.noise && args.snr !== 'clean' ? `demand_${args.noise.toLowerCase()}_${args.snr}db` : 'clean');
 const sessionId = `gate_${args.label}_${Date.now().toString(36)}`;
-const store = createStore({ orderId: guion.order_id });
-const toolRunner = createToolRunner({ ordenes, piezas, store, clock: realClock() });
+const store = INCIDENT
+  ? createStore({ incidenteId: casoId })
+  : createStore({ orderId: guion.order_id });
+const toolRunner = INCIDENT
+  ? createToolRunner({ incidentes: casos, servicios: catalogo, store, clock: realClock() })
+  : createToolRunner({ ordenes: casos, piezas: catalogo, store, clock: realClock() });
 const pendingToolResults = [];   // {callId, msg} — drenar en reply.done(completed)
 let lastAgentPartial = '';
 const channel = {
@@ -184,7 +272,7 @@ const engine = createSessionEngine({
   channel,
   toolRunner,
   store,
-  meta: { session_id: sessionId, scenario_id: args.guion, mode: 'real', order_id: guion.order_id, noise_condition: noiseCondition },
+  meta: { session_id: sessionId, scenario_id: args.guion, mode: 'real', order_id: INCIDENT ? casoId : guion.order_id, noise_condition: noiseCondition },
   clock: realClock(),
 });
 
@@ -310,7 +398,7 @@ async function playTurn(t) {
 }
 
 async function run() {
-  console.log(`[realgate] ${args.label} · ${args.guion} · ${noiseCondition} · vad=${args.vad} idelay=${args.idelay} tmode=${args.tmode}`);
+  console.log(`[realgate] ${args.label} · ${args.domain}:${args.guion} · ${noiseCondition} · vad=${args.vad} idelay=${args.idelay} tmode=${args.tmode}`);
   const token = await tempToken();
   console.log('  token temporal OK (un solo uso, 180 s)');
   ws = new WebSocket(`wss://agents.assemblyai.com/v1/ws?token=${encodeURIComponent(token)}`);
@@ -355,6 +443,43 @@ let finished = false;
 function deriveConfirmations(artifact) {
   const tr = artifact.transcript;
   const norm = (s) => (s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  if (INCIDENT) {
+    const servicios = artifact.final_form.servicios_afectados ?? [];
+    for (let i = 0; i < tr.length; i++) {
+      const t = tr[i];
+      if (t.role !== 'agent') continue;
+      const a = norm(t.text);
+      const isReadback = /(correcto|confirmo|va bien|ahora si|cierto)\s*\??\s*$/.test(a.trim()) && a.length > 15;
+      if (!isReadback) continue;
+      const next = tr.slice(i + 1).find((x) => x.role === 'user');
+      if (!next) continue;
+      const u = norm(next.text);
+      const yes = /(^|\s)(si|correcto|ese mismo|esa misma|asi es|esa|ese|eso|va|ok|est bien)(\s|,|!|$)/.test(u.slice(0, 60));
+      const corr = /(no,? no|era la|era el|no es|no, es|cambiala|cambiela)/.test(u.slice(0, 60));
+      let field = 'servicio';
+      let value = null;
+      if (/severidad/.test(a)) {
+        field = 'severidad';
+        value = artifact.final_form.severidad ?? null;
+      } else if (/a las|hora/.test(a)) {
+        field = 'hora';
+        const horas = (artifact.final_form.timeline ?? []).map((e) => e.hora);
+        value = horas.length ? horas[horas.length - 1] : null;
+      } else {
+        const target = servicios.find((s) => !s.confirmado)
+          ?? servicios[servicios.length - 1] ?? null;
+        value = target ? { id: target.id } : null;
+      }
+      artifact.events.push({ t_ms: t.t_end_ms ?? t.t_start_ms ?? 0, type: 'confirm_request', field, value, derived: 'transcript' });
+      artifact.events.push({ t_ms: next.t_end_ms ?? next.t_start_ms ?? 0, type: 'confirm_result', field, value, confirmed: yes && !corr, derived: 'transcript' });
+      if (field === 'servicio' && value?.id && yes && !corr) {
+        const s = servicios.find((x) => x.id === value.id);
+        if (s) s.confirmado = true;
+      }
+    }
+    artifact.events.sort((x, y) => x.t_ms - y.t_ms);
+    return;
+  }
   const pieces = artifact.final_form.piezas ?? [];
   const keyword = (p) => norm(p.nombre).split(/\s+/).find((w) => w.length > 4 && !['laton', 'neopreno', 'reforzada', 'arranque', 'trabajo'].includes(w)) ?? norm(p.sku);
   for (let i = 0; i < tr.length; i++) {
@@ -394,8 +519,13 @@ function finish(reason) {
   const count = (ty) => evs.filter((e) => e.type === ty).length;
   console.log(`\n[realgate:${reason}] ${out}`);
   console.log(`  turnos user=${count('user_turn_end')} agent=${count('agent_turn_end')} tools=${count('tool_call')} confirm=${count('confirm_result')} barge_in=${count('barge_in')} errores=${count('session_error')}`);
-  console.log(`  ficha: ${artifact.final_form.piezas.map((p) => `${p.sku}x${p.qty}${p.confirmada ? '✓' : '?'}`).join(' · ') || '(sin piezas)'} · tiempo=${artifact.final_form.tiempo_minutos ?? '?'}min · estado=${artifact.final_form.estado}`);
-  console.log(`  métricas: node metrics/cli.js ${JSON.stringify(out)} --gt data/ground-truth/gt-${args.guion}.json`);
+  if (INCIDENT) {
+    const f = artifact.final_form;
+    console.log(`  ficha: ${(f.servicios_afectados ?? []).map((s) => `${s.id}${s.confirmado ? '✓' : '?'}`).join(' · ') || '(sin servicios)'} · timeline=${(f.timeline ?? []).length} ev · sev=${f.severidad ?? '?'} · items=${(f.action_items ?? []).length} · estado=${f.estado}`);
+  } else {
+    console.log(`  ficha: ${artifact.final_form.piezas.map((p) => `${p.sku}x${p.qty}${p.confirmada ? '✓' : '?'}`).join(' · ') || '(sin piezas)'} · tiempo=${artifact.final_form.tiempo_minutos ?? '?'}min · estado=${artifact.final_form.estado}`);
+  }
+  console.log(`  métricas: node metrics/cli.js ${JSON.stringify(out)} --gt data/${gtDir}/gt-${args.guion}.json`);
   setTimeout(() => process.exit(0), 1800).unref?.();
 }
 

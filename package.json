@@ -10,8 +10,8 @@
   },
   "scripts": {
     "dev": "node scripts/dev-server.mjs",
-    "selftest": "node metrics/cli.js --selftest && node data/validate.js",
+    "selftest": "node metrics/cli.js --selftest && node data/validate.js && node data/validate-incidente.js",
     "metrics": "node metrics/cli.js",
-    "smoke:mock": "node scripts/smoke-mock.mjs"
+    "smoke:mock": "node scripts/smoke-mock.mjs && node web/js/smoke-incidente.mjs"
   }
 }

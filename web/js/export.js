@@ -56,11 +56,14 @@ export function ordenInfoDe(artifact) {
   for (let i = events.length - 1; i >= 0; i--) {
     const ev = events[i] || {};
     const orden = ev.result && ev.result.orden;
-    if (ev.type === 'tool_result' && orden && typeof orden === 'object') {
+    const incidente = ev.tool === 'get_incidente' && ev.result && ev.result.incidente;
+    const ent = orden && typeof orden === 'object' ? orden
+      : incidente && typeof incidente === 'object' ? incidente : null;
+    if (ev.type === 'tool_result' && ent) {
       for (const k of Object.keys(info)) {
-        if (!info[k] && typeof orden[k] === 'string' && orden[k]) info[k] = orden[k];
+        if (!info[k] && typeof ent[k] === 'string' && ent[k]) info[k] = ent[k];
       }
-      break; // el último get_orden manda
+      break; // el último get_orden / get_incidente manda
     }
   }
   return info;
@@ -129,6 +132,67 @@ export function sanitizeFileToken(value) {
 /** orden-<id>-<yyyymmdd-hhmm>.csv */
 export function ordenFilename(orderId, date) {
   return `orden-${sanitizeFileToken(orderId)}-${stampForFilename(date)}.csv`;
+}
+
+// ---------------------------------------------------------------------------
+// Dominio INCIDENTE (Plan B): CSV de la ficha de incidente. Mismo contrato de
+// dos+ bloques; las columnas salen de las llaves de final_form (contrato §2).
+// ---------------------------------------------------------------------------
+
+const INCIDENTE_COLUMNS = ['incidente_id', 'cliente', 'resumen', 'que_paso', 'severidad', 'estado'];
+const TIMELINE_COLUMNS = ['hora', 'evento'];
+const SERVICIO_COLUMNS = ['id', 'nombre', 'afectados', 'confirmado'];
+const ITEM_COLUMNS = ['descripcion'];
+
+/** ¿El artefacto es del dominio incidente (final_form de incidente)? */
+export function esIncidente(artifact) {
+  const ff = artifact && artifact.final_form;
+  return !!ff && ff.incidente_id != null && Array.isArray(ff.timeline);
+}
+
+/** incidente-<id>-<yyyymmdd-hhmm>.csv */
+export function incidenteFilename(incidenteId, date) {
+  return `incidente-${sanitizeFileToken(incidenteId)}-${stampForFilename(date)}.csv`;
+}
+
+/**
+ * CSV del incidente: bloque 1 con los campos escalares de la ficha (cliente
+ * desde final_form o del último get_incidente en events[]), y bloques de
+ * detalle para timeline, servicios afectados y pendientes. BOM + CRLF igual
+ * que buildOrdenCsv.
+ */
+export function buildIncidentCsv(artifact, opts) {
+  const ff = (artifact && artifact.final_form) || {};
+  const info = ordenInfoDe(artifact); // cliente/sitio/equipo/tecnico (mismas llaves)
+  const values = INCIDENTE_COLUMNS.map((col) => {
+    if (col === 'cliente') return info.cliente;
+    if (Object.prototype.hasOwnProperty.call(ff, col)) {
+      const v = ff[col];
+      return v === null || v === undefined ? '' : v;
+    }
+    return '';
+  });
+
+  const timeline = Array.isArray(ff.timeline) ? ff.timeline : [];
+  const servicios = Array.isArray(ff.servicios_afectados) ? ff.servicios_afectados : [];
+  const items = Array.isArray(ff.action_items) ? ff.action_items : [];
+
+  const lines = [csvRow(INCIDENTE_COLUMNS), csvRow(values)];
+  lines.push('', csvRow(TIMELINE_COLUMNS));
+  for (const ev of timeline) {
+    lines.push(csvRow(TIMELINE_COLUMNS.map((c) => (ev && typeof ev === 'object' ? ev[c] : ''))));
+  }
+  lines.push('', csvRow(SERVICIO_COLUMNS));
+  for (const s of servicios) {
+    lines.push(csvRow(SERVICIO_COLUMNS.map((c) => (s && typeof s === 'object' ? s[c] : ''))));
+  }
+  lines.push('', csvRow(ITEM_COLUMNS));
+  for (const it of items) {
+    lines.push(csvRow([typeof it === 'string' ? it : '']));
+  }
+
+  const bom = !opts || opts.bom !== false ? '﻿' : '';
+  return bom + lines.join('\r\n') + '\r\n';
 }
 
 /** Celda de tabla markdown: sin pipes ni saltos que rompan la tabla. */
@@ -246,6 +310,10 @@ function buildPrintView() {
   pv.replaceChildren();
 
   const a = state.artifact || {};
+  if (esIncidente(a)) {
+    buildIncidentePrintView(pv, a);
+    return pv;
+  }
   const ff = a.final_form || {};
   const info = ordenInfoDe(a);
   const id = ff.order_id || a.order_id || '(sin id)';
@@ -317,14 +385,95 @@ function buildPrintView() {
   return pv;
 }
 
-// --- acciones (todas con try/catch vía guarded) ------------------------------
+/** Vista de impresión de la ficha de INCIDENTE (mismo esqueleto A4). */
+function buildIncidentePrintView(pv, a) {
+  const ff = a.final_form || {};
+  const info = ordenInfoDe(a);
+  const id = ff.incidente_id || a.order_id || '(sin id)';
 
+  const head = el('header', 'pv-head');
+  head.appendChild(el('h1', null, `Ficha de incidente ${id}`));
+  if (info.cliente) head.appendChild(el('p', 'pv-sub', info.cliente));
+  pv.appendChild(head);
+
+  const dl = el('dl', 'pv-meta');
+  const metaRows = [
+    ['Sitio', info.sitio],
+    ['Equipo', info.equipo],
+    ['Técnico', info.tecnico],
+    ['Estado', ff.estado],
+    ['Severidad', ff.severidad ?? ''],
+  ];
+  for (const [k, v] of metaRows) {
+    if (!v) continue;
+    dl.appendChild(el('dt', null, `${k}:`));
+    dl.appendChild(el('dd', null, String(v)));
+  }
+  if (dl.childNodes.length > 0) pv.appendChild(dl);
+
+  const seccion = (titulo, texto) => {
+    const s = el('section', 'pv-sec');
+    s.appendChild(el('h2', null, titulo));
+    s.appendChild(el('p', 'pv-text', texto && String(texto).trim() ? String(texto) : '—'));
+    pv.appendChild(s);
+  };
+  seccion('Resumen', ff.resumen);
+  seccion('Qué pasó', ff.que_paso);
+
+  const tabla = (titulo, headers, rows) => {
+    const sec = el('section', 'pv-sec');
+    sec.appendChild(el('h2', null, titulo));
+    if (!rows.length) {
+      sec.appendChild(el('p', 'pv-text', '(sin registros)'));
+    } else {
+      const tbl = el('table', 'pv-piezas');
+      const thead = el('thead');
+      const hr = el('tr');
+      for (const h of headers) hr.appendChild(el('th', null, h));
+      thead.appendChild(hr);
+      tbl.appendChild(thead);
+      const tbody = el('tbody');
+      for (const r of rows) {
+        const tr = el('tr');
+        for (const c of r) tr.appendChild(el('td', null, String(c ?? '')));
+        tbody.appendChild(tr);
+      }
+      tbl.appendChild(tbody);
+      sec.appendChild(tbl);
+    }
+    pv.appendChild(sec);
+  };
+
+  const timeline = Array.isArray(ff.timeline) ? ff.timeline : [];
+  tabla('Timeline', ['Hora', 'Evento'], timeline.map((e) => [e.hora, e.evento]));
+  const servicios = Array.isArray(ff.servicios_afectados) ? ff.servicios_afectados : [];
+  tabla('Servicios afectados', ['ID', 'Servicio', 'Afectados', 'Confirmado'],
+    servicios.map((s) => [s.id, s.nombre ?? '', s.afectados ?? '', s.confirmado ? 'Sí' : 'No']));
+  const items = Array.isArray(ff.action_items) ? ff.action_items : [];
+  tabla('Pendientes', ['Descripción'], items.map((it) => [it]));
+
+  const foot = el('footer', 'pv-foot');
+  foot.appendChild(el('p', 'pv-audit', 'Documento generado por sesión de voz — el audio no fue retenido.'));
+  foot.appendChild(el('p', 'pv-audit', `Sesión ${a.session_id || 'sin-id'} · impreso ${new Date().toLocaleString('es-MX')}`));
+  pv.appendChild(foot);
+  return pv;
+}
+
+// --- acciones (todas con try/catch vía guarded) ------------------------------
 function doExportCsv() {
   const a = state.artifact || {};
   const ff = a.final_form || {};
-  const id = ff.order_id || a.order_id;
+  const id = ff.order_id || ff.incidente_id || a.order_id;
   if (!ff || Array.isArray(ff) || Object.keys(ff).length === 0) {
     line('err', 'No hay ficha final en el artefacto; no puedo armar el CSV.');
+    return;
+  }
+  if (esIncidente(a)) {
+    const name = incidenteFilename(id, new Date());
+    const csv = buildIncidentCsv(a);
+    downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8' }), name);
+    line('ok', `CSV descargado (${(Array.isArray(ff.timeline) ? ff.timeline.length : 0)} eventos, ` +
+      `${(Array.isArray(ff.servicios_afectados) ? ff.servicios_afectados.length : 0)} servicios): ${name}`);
     return;
   }
   const name = ordenFilename(id, new Date());

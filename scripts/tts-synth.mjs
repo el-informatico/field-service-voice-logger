@@ -1,11 +1,17 @@
 #!/usr/bin/env node
-// tts-synth.mjs — synthesize every USER turn of the 3 guiones to wav
+// tts-synth.mjs — synthesize every USER turn of the guiones to wav
 // (24 kHz mono PCM16), the exact session audio format.
 //
 //   node scripts/tts-synth.mjs [--guiones s1-happy-path,s2-pieza-mal-oida] \
 //       [--turn 5] [--force]
+//   node scripts/tts-synth.mjs --dir guiones-incidente   # dominio incidente
+//       (alias: --guiones-dir)
 //
-// Output: .data/tts/<scenario>/turn-<n>.wav  (+ turn-<n>-as-heard.wav when the
+// --dir selects the guiones folder under data/ (default: guiones). With
+// guiones-incidente the output root defaults to .data/tts-incidente (the
+// incident gate has NO noise mixes); otherwise .data/tts. TTS_DIR still wins.
+//
+// Output: <out-root>/<scenario>/turn-<n>.wav  (+ turn-<n>-as-heard.wav when the
 // guion turn carries an `as_heard` variant, e.g. s2 turn 5) and a per-scenario
 // manifest.json (file, text, duration).
 //
@@ -15,6 +21,7 @@
 //   FFPROBE     path to ffprobe                    (default: ffprobe)
 //   TTS_VOICE   voice name                         (default: es-MX-JorgeNeural)
 //   TTS_RATE    optional rate argument, e.g. "+0%" (default: unset)
+//   TTS_DIR     output root override               (default: per --dir)
 //
 // DEV-ONLY material: synthesized speech is test input for the D2/D4 noise
 // harness; it must never appear in the demo video or published artifacts.
@@ -34,21 +41,25 @@ const FFMPEG = process.env.FFMPEG || 'ffmpeg';
 const FFPROBE = process.env.FFPROBE || 'ffprobe';
 const VOICE = process.env.TTS_VOICE || 'es-MX-JorgeNeural';
 const RATE = process.env.TTS_RATE || '';
-const OUT_ROOT = process.env.TTS_DIR || join(ROOT, '.data', 'tts');
 
 const SAMPLE_RATE = 24000;
 
 function parseArgs(argv) {
-  const o = { guiones: null, turn: null, force: false };
+  const o = { dir: 'guiones', guiones: null, turn: null, force: false };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
-    if (a === '--guiones') { i++; o.guiones = argv[i].split(',').filter(Boolean); }
+    if (a === '--dir' || a === '--guiones-dir') { i++; o.dir = String(argv[i]); }
+    else if (a === '--guiones') { i++; o.guiones = argv[i].split(',').filter(Boolean); }
     else if (a === '--turn') { i++; o.turn = Number.parseInt(argv[i], 10); }
     else if (a === '--force') o.force = true;
     else throw new Error(`Unknown arg: ${a}`);
   }
   return o;
 }
+
+const opts = parseArgs(process.argv.slice(2));
+const OUT_ROOT = process.env.TTS_DIR
+  || join(ROOT, '.data', opts.dir === 'guiones-incidente' ? 'tts-incidente' : 'tts');
 
 /** Run a command; capture stdout. Rejects on non-zero exit. */
 function run(cmd, args, { timeoutMs = 120000 } = {}) {
@@ -191,8 +202,7 @@ async function synthScenario(guionFile, opts) {
 }
 
 async function main() {
-  const opts = parseArgs(process.argv.slice(2));
-  const guionDir = join(ROOT, 'data', 'guiones');
+  const guionDir = join(ROOT, 'data', opts.dir);
   const files = readdirSync(guionDir).filter((f) => f.endsWith('.json')).sort()
     .filter((f) => !opts.guiones || opts.guiones.some((g) => f.startsWith(g)));
   if (!files.length) throw new Error(`no guiones matched in ${guionDir}`);

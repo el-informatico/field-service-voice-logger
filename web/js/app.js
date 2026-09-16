@@ -16,12 +16,19 @@ import { createMockAgentChannel } from './mock-agent.js';
 import { createRealAgentChannel } from './ws-agent.js';
 import { buildToolDefinitions } from './tools.js';
 import { prepareGuion } from './guion-sim.js';
+import { createIncidentStore } from './domain/incident/store.js';
+import { createIncidentToolRunner } from './domain/incident/tool-runner.js';
+import { createIncidentMockAgentChannel } from './domain/incident/mock-agent.js';
+import { buildIncidentToolDefinitions } from './domain/incident/tools.js';
+import { prepareIncidentGuion } from './domain/incident/guion-sim.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 
 const state = {
   mode: 'mock', token: null, ordenes: [], piezas: [], guiones: [],
+  incidentes: [], servicios: [], guionesIncidente: [],
+  domain: 'incidente', // 'incidente' (Plan B, default) | 'orden' (legado)
   orderId: null, guion: null, gt: null,
   channel: null, engine: null, store: null,
   timerHandle: null, agentBubbleEl: null, partialBubbleEl: null, ended: false,
@@ -38,10 +45,19 @@ const TOOL_FIELD = {
   set_notas: 'notas',
   get_tiempo_trabajo: 'tiempo_minutos',
   agregar_pieza_a_reporte: 'piezas',
+  set_resumen: 'resumen',
+  set_que_paso: 'que_paso',
+  agregar_evento_timeline: 'timeline',
+  agregar_servicio_afectado: 'servicios_afectados',
+  agregar_action_item: 'action_items',
+  set_severidad: 'severidad',
 };
 const FIELD_LABEL = {
   problema: 'Problema', diagnostico: 'Diagnóstico', solucion: 'Solución',
   piezas: 'Piezas', tiempo_minutos: 'Tiempo', notas: 'Notas',
+  resumen: 'Resumen', que_paso: 'Qué pasó', timeline: 'Timeline',
+  servicios_afectados: 'Servicios', action_items: 'Pendientes',
+  severidad: 'Severidad',
 };
 const AUDIT_LABEL = {
   form_update: 'ficha actualizada',
@@ -59,9 +75,21 @@ const AUDIT_LABEL = {
   tiempo_consultado: 'tiempo consultado',
   reporte_enviado: 'reporte enviado',
   tool_desconocida: 'tool desconocida',
+  incidente_cargado: 'incidente cargado',
+  busqueda_servicio: 'búsqueda de servicio',
+  servicio_agregado: 'servicio agregado',
+  servicio_confirmado: 'servicio confirmado',
+  servicio_rechazado: 'servicio rechazado',
+  evento_agregado: 'evento agregado',
+  hora_corregida: 'hora corregida',
+  action_item_agregado: 'pendiente agregado',
+  set_resumen: 'resumen (tool)',
+  set_que_paso: 'qué pasó (tool)',
+  severidad_fijada: 'severidad (tool)',
 };
 const PRIORIDAD_CLASE = { alta: 'chip-alta', media: 'chip-media', baja: 'chip-baja' };
 const ESTADO_CLASE = { abierta: 'chip-open', en_proceso: 'chip-wip', enviada: 'chip-done' };
+const SEVERIDAD_CLASE = { baja: 'chip-open', media: 'chip-media', alta: 'chip-alta', critica: 'chip-alta' };
 
 const orderButtons = new Map();    // id orden → botón del picker
 const scenarioButtons = new Map(); // scenario_id → botón del picker
@@ -72,15 +100,20 @@ const scenarioButtons = new Map(); // scenario_id → botón del picker
 
 async function boot() {
   wireConsent();
-  await Promise.all([loadToken(), loadOrdenes(), loadPiezas(), loadGuiones()]);
+  await Promise.all([
+    loadToken(), loadOrdenes(), loadPiezas(), loadGuiones(),
+    loadIncidentes(), loadServicios(), loadGuionesIncidente(),
+  ]);
   renderOrders();
   renderScenarios();
   renderDashOrders();
+  wireModeSwitch();
   wireDashboard();
   wireSetup();
   wireSessionControls();
   wireEditableFields();
   wireEndControls();
+  applyDomain();
 }
 boot().catch((err) => console.error('[app] boot:', err));
 
@@ -92,6 +125,14 @@ async function fetchJson(url, opts) {
 
 async function loadPiezas() {
   try { state.piezas = await fetchJson('/data/piezas.json'); } catch { state.piezas = []; }
+}
+
+async function loadIncidentes() {
+  try { state.incidentes = await fetchJson('/data/incidentes.json'); } catch { state.incidentes = []; }
+}
+
+async function loadServicios() {
+  try { state.servicios = await fetchJson('/data/servicios.json'); } catch { state.servicios = []; }
 }
 
 /* ---------------------------- pantallas ---------------------------- */
@@ -137,6 +178,19 @@ async function loadGuiones() {
   state.guiones = found;
 }
 
+async function loadGuionesIncidente() {
+  const KNOWN = ['i1-dictado-feliz', 'i2-servicio-confundido', 'i3-correccion-hora'];
+  const found = [];
+  for (const sid of KNOWN) {
+    try {
+      const g = await fetchJson(`/data/guiones-incidente/${sid}.json`);
+      found.push(g);
+      try { state.gt = state.gt ?? {}; state.gt[sid] = await fetchJson(`/data/ground-truth-incidente/gt-${sid}.json`); } catch { /* GT opcional */ }
+    } catch { /* guion ausente */ }
+  }
+  state.guionesIncidente = found;
+}
+
 /* ================================================================== */
 /* Panel (dashboard): órdenes sembradas + sesiones completadas         */
 /* ================================================================== */
@@ -174,8 +228,9 @@ function renderDashOrders() {
   }
 }
 
-/** Click en una orden del panel: preselecciona orden (y su guion, si tiene). */
+/** Click en una orden del panel (legado): modo orden + preselección. */
 function pickOrder(o) {
+  setDomain('orden');
   state.orderId = o.id;
   for (const [id, btn] of orderButtons) btn.setAttribute('aria-pressed', String(id === o.id));
   selectScenario(state.guiones.find((g) => g.order_id === o.id) ?? null);
@@ -236,22 +291,57 @@ function mutedLi(text) {
 }
 
 /* ================================================================== */
-/* Setup: orden + guion                                               */
+/* Setup: modo (incidente|orden) + caso + guion                        */
 /* ================================================================== */
+
+/** Datos del dominio activo: casos (órdenes|incidentes) y guiones. */
+function activeCases() { return state.domain === 'orden' ? state.ordenes : state.incidentes; }
+function activeGuiones() { return state.domain === 'orden' ? state.guiones : state.guionesIncidente; }
+/** id del caso al que pertenece un guion (order_id | incidente_id). */
+function caseIdOfGuion(g) { return g?.order_id ?? g?.incidente_id ?? null; }
+
+function setDomain(domain) {
+  if (state.domain === domain) return;
+  state.domain = domain;
+  applyDomain();
+}
+
+/** Aplica el dominio activo a la pantalla de setup y re-renderiza listas. */
+function applyDomain() {
+  const incidente = state.domain === 'incidente';
+  $('btn-mode-incidente').setAttribute('aria-pressed', String(incidente));
+  $('btn-mode-orden').setAttribute('aria-pressed', String(!incidente));
+  $('picker-case-title').textContent = incidente ? 'Incidente' : 'Orden de trabajo';
+  state.orderId = null;
+  state.guion = null;
+  renderOrders();
+  renderScenarios();
+  refreshStartBtn();
+}
+
+function wireModeSwitch() {
+  $('btn-mode-incidente').addEventListener('click', () => setDomain('incidente'));
+  $('btn-mode-orden').addEventListener('click', () => setDomain('orden'));
+}
 
 function renderOrders() {
   const ul = $('order-list');
   ul.textContent = '';
   orderButtons.clear();
-  if (!state.ordenes.length) {
-    ul.append(mutedLi('Sin /data/ordenes.json — sirve el repo con un server estático.'));
+  const casos = activeCases();
+  if (!casos.length) {
+    ul.append(mutedLi(state.domain === 'orden'
+      ? 'Sin /data/ordenes.json — sirve el repo con un server estático.'
+      : 'Sin /data/incidentes.json — sirve el repo con el server de desarrollo.'));
     return;
   }
-  for (const o of state.ordenes) {
+  for (const o of casos) {
     const li = document.createElement('li');
     const b = document.createElement('button');
     b.type = 'button';
-    b.innerHTML = `<strong>${esc(o.id)}</strong> · ${esc(o.cliente)}<small>${esc(o.equipo)} — ${esc(o.problema_reportado)}</small>`;
+    b.innerHTML = state.domain === 'orden'
+      ? `<strong>${esc(o.id)}</strong> · ${esc(o.cliente)}<small>${esc(o.equipo)} — ${esc(o.problema_reportado)}</small>`
+      : `<strong>${esc(o.id)}</strong> · ${esc(o.cliente)}<small>${esc(o.reporte_inicial ?? o.equipo ?? '')}</small>`;
     b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', () => {
       state.orderId = o.id;
@@ -268,15 +358,18 @@ function renderScenarios() {
   const ul = $('scenario-list');
   ul.textContent = '';
   scenarioButtons.clear();
-  if (!state.guiones.length) {
-    ul.append(mutedLi('Sin guiones en /data/guiones/.'));
+  const guiones = activeGuiones();
+  if (!guiones.length) {
+    ul.append(mutedLi(state.domain === 'orden'
+      ? 'Sin guiones en /data/guiones/.'
+      : 'Sin guiones en /data/guiones-incidente/.'));
     return;
   }
-  for (const g of state.guiones) {
+  for (const g of guiones) {
     const li = document.createElement('li');
     const b = document.createElement('button');
     b.type = 'button';
-    b.innerHTML = `<strong>${esc(g.scenario_id)}</strong> · ${esc(g.order_id)}<small>${esc((g.description ?? '').slice(0, 90))}…</small>`;
+    b.innerHTML = `<strong>${esc(g.scenario_id)}</strong> · ${esc(caseIdOfGuion(g))}<small>${esc((g.description ?? '').slice(0, 90))}…</small>`;
     b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', () => selectScenario(g));
     scenarioButtons.set(g.scenario_id, b);
@@ -295,10 +388,12 @@ function selectScenario(g) {
 }
 
 function refreshStartBtn() {
-  const guionMatchesOrder = !state.guion || !state.orderId || state.guion.order_id === state.orderId;
+  const casoId = caseIdOfGuion(state.guion);
+  const guionMatchesOrder = !state.guion || !state.orderId || casoId === state.orderId;
   const err = $('setup-error');
   if (state.orderId && state.guion && !guionMatchesOrder) {
-    err.textContent = `El guion ${state.guion.scenario_id} va con la orden ${state.guion.order_id}; elige esa.`;
+    const sustantivo = state.domain === 'orden' ? 'la orden' : 'el incidente';
+    err.textContent = `El guion ${state.guion.scenario_id} va con ${sustantivo} ${casoId}; elige ese.`;
     err.hidden = false;
   } else err.hidden = true;
   $('btn-start-session').disabled = !(state.orderId && state.guion && guionMatchesOrder);
@@ -329,36 +424,72 @@ async function startSession() {
   show('screen-session');
   resetSessionUi();
   state.ended = false;
-  const guion = prepareGuion(state.guion, state.gt?.[state.guion.scenario_id] ?? null);
-
-  const tools = buildToolDefinitions(state.piezas.map((p) => p.sku));
+  const gt = state.gt?.[state.guion.scenario_id] ?? null;
+  const incidente = state.domain === 'incidente';
 
   let channel;
-  if (state.mode === 'real' && state.token) {
-    channel = createRealAgentChannel({ token: state.token, tools });
+  let store;
+  let runner;
+  if (incidente) {
+    const guion = prepareIncidentGuion(state.guion, gt, state.servicios);
+    const tools = buildIncidentToolDefinitions(state.servicios.map((s) => s.id));
+    if (state.mode === 'real' && state.token) {
+      channel = createRealAgentChannel({ token: state.token, tools });
+    } else {
+      channel = createIncidentMockAgentChannel({
+        incidentes: state.incidentes, servicios: state.servicios, guion, speed: 1,
+      });
+    }
+    const clock = channel.clock;
+    store = createIncidentStore({ incidenteId: state.guion.incidente_id ?? state.orderId, now: () => clock.now() });
+    runner = createIncidentToolRunner({ incidentes: state.incidentes, servicios: state.servicios, store, clock });
+    state.channel = channel;
+    state.store = store;
+    state.engine = createSessionEngine({
+      channel, toolRunner: runner, store,
+      meta: {
+        session_id: `sess_${new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 15)}`,
+        scenario_id: state.guion.scenario_id, mode: state.mode,
+        order_id: state.guion.incidente_id ?? state.orderId,
+        noise_condition: state.guion.ambiente ?? 'tranquilo',
+      },
+      clock,
+      onEvent: (type) => {
+        if (['tool_call', 'tool_result', 'confirm_result', 'form_update', 'report_sent'].includes(type)) renderForm();
+      },
+    });
   } else {
-    channel = createMockAgentChannel({
-      ordenes: state.ordenes, piezas: state.piezas, guion, speed: 1,
+    const guion = prepareGuion(state.guion, gt);
+    const tools = buildToolDefinitions(state.piezas.map((p) => p.sku));
+    if (state.mode === 'real' && state.token) {
+      channel = createRealAgentChannel({ token: state.token, tools });
+    } else {
+      channel = createMockAgentChannel({
+        ordenes: state.ordenes, piezas: state.piezas, guion, speed: 1,
+      });
+    }
+    const clock = channel.clock;
+    store = createStore({ orderId: state.guion.order_id ?? state.orderId, now: () => clock.now() });
+    runner = createToolRunner({ ordenes: state.ordenes, piezas: state.piezas, store, clock });
+    state.channel = channel;
+    state.store = store;
+    state.engine = createSessionEngine({
+      channel, toolRunner: runner, store,
+      meta: {
+        session_id: `sess_${new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 15)}`,
+        scenario_id: state.guion.scenario_id, mode: state.mode,
+        order_id: state.guion.order_id ?? state.orderId,
+        noise_condition: state.guion.noise_condition ?? 'clean',
+      },
+      clock,
+      onEvent: (type) => {
+        if (['tool_call', 'tool_result', 'confirm_result', 'form_update', 'report_sent'].includes(type)) renderForm();
+      },
     });
   }
-  const clock = channel.clock;
-  state.channel = channel;
-  state.store = createStore({ orderId: state.guion.order_id ?? state.orderId, now: () => clock.now() });
-  const runner = createToolRunner({ ordenes: state.ordenes, piezas: state.piezas, store: state.store, clock });
-  state.engine = createSessionEngine({
-    channel, toolRunner: runner, store: state.store,
-    meta: {
-      session_id: `sess_${new Date().toISOString().replace(/[-:TZ.]/g, '').slice(0, 15)}`,
-      scenario_id: state.guion.scenario_id, mode: state.mode,
-      order_id: state.guion.order_id ?? state.orderId,
-      noise_condition: state.guion.noise_condition ?? 'clean',
-    },
-    clock,
-    onEvent: (type) => {
-      if (['tool_call', 'tool_result', 'confirm_result', 'form_update', 'report_sent'].includes(type)) renderForm();
-    },
-  });
 
+  $('ficha').hidden = incidente;
+  $('ficha-incidente').hidden = !incidente;
   wireSessionUi(channel);
   renderForm();
   state.engine.start();
@@ -451,7 +582,19 @@ function showReadbackBanner(data, label) {
   const b = $('readback-banner');
   const t = $('readback-text');
   const v = data?.value ?? {};
-  t.textContent = label ?? `¿Decías ${v.nombre ?? 'la pieza'} × ${v.qty ?? 1}?`;
+  let pregunta = label;
+  if (pregunta == null) {
+    if (data?.field === 'hora') {
+      const horas = Array.isArray(v) ? v : (v ? [v] : []);
+      pregunta = `¿Confirmo ${horas.length > 1 ? 'esas horas' : `el evento a las ${horas[0] ?? '?'}`}?`;
+    } else if (data?.field === 'severidad') {
+      const sev = typeof v === 'string' ? v : v?.severidad;
+      pregunta = `¿Confirmo severidad ${String(sev ?? '?').toUpperCase()}?`;
+    } else {
+      pregunta = `¿Decías ${v.nombre ?? 'el servicio'}?`;
+    }
+  }
+  t.textContent = pregunta;
   b.hidden = false;
   b.classList.add('pendiente');
 }
@@ -463,6 +606,14 @@ function hideReadbackBanner() {
 }
 
 /* ------------------------ ficha viva + auditoría ------------------- */
+
+/** confirm_result (canal) → campo de la ficha que deja huella. */
+const CONFIRM_FIELD = {
+  pieza: 'piezas',
+  servicio: 'servicios_afectados',
+  hora: 'timeline',
+  severidad: 'severidad',
+};
 
 /**
  * Último setter de un campo, escaneando engine.events hacia atrás (la misma
@@ -476,7 +627,7 @@ function fieldTrailOf(field) {
     if (e.type === 'tool_result' && e.ok !== false && TOOL_FIELD[e.tool] === field) {
       return { kind: 'tool', label: e.tool, t_ms: e.t_ms };
     }
-    if (e.type === 'confirm_result' && field === 'piezas') {
+    if (e.type === 'confirm_result' && field === CONFIRM_FIELD[e.field]) {
       return e.confirmed
         ? { kind: 'confirm', label: 'confirmación por voz', t_ms: e.t_ms }
         : { kind: 'correct', label: 'corrección por voz', t_ms: e.t_ms };
@@ -492,33 +643,46 @@ function renderForm() {
   const f = state.store?.final_form;
   if (!f) return;
   const editable = !state.ended && f.estado !== 'enviada';
+  const incidente = state.domain === 'incidente';
 
-  $('session-ot').textContent = f.order_id ?? '—';
+  $('session-ot').textContent = f.order_id ?? f.incidente_id ?? '—';
   const est = $('session-estado');
   est.textContent = f.estado;
   est.className = `chip ${ESTADO_CLASE[f.estado] ?? 'chip-wip'}`;
 
+  const fichaEl = incidente ? $('ficha-incidente') : $('ficha');
   const setValue = (field, text) => {
-    const el = document.querySelector(`#ficha .field-value[data-value="${field}"]`);
+    const el = fichaEl.querySelector(`.field-value[data-value="${field}"]`);
     if (!el) return;
     el.contentEditable = editable ? 'true' : 'false';
     el.closest('.field-card')?.classList.toggle('editable', editable);
     if (state.editing !== field) el.textContent = text;
   };
-  setValue('problema', f.problema || '—');
-  setValue('diagnostico', f.diagnostico || '—');
-  setValue('solucion', f.solucion || '—');
-  setValue('tiempo_minutos', f.tiempo_minutos != null ? `${f.tiempo_minutos} min` : '—');
-  setValue('notas', f.notas || '—');
-  renderPiezas(f.piezas, editable);
+
+  if (incidente) {
+    setValue('resumen', f.resumen || '—');
+    setValue('que_paso', f.que_paso || '—');
+    setValue('severidad', f.severidad ?? '—');
+    renderTimeline(f.timeline, editable);
+    renderServicios(f.servicios_afectados, editable);
+    renderActionItems(f.action_items, editable);
+  } else {
+    setValue('problema', f.problema || '—');
+    setValue('diagnostico', f.diagnostico || '—');
+    setValue('solucion', f.solucion || '—');
+    setValue('tiempo_minutos', f.tiempo_minutos != null ? `${f.tiempo_minutos} min` : '—');
+    setValue('notas', f.notas || '—');
+    renderPiezas(f.piezas, editable);
+  }
   renderFieldAudits();
   renderAuditTrail();
 }
 
 function renderFieldAudits() {
-  for (const field of Object.keys(FIELD_LABEL)) {
-    const el = document.querySelector(`#ficha [data-audit="${field}"]`);
-    if (!el) continue;
+  const fichaEl = state.domain === 'incidente' ? $('ficha-incidente') : $('ficha');
+  if (!fichaEl) return;
+  for (const el of fichaEl.querySelectorAll('[data-audit]')) {
+    const field = el.dataset.audit;
     const tr = fieldTrailOf(field);
     if (!tr) {
       el.className = 'field-audit muted';
@@ -593,6 +757,130 @@ function piezaTrail(sku) {
   return parts.slice(-2).join(' · ');
 }
 
+/* ---------------- ficha incidente: filas por campo ---------------- */
+
+/** Timeline: una fila por evento, hora en mono + texto del operador. */
+function renderTimeline(timeline, editable) {
+  const ul = $('ficha-incidente')?.querySelector('[data-value="timeline"]');
+  if (!ul) return;
+  if (state.editing === 'timeline') return;
+  ul.classList.toggle('editable', editable);
+  ul.textContent = '';
+  if (!timeline.length) {
+    const li = document.createElement('li');
+    li.className = 'muted';
+    li.textContent = '— sin eventos todavía —';
+    ul.append(li);
+    return;
+  }
+  for (const ev of [...timeline].sort((a, b) => String(a.hora).localeCompare(String(b.hora)))) {
+    const li = document.createElement('li');
+    li.className = 'pieza-row';
+    li.innerHTML =
+      `<span class="mono" style="font-weight:700">${esc(ev.hora)}</span>` +
+      `<span class="pieza-info"><span style="font-size:0.88rem">${esc(ev.evento)}</span></span>`;
+    li.append(botonQuitar('Quitar evento (edición manual)', editable, () => {
+      commitManualArray('timeline', (rows) => rows.filter((r) => r.hora !== ev.hora));
+    }));
+    ul.append(li);
+  }
+}
+
+/** Servicios afectados: chips con ✓/⏳ de confirmación por voz. */
+function renderServicios(servicios, editable) {
+  const ul = $('ficha-incidente')?.querySelector('[data-value="servicios_afectados"]');
+  if (!ul) return;
+  if (state.editing === 'servicios_afectados') return;
+  ul.classList.toggle('editable', editable);
+  ul.textContent = '';
+  if (!servicios.length) {
+    const li = document.createElement('li');
+    li.className = 'muted';
+    li.textContent = '— sin servicios todavía —';
+    ul.append(li);
+    return;
+  }
+  for (const s of servicios) {
+    const trail = servicioTrail(s.id);
+    const li = document.createElement('li');
+    li.className = 'pieza-row';
+    li.innerHTML =
+      `<span class="pieza-badge ${s.confirmado ? 'ok' : 'pend'}" ` +
+      `title="${s.confirmado ? 'confirmado por voz' : 'confirmación pendiente'}">${s.confirmado ? '✓' : '⏳'}</span>` +
+      `<span class="pieza-info"><strong>${esc(s.nombre ?? s.id)}</strong><code>${esc(s.id)}</code>` +
+      (s.afectados != null ? `<span class="pieza-trail">${esc(s.afectados)} afectados</span>` : '') +
+      (trail ? `<span class="pieza-trail">${esc(trail)}</span>` : '') + '</span>';
+    li.append(botonQuitar('Quitar servicio (edición manual)', editable, () => {
+      commitManualArray('servicios_afectados', (rows) => rows.filter((r) => r.id !== s.id));
+    }));
+    ul.append(li);
+  }
+}
+
+/** Pendientes: una fila por action item. */
+function renderActionItems(items, editable) {
+  const ul = $('ficha-incidente')?.querySelector('[data-value="action_items"]');
+  if (!ul) return;
+  if (state.editing === 'action_items') return;
+  ul.classList.toggle('editable', editable);
+  ul.textContent = '';
+  if (!items.length) {
+    const li = document.createElement('li');
+    li.className = 'muted';
+    li.textContent = '— sin pendientes —';
+    ul.append(li);
+    return;
+  }
+  for (const [idx, item] of items.entries()) {
+    const li = document.createElement('li');
+    li.className = 'pieza-row';
+    li.innerHTML = `<span class="pieza-info"><span style="font-size:0.88rem">${esc(item)}</span></span>`;
+    li.append(botonQuitar('Quitar pendiente (edición manual)', editable, () => {
+      commitManualArray('action_items', (rows) => rows.filter((_, i) => i !== idx));
+    }));
+    ul.append(li);
+  }
+}
+
+function botonQuitar(title, editable, onClick) {
+  const rm = document.createElement('button');
+  rm.type = 'button';
+  rm.className = 'pieza-quitar';
+  rm.textContent = '✕';
+  rm.title = title;
+  rm.disabled = !editable;
+  rm.addEventListener('click', onClick);
+  return rm;
+}
+
+/** Última huella de un servicio: agregado / confirmado / corregido por voz. */
+function servicioTrail(id) {
+  const evs = state.engine?.events ?? [];
+  const parts = [];
+  for (const e of evs) {
+    if (e.type === 'tool_result' && e.tool === 'agregar_servicio_afectado' && e.result?.id === id) {
+      parts.push(`agregado ${(e.t_ms / 1000).toFixed(1)} s`);
+    } else if (e.type === 'confirm_result' && e.value?.id === id) {
+      parts.push(`${e.confirmed ? 'confirmado' : 'corregido'} ${(e.t_ms / 1000).toFixed(1)} s`);
+    }
+  }
+  return parts.slice(-2).join(' · ');
+}
+
+/** Edición manual de un campo-arreglo del incidente (timeline/servicios/items). */
+function commitManualArray(field, mutator) {
+  const f = state.store?.final_form;
+  if (!f || state.ended || f.estado === 'enviada') return;
+  const next = JSON.parse(JSON.stringify(f[field] ?? []));
+  mutator(next);
+  const { changed } = state.store.applyManualEdit(field, next);
+  if (changed.length) {
+    recordManualFormUpdate(changed);
+    setStatus(`Edición manual guardada: ${FIELD_LABEL[field] ?? field}.`);
+  }
+  renderForm();
+}
+
 function renderAuditTrail() {
   const trail = $('audit-trail');
   if (!trail) return;
@@ -611,9 +899,9 @@ function renderAuditTrail() {
 /* --------------------- edición ligera (manual) --------------------- */
 
 function wireEditableFields() {
-  for (const el of document.querySelectorAll('#ficha .field-value[data-value]')) {
+  for (const el of document.querySelectorAll('.ficha .field-value[data-value]')) {
     const field = el.dataset.value;
-    if (field === 'piezas') continue; // las piezas se editan por fila (qty/quitar)
+    if (ARRAY_FIELDS.includes(field)) continue; // arreglos: edición por fila (botones)
     el.addEventListener('focus', () => {
       state.editing = field;
       el.classList.add('editing');
@@ -634,17 +922,22 @@ function wireEditableFields() {
       document.execCommand('insertText', false, t);
     });
   }
-  const pz = document.querySelector('#ficha [data-value="piezas"]');
-  pz?.addEventListener('focusin', () => { state.editing = 'piezas'; });
-  pz?.addEventListener('focusout', () => {
-    setTimeout(() => {
-      if (!pz.contains(document.activeElement)) {
-        state.editing = null;
-        renderForm(); // pinta las piezas con el valor ya comprometido
-      }
-    }, 0);
-  });
+  for (const field of ARRAY_FIELDS) {
+    const ul = document.querySelector(`.ficha [data-value="${field}"]`);
+    ul?.addEventListener('focusin', () => { state.editing = field; });
+    ul?.addEventListener('focusout', () => {
+      setTimeout(() => {
+        if (!ul.contains(document.activeElement)) {
+          state.editing = null;
+          renderForm(); // pinta las filas con el valor ya comprometido
+        }
+      }, 0);
+    });
+  }
 }
+
+/** Campos-arreglo de la ficha (por dominio): piezas | timeline | servicios | items. */
+const ARRAY_FIELDS = ['piezas', 'timeline', 'servicios_afectados', 'action_items'];
 
 function currentFieldValue(field) {
   const f = state.store?.final_form;
@@ -666,6 +959,15 @@ function commitFieldEdit(field, el) {
       return;
     }
     value = n;
+  }
+  if (field === 'severidad') {
+    const sev = raw.toLowerCase();
+    if (!['baja', 'media', 'alta', 'critica'].includes(sev)) {
+      setStatus('Severidad inválida — escribe baja, media, alta o critica.', true);
+      renderForm();
+      return;
+    }
+    value = sev;
   }
   const { changed } = state.store.applyManualEdit(field, value);
   if (changed.length) {
@@ -773,12 +1075,16 @@ function wireSessionControls() {
     }
   });
   $('btn-confirm-edit').addEventListener('click', () => {
-    const card = document.querySelector('#ficha .field-card[data-field="piezas"]');
+    const campo = state.domain === 'incidente' ? 'servicios_afectados' : 'piezas';
+    const fichaEl = state.domain === 'incidente' ? $('ficha-incidente') : $('ficha');
+    const card = fichaEl?.querySelector(`.field-card[data-field="${campo}"]`);
     if (!card) return;
     card.scrollIntoView({ behavior: 'smooth', block: 'center' });
     card.classList.add('flash');
     setTimeout(() => card.classList.remove('flash'), 1300);
-    setStatus('Corrige la pieza aquí (cantidad o quitar) — el agente sigue esperando tu respuesta de voz.');
+    setStatus(state.domain === 'incidente'
+      ? 'Corrige el servicio aquí (quitar) — el agente sigue esperando tu respuesta de voz.'
+      : 'Corrige la pieza aquí (cantidad o quitar) — el agente sigue esperando tu respuesta de voz.');
   });
 }
 
@@ -822,35 +1128,69 @@ async function finishSession() {
 
 function renderEndScreen(artifact) {
   const f = artifact.final_form;
-  const orden = state.ordenes.find((o) => o.id === f.order_id) ?? null;
-  const set = (k, html) => {
-    const el = document.querySelector(`#screen-end [data-s="${k}"]`);
-    if (el) el.innerHTML = html;
-  };
-  set('orden', esc(f.order_id ?? '—'));
-  set('cliente', esc(orden?.cliente ?? '—'));
-  set('equipo', esc(orden?.equipo ?? '—'));
-  set('problema', esc(f.problema) || '—');
-  set('diagnostico', esc(f.diagnostico) || '—');
-  set('solucion', esc(f.solucion) || '—');
-  set('piezas', f.piezas.length
-    ? f.piezas.map((p) =>
-      `<li class="pieza-row mini"><span class="pieza-badge ${p.confirmada ? 'ok' : 'pend'}">${p.confirmada ? '✓' : '⏳'}</span>` +
-      `<span class="pieza-info"><strong>${esc(p.nombre)}</strong><code>${esc(p.sku)}</code></span>` +
-      `<span class="pieza-qty">× ${p.qty}</span></li>`).join('')
-    : '<li class="muted">—</li>');
-  set('tiempo_minutos', f.tiempo_minutos != null ? `${f.tiempo_minutos} min` : '—');
-  set('notas', esc(f.notas) || '—');
+  const incidente = state.domain === 'incidente';
+  $('end-summary-orden').hidden = incidente;
+  $('end-summary-incidente').hidden = !incidente;
 
   const est = $('end-estado');
   est.textContent = f.estado;
   est.className = `chip ${ESTADO_CLASE[f.estado] ?? 'chip-wip'}`;
 
+  if (incidente) {
+    const inc = state.incidentes.find((o) => o.id === (f.incidente_id ?? artifact.order_id)) ?? null;
+    const set = (k, html) => {
+      const el = document.querySelector(`#screen-end [data-i="${k}"]`);
+      if (el) el.innerHTML = html;
+    };
+    set('incidente', esc(f.incidente_id ?? artifact.order_id ?? '—'));
+    set('cliente', esc(inc?.cliente ?? '—'));
+    set('resumen', esc(f.resumen) || '—');
+    set('que_paso', esc(f.que_paso) || '—');
+    set('timeline', f.timeline.length
+      ? [...f.timeline].sort((a, b) => String(a.hora).localeCompare(String(b.hora)))
+        .map((ev) => `<li class="pieza-row mini"><span class="mono" style="font-weight:700">${esc(ev.hora)}</span>` +
+          `<span class="pieza-info"><span style="font-size:0.88rem">${esc(ev.evento)}</span></span></li>`).join('')
+      : '<li class="muted">—</li>');
+    set('servicios', f.servicios_afectados.length
+      ? f.servicios_afectados.map((s) =>
+        `<li class="pieza-row mini"><span class="pieza-badge ${s.confirmado ? 'ok' : 'pend'}">${s.confirmado ? '✓' : '⏳'}</span>` +
+        `<span class="pieza-info"><strong>${esc(s.nombre ?? s.id)}</strong><code>${esc(s.id)}</code></span>` +
+        (s.afectados != null ? `<span class="pieza-qty">${s.afectados} afectados</span>` : '') + '</li>').join('')
+      : '<li class="muted">—</li>');
+    set('items', f.action_items.length
+      ? f.action_items.map((it) => `<li class="pieza-row mini"><span class="pieza-info"><span style="font-size:0.88rem">${esc(it)}</span></span></li>`).join('')
+      : '<li class="muted">—</li>');
+    const sev = f.severidad;
+    set('severidad', sev
+      ? `<span class="chip ${SEVERIDAD_CLASE[sev] ?? 'chip-wip'}">${esc(sev)}</span>`
+      : '—');
+  } else {
+    const orden = state.ordenes.find((o) => o.id === f.order_id) ?? null;
+    const set = (k, html) => {
+      const el = document.querySelector(`#screen-end [data-s="${k}"]`);
+      if (el) el.innerHTML = html;
+    };
+    set('orden', esc(f.order_id ?? '—'));
+    set('cliente', esc(orden?.cliente ?? '—'));
+    set('equipo', esc(orden?.equipo ?? '—'));
+    set('problema', esc(f.problema) || '—');
+    set('diagnostico', esc(f.diagnostico) || '—');
+    set('solucion', esc(f.solucion) || '—');
+    set('piezas', f.piezas.length
+      ? f.piezas.map((p) =>
+        `<li class="pieza-row mini"><span class="pieza-badge ${p.confirmada ? 'ok' : 'pend'}">${p.confirmada ? '✓' : '⏳'}</span>` +
+        `<span class="pieza-info"><strong>${esc(p.nombre)}</strong><code>${esc(p.sku)}</code></span>` +
+        `<span class="pieza-qty">× ${p.qty}</span></li>`).join('')
+      : '<li class="muted">—</li>');
+    set('tiempo_minutos', f.tiempo_minutos != null ? `${f.tiempo_minutos} min` : '—');
+    set('notas', esc(f.notas) || '—');
+  }
+
   const evs = artifact.events;
   const nUser = artifact.transcript.filter((t) => t.role === 'user').length;
   const lastT = evs.length ? evs[evs.length - 1].t_ms : 0;
   $('end-stats').textContent =
-    `${nUser} turnos del técnico · ${evs.filter((e) => e.type === 'tool_call').length} tools · ` +
+    `${nUser} turnos del ${incidente ? 'operador' : 'técnico'} · ${evs.filter((e) => e.type === 'tool_call').length} tools · ` +
     `${evs.filter((e) => e.type === 'confirm_request').length} read-backs · ` +
     `${evs.filter((e) => e.type === 'barge_in').length} barge-ins · duración ${fmtMs(lastT)}`;
 
