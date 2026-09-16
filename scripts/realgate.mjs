@@ -186,6 +186,16 @@ FLUJO OBLIGATORIO — una cosa por turno:
    llamada. Al final arma set_resumen de UNA línea.
 7. El operador pida enviar ("mándalo", "listo") → enviar_reporte() y despídete.
 CONFIRMACIONES: con su "sí/correcto/ese mismo" el dato YA queda — no lo re-agregues.
+CADENA buscar→agregar: después de buscar_servicio SIN confusable_warning, llama
+agregar_servicio_afectado({id}) EN EL MISMO turno antes de hablar. Respeta el
+campo siguiente_paso que traen los resultados de las tools.
+HORAS: dichas con palabras se escriben "H:MM" en la tool: "ocho cincuenta"→"8:50",
+"nueve veinte"→"9:20", "once y cuarto"→"11:15", "nueve cuarenta"→"9:40".
+EJEMPLO: usuario: "la llamada fue como a las ocho cincuenta de la mañana" → tú llamas
+agregar_evento_timeline({"hora":"8:50","evento":"llamada de recepción por falta de internet"}) → dices:
+"Evento a las ocho cincuenta, llamada de recepción, ¿correcto?" → usuario: "sí" →
+tú: "Anotado" y SIGUES (sin re-agregar). Si el operador dice "apúntale/anota/registra
+esto", ES un tool call INMEDIATO — nunca lo vuelvas a preguntar.
 Regla de oro: cada dato que te den ES un tool call; tu única libertad es el read-back.`;
   greeting = `¡Buen día! Ya cargué el incidente ${casoId} de ${caso?.cliente ?? 'tu cliente'}. Cuéntame con calma qué pasó y armo la ficha.`;
   tools = buildToolDefinitions(catalogo.map((s) => s.id));

@@ -46,31 +46,37 @@ Technicians ask for exactly this ([r/FieldService](https://www.reddit.com/r/Fiel
 ## Metrics
 
 Produced by [metrics/](metrics/README.md) from session artifacts; definitions are
-exact and reproducible. **Numbers below are placeholders until the sprint's real
-sessions (D4) — we will not publish a number we cannot reproduce.**
+exact and reproducible. **First 5 REAL voice sessions** (Voice Incident Reporter,
+post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API,
+prompt v3; artifacts under `.data/gate/`):
 
 | Metric | Value | N | Condition |
 |---|---|---|---|
-| Extraction accuracy — problema | _pending_ | | scripted sessions |
-| Extraction accuracy — solucion | _pending_ | | scripted sessions |
-| Parts set precision / recall / F1 | _pending_ | | scripted sessions |
-| Work-time delta ≤5 min | _pending_ | | scripted sessions |
-| Confirmation loop precision / recall | _pending_ | | seeded-error sessions |
-| End-of-speech → tool call, p50 / p95 | _pending_ | ≥30 turns | clean |
-| End-of-speech → agent first word, p50 / p95 | _pending_ | ≥30 turns | clean |
-| WER (clean) / WER (+DEMAND noise @10 dB SNR) | _pending_ | | scripted script |
-| Barge-in respected | _pending_ | ≥3 provoked | scripted interruptions |
+| Turn completion (scripted turns transcribed) | 8–10 of 10–11 per session | 5 sessions | quiet dictation |
+| WER, matched pairs | **0.231** (0.164–0.382/session) | 1,081 ref words | quiet dictation |
+| End-of-speech → tool call, p50 / p95 | 1,775 ms / 6,192 ms | 23 tool turns | real API |
+| Severidad exacta | 2/5 sessions | 5 | read-back loop |
+| Servicios afectados set precision | 100% (3 TP / 0 FP) | 5 | catalog enum |
+| Servicios afectados set recall | 37.5% (5 FN) | 5 | see notes |
+| Timeline eventos (hora+evento) | 3/3 in both sessions that ran the timeline flow; 0 in the rest | 5 | see notes |
+| Confirmation-loop precision (read-backs → correction) | 61.5% | 13 read-backs | real dialogue |
 
-_Placeholders until real voice sessions (sprint D1–D4). What is already
+Honest notes: (1) high run-to-run variance of the interview agent — 2 of 5
+sessions (the pure-narrative script i1) collapsed to 1 tool call and were
+scored at zero extraction; sessions that engaged (i2/i3) reached 100% service
+precision, 3/3 timeline events and correct severity. (2) One session timed out
+(watchdog 300 s, documented). (3) Aggregate chronological WER (1.05) and
+agent-first-word latency are excluded as pairing/event-ordering artifacts of
+the driver — matched-pair WER is the reported figure. (4) Numbers will be
+re-published with a larger N as the interview prompt converges.
+
 CI-proven in mock mode (`npm run smoke:mock`, deterministic, no API key): the
-session artifacts match the seeded ground truth exactly — parts precision /
-recall / F1 = 100% (6/6 SKU+qty pairs), both seeded capture errors rescued by
-the spoken confirmation loop, 3/3 provoked barge-ins respected, WER 0.003 on
-scripted turns (residual = the deliberately seeded mishearing), work time
-within ±5 min. Free-text fields (problema/solución) score low against clean
-references because the agent captures the technician's verbatim speech — an
-honest, documented trade-off to resolve with real data on D4 (verbatim evidence
-vs. cleaned summary)._
+session artifacts match the seeded ground truth exactly — services/timeline/
+action-items/severidad P/R 100%, all 3 seeded capture errors rescued by the
+spoken confirmation loop, WER 0.006. The earlier field-service (work-order)
+product's live-interview route failed its noise gate at 10 dB (see
+[docs/D2-GATE-RESULTS.md](docs/D2-GATE-RESULTS.md)) — that evidence drove the
+pivot to post-visit quiet dictation, which designs the failure mode out.
 
 ## How we differ from Relay (and the field)
 

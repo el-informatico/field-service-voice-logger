@@ -100,6 +100,10 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
       }
     }
     const result = { ok: true, consulta: q, found, best, confusable_warning };
+    // Guion de acción para el LLM: el resultado le dice cuál es el siguiente paso.
+    result.siguiente_paso = confusable_warning
+      ? `DESVIACIÓN: pregunta la desambiguación en voz alta («¿${best?.nombre} o ${confusable_warning.nombre}?») y agrega SOLO el que confirme.`
+      : (best ? `AGREGA YA este servicio con agregar_servicio_afectado({"id":"${best.id}"}) y haz el read-back del nombre.` : 'Sin candidato claro: pregunta al operador el nombre exacto del servicio.');
     store.applyToolResult('buscar_servicio', { consulta: q }, result);
     return result;
   }

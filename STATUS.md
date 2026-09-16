@@ -76,6 +76,28 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
 
 ## Bitácora
 
+- **2026-09-15 (PLAN-B-D2 — 5+1 sesiones REALES tranquilas del incidente,
+  tabla publicada en README)** — Sesiones reales contra el API con
+  `realgate --domain incident` (prompt v3: máquina de estados + few-shot de
+  horas + cadena buscar→agregar con `siguiente_paso` en los resultados de las
+  tools). Set final-config: R1c/R1d (i1), R2a (i2), R3a/R3b (i3) + R1a/R1b
+  exploratorias y R2b (timeout del watchdog, documentado). Resultados en el
+  README ( matched-WER 0.231, turn completion 8-10/10-11, herramientas
+  end-of-speech→tool p50 1775 ms; sesiones que engancharon: servicios 100%
+  precisión, timeline 3/3, severidad OK). **Hallazgo de producto honesto**: el
+  guion narrativo puro (i1) colapsa el agente de entrevista en 2/2 corridas
+  (1 tool call) — el dictado necesita pausas/marcadores del operador o un
+  prompt que extraiga del flujo continuo; queda como iteración #1 post-D2.
+  Métricas crudas con artefactos de medición (WER cronológico por splits,
+  latencia agente por orden de eventos) documentadas y EXCLUIDAS de la tabla
+  pública. Artefactos: `.data/gate/artifact-i*-tranquilo-R*.json` +
+  `report-incidente.json`.
+  **FALTA D5 (deploy)**: push (tu YES) + Vercel + storage durable
+  /api/sessions y /api/fsm + prueba móvil auriculares. **FALTA D6 (video)**:
+  re-auditar galería (AutoCopilot/KiaOra/nuevas), guion video EN <5 min
+  (dolor → dictado real con read-back → ficha+export → métricas medidas → 40 s
+  arquitectura), README ya lleva la tabla real, submit con margen (cierre
+  30-sep 15:00 UTC).
 - **2026-09-15 (PLAN-B-D1 — pivote ejecutado: Voice Incident Reporter)** —
   Dominio incidente completo sobre el 70% compartido (ws-agent, session-engine,
   artefacto §6, canal mock/real, métricas, export — INTACTOS, `git diff`
