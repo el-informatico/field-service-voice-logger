@@ -2,10 +2,11 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "functions": {
     "api/**/*.js": {
-      "runtime": "nodejs22.x"
+      "excludeFiles": "{.data,.data/**}"
     }
   },
   "rewrites": [
+    { "source": "/api/fsm/(.*)", "destination": "/api/fsm" },
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/data/(.*)", "destination": "/data/$1" },
     { "source": "/(.*)", "destination": "/web/$1" }

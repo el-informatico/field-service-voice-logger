@@ -87,9 +87,31 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
   boot + banner; modo mock determinista $0 / real ~$0.2/take). README lleva
   la sección video con el pitch del diferencial. **PENDIENTE**: grabar,
   editar <5:00, subir, submit con margen (cierre 30-sep 15:00 UTC).
-- **2026-09-15 (D5 — gate de publicación AUTORIZADO por el usuario; en
-  ejecución)** — Auditoría pre-push obligatoria en curso + deploy Vercel;
-  resultado y URL se documentan en el siguiente bloque cuando cierren.
+- **2026-09-15 (D5 — COMPLETO: auditado → pusheado → desplegado, con gate del
+  usuario)** — (1) Pruebas negativas de hooks: commit con path local, con
+  nombre hermano (un identificador recién añadido a la lista local de
+  tokens del git dir) y con
+  trailer IA — los tres RECHAZADOS; greps del checklist: 0 hits de
+  paths/hermanos/keys en el árbol trackeado; `.env` no trackeado + ignorado.
+  (2) Auditoría pre-push completa (21 commits, 138 blobs, objeto-DB entero):
+  **PUSH SAFE** — 0 atribución de IA (solo el propio guard como blocklist),
+  0 paths internos en lo pusheable, 0 secrets, LICENSE Apache-2.0 en TODOS
+  los árboles, mensajes como dev-log normal; 2 hallazgos cerrados (gitignore
+  `.env*` commitado; objetos inalcanzables purgados con gc). (3) **Push**
+  `20447b1..bec2795` (22 commits en remoto) — CI del push: **success**.
+  (4) **Deploy Vercel**: https://field-service-voice-logger.vercel.app —
+  verificación en vivo completa: / 200, data/ordenes 200, /api/token 200
+  (modo mock SIN key en el server — deseado), /api/sessions POST+GET 200,
+  /api/fsm/report 200 (rewrite añadido), `audio_retained:true` → 400, y
+  /.env, /.data/, /.vercel → 404. Tres intentos de deploy con dos fallos
+  diagnosticados y fixeado quirúrgicamente (payload 190 MB → `.vercelignore`
+  con .env*/.data/etc a 61 archivos; alias de runtime `nodejs22.x` rechazado
+  por CLI 59.x → default Node 22 vía engines). (5) **Storage**: efímero
+  EXPLÍCITO — write-failures devuelven `stored:false`+nota (jamás 500), GET
+  en frío devuelve lista vacía, todo response lleva `ephemeral_note`; ruta de
+  upgrade durable documentada en `api/README.md` (KV/Neon/Upstash → swap de
+  `storeArtifact()`/`storeReport()`). `.env.local` de `vercel link` contiene
+  solo un token OIDC efímero del CLI, gitignored, nunca deployado.
 - **2026-09-15 (PLAN-B-D2 — 5+1 sesiones REALES tranquilas del incidente,
   tabla publicada en README)** — Sesiones reales contra el API con
   `realgate --domain incident` (prompt v3: máquina de estados + few-shot de

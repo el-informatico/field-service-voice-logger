@@ -1,0 +1,30 @@
+# .vercelignore overrides .gitignore for `vercel` CLI uploads — keep exhaustive.
+# Rationale: the 2026-09-15 first deploy attempt uploaded 188.8 MB because
+# .gitignore was not applied; .data/ holds real-session transcripts (privacy)
+# and must never leave this machine.
+
+# secrets — NEVER deploy (values live only in server env)
+.env
+.env.*
+.env.local
+
+# local runtime artifacts (session JSONs with transcripts of real people)
+.data/
+sessions-out/
+*.session.json
+
+# version control / CI / Vercel linkage
+.git
+.github
+.vercel
+
+# dev-only tooling, docs and metrics (not needed to serve the app)
+scripts/
+metrics/
+docs/
+api/selfcheck.sh
+
+# node / os noise
+node_modules/
+.DS_Store
+*.swp

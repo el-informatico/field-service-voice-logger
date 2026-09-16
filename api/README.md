@@ -48,3 +48,29 @@ Durable storage is decision D5: replace the `writeFile` in `api/sessions.js#stor
   same ephemeral-disk caveat as sessions). The local dev server routes `/api/fsm/*` to this handler.
 - This is the demo connector: swap `storeReport()` in `api/fsm.js` for the real FSM API call
   (decision D5); the response shape stays the same.
+
+---
+
+## Production deploy notes (Vercel, 2026-09-15)
+
+Live: <https://field-service-voice-logger.vercel.app> — project `el-informatico/field-service-voice-logger`,
+region iad1, deployed from the working tree via the `vercel` CLI (see `.vercelignore` for what ships).
+
+- **Token mode**: the Vercel project has **no** `ASSEMBLYAI_API_KEY` env var (`vercel env ls` → none),
+  so `/api/token` intentionally returns `mode:"mock"`. That is the desired state for the public deploy.
+  To go real: `vercel env add ASSEMBLYAI_API_KEY production` + redeploy — no code change needed.
+- **Storage decision D5 (free tier)**: no Vercel KV / Postgres / Marketplace store is linked to the
+  project, so the functions keep the documented **ephemeral** behavior: artifacts and acks go to
+  `/tmp/fsvl-*` on a warm instance and vanish on recycle. Degradation is explicit and verified live:
+  every write response carries `ephemeral_note`; a write failure is caught and reported as
+  `stored:false` (never a 500); `GET /api/sessions` and `GET /api/fsm/report` on a cold instance
+  return `{"ok":true,"count":0,...}`, not an error.
+- **Durable upgrade path** (response shapes unchanged): add a store from the Vercel dashboard
+  (Storage → Marketplace: Vercel KV, Neon Postgres, Upstash, …) — its env vars are injected into the
+  functions — then swap `storeArtifact()` in `api/sessions.js` and `storeReport()` in `api/fsm.js`
+  (each is a small, isolated function).
+- **Routing quirk**: zero-config builds map `api/fsm.js` to `/api/fsm` only, so `vercel.json` carries
+  the rewrite `/api/fsm/(.*) → /api/fsm` (before the generic `/api/(.*)` rule) to serve
+  `/api/fsm/report`. The `functions` block uses `excludeFiles` only — bare runtime aliases like
+  `nodejs22.x` are rejected by Vercel CLI 59 ("Function Runtimes must have a valid version"); the
+  default Node 22 runtime applies via project settings.
