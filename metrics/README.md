@@ -54,6 +54,25 @@ Across sessions: latency samples are pooled; WER errors are micro-averaged;
 confusion counts (TP/FP/FN), confirmation counts and barge-in counts are summed;
 extraction accuracy is recomputed from summed correct/evaluated fields.
 
+## Incidente fields (Plan B — docs/incident-contract.md §7)
+Sessions whose `final_form` has `incidente_id` (or whose GT `expected_form`
+has `servicios_afectados`) are routed through `lib/incident-accuracy.js`
+instead of the orden comparators; latency/confirmation/WER/barge-in are
+unchanged (same artifact).
+- `resumen`, `que_paso`: Jaccard similarity ≥ 0.8 over normalized token sets
+  (same treatment as `problema`/`solucion`).
+- `servicios_afectados`: set-level precision / recall / F1 over exact service
+  ids (confundibles like RACK-A3↔A8 count as FP+FN — same as piezas).
+- `timeline`: a predicted event matches a GT event iff `hora` is exact AND
+  `evento` similarity ≥ 0.6; P/R/F1 over those matches (greedy in GT order).
+- `action_items`: recall by coverage — a GT ítem is covered if any predicted
+  ítem has similarity ≥ 0.6; extra predicted ítems do not lower the metric.
+- `severidad`: exact match (case-insensitive enum).
+- **Overall** = correct fields ÷ evaluated fields, same as orden; a field is
+  correct when its §7 criterion passes (`servicios_afectados`/`timeline` need
+  the exact set). Fixtures: `metrics/fixtures-incidente/` (checked by
+  `--selftest` together with the orden set).
+
 ## Honest-notes column (fill before publishing)
 | Placeholder | What to record |
 |---|---|

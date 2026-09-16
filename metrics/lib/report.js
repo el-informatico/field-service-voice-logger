@@ -46,7 +46,14 @@ export function buildReport(sessions) {
 
   let correctFields = 0, evaluatedFields = 0;
   let tp = 0, fp = 0, fn = 0, exactSets = 0, sessionsWithPiezasGt = 0;
-  const fieldCorrect = { problema: [0, 0], diagnostico: [0, 0], solucion: [0, 0], tiempo_minutos: [0, 0] };
+  // incidente (Plan B): pooled set metrics + scalar per-field tallies.
+  let srvTp = 0, srvFp = 0, srvFn = 0, srvExact = 0, sessionsWithServiciosGt = 0;
+  let tlTp = 0, tlFp = 0, tlFn = 0, tlExact = 0, sessionsWithTimelineGt = 0;
+  let aiCovered = 0, aiGt = 0, sessionsWithActionsGt = 0;
+  const fieldCorrect = {
+    problema: [0, 0], diagnostico: [0, 0], solucion: [0, 0], tiempo_minutos: [0, 0],
+    resumen: [0, 0], que_paso: [0, 0], severidad: [0, 0],
+  };
   for (const { metrics } of sessions) {
     const a = metrics.accuracy;
     correctFields += a.correct_fields; evaluatedFields += a.evaluated_fields;
@@ -59,10 +66,39 @@ export function buildReport(sessions) {
       sessionsWithPiezasGt++;
       if (p.exact_set) exactSets++;
     }
+    const srv = a.fields.servicios_afectados;
+    if (srv) {
+      srvTp += srv.tp; srvFp += srv.fp; srvFn += srv.fn;
+      sessionsWithServiciosGt++;
+      if (srv.exact_set) srvExact++;
+    }
+    const tl = a.fields.timeline;
+    if (tl) {
+      tlTp += tl.tp; tlFp += tl.fp; tlFn += tl.fn;
+      sessionsWithTimelineGt++;
+      if (tl.exact_set) tlExact++;
+    }
+    const ai = a.fields.action_items;
+    if (ai) {
+      aiCovered += ai.covered; aiGt += ai.n_gt;
+      sessionsWithActionsGt++;
+    }
   }
   const precision = tp + fp ? tp / (tp + fp) : null;
   const recall = tp + fn ? tp / (tp + fn) : null;
   const f1 = precision == null && recall == null ? null : precision == null || recall == null || precision + recall === 0 ? 0 : (2 * precision * recall) / (precision + recall);
+
+  const prfBlock = (t, f, n, exact, nSessions) => {
+    const p = t + f ? t / (t + f) : null;
+    const r = t + n ? t / (t + n) : null;
+    const fo = p == null && r == null ? null : p == null || r == null || p + r === 0 ? 0 : (2 * p * r) / (p + r);
+    return {
+      tp: t, fp: f, fn: n,
+      precision: p, recall: r, f1: fo,
+      exact_set_pct: nSessions ? exact / nSessions : null,
+      n_sessions_with_gt: nSessions,
+    };
+  };
 
   const conf = sessions.reduce(
     (acc, { metrics }) => {
@@ -108,6 +144,14 @@ export function buildReport(sessions) {
           exact_set_pct: sessionsWithPiezasGt ? exactSets / sessionsWithPiezasGt : null,
           n_sessions_with_piezas_gt: sessionsWithPiezasGt,
         },
+        servicios_afectados: prfBlock(srvTp, srvFp, srvFn, srvExact, sessionsWithServiciosGt),
+        timeline: prfBlock(tlTp, tlFp, tlFn, tlExact, sessionsWithTimelineGt),
+        action_items: {
+          covered: aiCovered,
+          n_gt: aiGt,
+          recall: aiGt ? aiCovered / aiGt : null,
+          n_sessions_with_gt: sessionsWithActionsGt,
+        },
       },
       confirmation: {
         ...conf,
@@ -131,13 +175,36 @@ export function markdownTable(report) {
   ];
   for (const [f, label] of [['problema', 'problema'], ['diagnostico', 'diagnóstico'], ['solucion', 'solución'], ['tiempo_minutos', 'tiempo_minutos (±5 min)']]) {
     const pf = a.extraction.per_field[f];
+    if (!pf?.n) continue; // orden rows only when orden data present
     const extra = f === 'tiempo_minutos' ? ' ±5 min' : ' sim ≥ 0.8';
     rows.push([`  of which: ${label}`, pct(pf?.pct), num(pf?.n), `field-level${extra}`]);
   }
+  for (const [f, label] of [['resumen', 'resumen'], ['que_paso', 'que_paso'], ['severidad', 'severidad (exacta)']]) {
+    const pf = a.extraction.per_field[f];
+    if (!pf?.n) continue; // incidente rows only when incident data present
+    const extra = f === 'severidad' ? ' exact match' : ' sim ≥ 0.8';
+    rows.push([`  of which: ${label}`, pct(pf?.pct), num(pf?.n), `field-level${extra}`]);
+  }
   const pz = a.extraction.piezas;
+  const srv = a.extraction.servicios_afectados;
+  const tl = a.extraction.timeline;
+  const ai = a.extraction.action_items;
+  if (pz.n_sessions_with_piezas_gt > 0) {
+    rows.push(
+      ['Piezas precision / recall / F1', `${pct(pz.precision)} / ${pct(pz.recall)} / ${pct(pz.f1)}`, `${pz.tp} TP / ${pz.fp} FP / ${pz.fn} FN`, 'exact (sku, qty) pairs vs GT'],
+      ['Orders with exact piezas set', pct(pz.exact_set_pct), num(pz.n_sessions_with_piezas_gt), 'orders where GT includes piezas'],
+    );
+  }
+  if (srv.n_sessions_with_gt > 0) {
+    rows.push(['Servicios afectados precision / recall / F1', `${pct(srv.precision)} / ${pct(srv.recall)} / ${pct(srv.f1)}`, `${srv.tp} TP / ${srv.fp} FP / ${srv.fn} FN`, 'exact service ids vs GT (read-back de desambiguación)']);
+  }
+  if (tl.n_sessions_with_gt > 0) {
+    rows.push(['Timeline precision / recall / F1', `${pct(tl.precision)} / ${pct(tl.recall)} / ${pct(tl.f1)}`, `${tl.tp} TP / ${tl.fp} FP / ${tl.fn} FN`, 'hora exacta Y evento sim ≥ 0.6 vs GT']);
+  }
+  if (ai.n_sessions_with_gt > 0) {
+    rows.push(['Action items recall (cobrimiento)', pct(ai.recall), num(ai.n_gt), 'ítems GT cubiertos por un predicho con sim ≥ 0.6']);
+  }
   rows.push(
-    ['Piezas precision / recall / F1', `${pct(pz.precision)} / ${pct(pz.recall)} / ${pct(pz.f1)}`, `${pz.tp} TP / ${pz.fp} FP / ${pz.fn} FN`, 'exact (sku, qty) pairs vs GT'],
-    ['Orders with exact piezas set', pct(pz.exact_set_pct), num(pz.n_sessions_with_piezas_gt), 'orders where GT includes piezas'],
     ['Confirmation-loop recall (seeded errors rescued)', pct(a.confirmation.recall), num(a.confirmation.n_seeded), 'seeded capture errors'],
     ['Confirmation-loop precision (read-backs → correction)', pct(a.confirmation.precision), num(a.confirmation.n_requests), `read-backs (${a.confirmation.n_false_alarms} false alarms)`],
     ['WER (user turns, scripted scenarios)', a.wer.wer.toFixed(3), num(a.wer.n_ref), `user words; noise: ${noises}`],

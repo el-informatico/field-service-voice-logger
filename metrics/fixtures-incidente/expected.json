@@ -1,0 +1,98 @@
+{
+  "_comment": "Hand-computed oracle for the incidente fixtures (Plan B). Every number was derived manually from the fixture event timelines and the §7 field definitions; selftest asserts the harness reproduces them exactly (floats to 1e-6). fxi-feliz: dictado limpio, todo correcto (timeline con sim 2/3 >= 0.6). fxi-confuso: resumen bajo (1/12), servicio FP (RACK-A3 vs A8), timeline FN (evento 11:40 omitido), severidad media vs alta, action item no cubierto; la hora 09:20->09:40 rescatada por read-back, el servicio confundible NO rescatado.",
+  "fxi-feliz": {
+    "latency": {
+      "tool": { "n": 9, "p50": 460, "p95": 616, "min": 440, "max": 640 },
+      "agent": { "n": 9, "p50": 720, "p95": 960, "min": 700, "max": 1000 },
+      "skipped_tool": 0,
+      "skipped_agent": 0
+    },
+    "accuracy": {
+      "overall": 1.0,
+      "correct_fields": 6,
+      "evaluated_fields": 6,
+      "resumen": { "similarity": 1.0, "correct": true },
+      "que_paso": { "similarity": 1.0, "correct": true },
+      "servicios_afectados": { "tp": 2, "fp": 0, "fn": 0, "precision": 1.0, "recall": 1.0, "f1": 1.0, "exact_set": true, "correct": true },
+      "timeline": {
+        "tp": 3, "fp": 0, "fn": 0, "precision": 1.0, "recall": 1.0, "f1": 1.0, "exact_set": true, "correct": true,
+        "matches": [
+          { "hora": "09:20", "evento_similarity": 0.6666666666666666 },
+          { "hora": "09:35", "evento_similarity": 1.0 },
+          { "hora": "10:05", "evento_similarity": 1.0 }
+        ]
+      },
+      "action_items": { "covered": 2, "n_gt": 2, "n_pred": 3, "recall": 1.0, "correct": true },
+      "severidad": { "pred": "alta", "gt": "alta", "correct": true }
+    },
+    "confirmation": {
+      "n_requests": 3,
+      "n_corrections": 0,
+      "n_false_alarms": 3,
+      "precision": 0.0,
+      "recall": null,
+      "n_seeded_errors": 0,
+      "n_rescued": 0
+    },
+    "bargein": { "n_provoked": 1, "n_respected": 1, "n_stolen": 0, "pct_respected": 1.0 },
+    "wer": { "wer": 0.0, "sub": 0, "ins": 0, "del": 0, "hits": 102, "n_ref": 102 }
+  },
+  "fxi-confuso": {
+    "latency": {
+      "tool": { "n": 8, "p50": 480, "p95": 599, "min": 480, "max": 620 },
+      "agent": { "n": 8, "p50": 780, "p95": 780, "min": 750, "max": 780 },
+      "skipped_tool": 0,
+      "skipped_agent": 0
+    },
+    "accuracy": {
+      "overall": 0.16666666666666666,
+      "correct_fields": 1,
+      "evaluated_fields": 6,
+      "resumen": { "similarity": 0.08333333333333333, "correct": false },
+      "que_paso": { "similarity": 1.0, "correct": true },
+      "servicios_afectados": { "tp": 1, "fp": 1, "fn": 1, "precision": 0.5, "recall": 0.5, "f1": 0.5, "exact_set": false, "correct": false },
+      "timeline": {
+        "tp": 2, "fp": 0, "fn": 1, "precision": 1.0, "recall": 0.6666666666666666, "f1": 0.8, "exact_set": false, "correct": false,
+        "matches": [
+          { "hora": "09:20", "evento_similarity": 1.0 },
+          { "hora": "09:40", "evento_similarity": 1.0 }
+        ]
+      },
+      "action_items": { "covered": 1, "n_gt": 2, "n_pred": 1, "recall": 0.5, "correct": false },
+      "severidad": { "pred": "media", "gt": "alta", "correct": false }
+    },
+    "confirmation": {
+      "n_requests": 3,
+      "n_corrections": 1,
+      "n_false_alarms": 2,
+      "precision": 0.3333333333333333,
+      "recall": 0.5,
+      "n_seeded_errors": 2,
+      "n_rescued": 1
+    },
+    "bargein": { "n_provoked": 1, "n_respected": 0, "n_stolen": 1, "pct_respected": 0.0 },
+    "wer": { "wer": 0.013333333333333334, "sub": 1, "ins": 0, "del": 0, "hits": 74, "n_ref": 75 }
+  },
+  "aggregate": {
+    "latency": {
+      "tool": { "n": 17, "p50": 480, "p95": 624 },
+      "agent": { "n": 17, "p50": 750, "p95": 920 }
+    },
+    "wer": { "wer": 0.005649717514124294, "n_ref": 177 },
+    "extraction": {
+      "overall": 0.5833333333333334,
+      "correct_fields": 7,
+      "evaluated_fields": 12,
+      "per_field": {
+        "resumen": { "correct": 1, "n": 2 },
+        "que_paso": { "correct": 2, "n": 2 },
+        "severidad": { "correct": 1, "n": 2 }
+      },
+      "servicios_afectados": { "tp": 3, "fp": 1, "fn": 1, "precision": 0.75, "recall": 0.75, "f1": 0.75, "exact_set_pct": 0.5, "n_sessions_with_gt": 2 },
+      "timeline": { "tp": 5, "fp": 0, "fn": 1, "precision": 1.0, "recall": 0.8333333333333334, "f1": 0.9090909090909091, "exact_set_pct": 0.5, "n_sessions_with_gt": 2 },
+      "action_items": { "covered": 3, "n_gt": 4, "recall": 0.75, "n_sessions_with_gt": 2 }
+    },
+    "confirmation": { "n_requests": 6, "n_corrections": 1, "n_false_alarms": 5, "precision": 0.16666666666666666, "recall": 0.5, "n_seeded": 2, "n_rescued": 1 },
+    "bargein": { "n_provoked": 2, "n_respected": 1, "n_stolen": 1, "pct_respected": 0.5 }
+  }
+}

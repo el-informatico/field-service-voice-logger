@@ -1,0 +1,53 @@
+{
+  "schema_version": 1,
+  "scenario_id": "fxi-confuso",
+  "incidente_id": "IC-2004",
+  "ambiente": "tranquilo",
+  "expected_form": {
+    "incidente_id": "IC-2004",
+    "resumen": "Falla eléctrica en el rack A8 deja sin servicio al correo de producción",
+    "que_paso": "El correo de producción dejó de responder; el módulo fuente del rack A8 falló y al cambiarlo el servicio regresó.",
+    "timeline": [
+      { "hora": "09:20", "evento": "se reporta la caída del correo" },
+      { "hora": "09:40", "evento": "se confirma el fallo del módulo fuente del rack A8" },
+      { "hora": "11:40", "evento": "se reemplaza el módulo fuente y el correo se restablece" }
+    ],
+    "servicios_afectados": [
+      { "id": "SRV-CORREO-PROD" },
+      { "id": "SRV-RACK-A8" }
+    ],
+    "action_items": [
+      "cambiar el módulo fuente del rack",
+      "abrir ticket con el proveedor de hardware"
+    ],
+    "severidad": "alta",
+    "estado": "enviada"
+  },
+  "user_utterances": [
+    { "n": 1, "text": "buenas aquí la nota del incidente del rack" },
+    { "n": 3, "text": "el correo de producción dejó de responder el módulo fuente del rack falló y al cambiarlo el servicio regresó" },
+    { "n": 5, "text": "a las nueve veinte se reportó la caída del correo" },
+    { "n": 7, "text": "el fallo del módulo fuente se confirmó a las nueve cuarenta" },
+    { "n": 9, "text": "los servicios afectados son el correo de producción" },
+    { "n": 11, "text": "también el rack a ocho del datacenter" },
+    { "n": 13, "text": "deja pendiente cambiar el módulo fuente" },
+    { "n": 15, "text": "márcala como severidad alta y envíala" }
+  ],
+  "seeded_errors": [
+    {
+      "field": "hora",
+      "captured": "09:20",
+      "truth": "09:40",
+      "rescued_by_confirmation": true
+    },
+    {
+      "field": "servicio",
+      "captured": { "id": "SRV-RACK-A3" },
+      "truth": { "id": "SRV-RACK-A8" },
+      "rescued_by_confirmation": false
+    }
+  ],
+  "provoked_interruptions": [
+    { "at_turn": 13, "user_text": "espera marca la severidad", "reason": "corte al ack del pendiente" }
+  ]
+}

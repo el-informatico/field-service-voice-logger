@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "scenario_id": "fxi-feliz",
+  "incidente_id": "IC-2001",
+  "ambiente": "tranquilo",
+  "expected_form": {
+    "incidente_id": "IC-2001",
+    "resumen": "Caída del servicio web de producción por un fallo en el rack A3",
+    "que_paso": "El sitio público se cayó a las 09:20; se reinició el switch del rack A3 y el servicio quedó restablecido a las 10:05.",
+    "timeline": [
+      { "hora": "09:20", "evento": "se reporta la caída del sitio web público" },
+      { "hora": "09:35", "evento": "se reinicia el switch del rack A3" },
+      { "hora": "10:05", "evento": "el servicio web queda restablecido" }
+    ],
+    "servicios_afectados": [
+      { "id": "SRV-WEB-PROD" },
+      { "id": "SRV-CORREO-PROD" }
+    ],
+    "action_items": [
+      "revisar los logs del switch de hoy",
+      "programar el reemplazo del módulo fuente"
+    ],
+    "severidad": "alta",
+    "estado": "enviada"
+  },
+  "user_utterances": [
+    { "n": 1, "text": "buenas ya terminé la visita del incidente del correo te dicto la nota" },
+    { "n": 3, "text": "el sitio público se cayó a las nueve veinte se reinició el switch del rack A3 y el servicio quedó restablecido a las diez cinco" },
+    { "n": 5, "text": "a las nueve veinte se reportó la caída del sitio web público" },
+    { "n": 7, "text": "después reinicié switch del rack A3" },
+    { "n": 9, "text": "y a las diez cinco el servicio web queda restablecido" },
+    { "n": 11, "text": "los servicios afectados son el web de producción y el correo de producción" },
+    { "n": 13, "text": "el correo de producción también" },
+    { "n": 15, "text": "deja pendientes revisar logs del switch y avisar al equipo de redes" },
+    { "n": 17, "text": "márcala como severidad alta y envíala" }
+  ],
+  "seeded_errors": [],
+  "provoked_interruptions": [
+    { "at_turn": 9, "user_text": "sí sigue", "reason": "asentimiento que corta el read-back del evento" }
+  ]
+}
