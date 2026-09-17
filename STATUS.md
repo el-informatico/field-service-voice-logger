@@ -1,6 +1,6 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-16** (D6-video generado, QA 9/9 y entregado).
+Bitácora por bloque. Última actualización: **2026-09-16** (pack de submit completo: textos, guía de revisión del video, auditoría PUSH-SAFE; únicos gates restantes: revisión humana del video + push).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
@@ -365,3 +365,42 @@ disciplina de tool calls, no de escucha.
 - Artefactos por sesión: `.data/gate/artifact-*-tranquilo-R4a/R4b/R5a/R5b/
   R5c/R5d.json` (patrón existente, fuera de git).
 - Coste: 6 sesiones reales nuevas (R4a, R4b, R5a–R5d) ≈ $1.5 USD.
+
+## SUBMISSION-READINESS (2026-09-16) — pack de submit completo; gates restantes: revisión humana del video + push
+
+Meta: día del submit = ejecución pura (objetivo 28-sep; cierre 30-sep 15:00
+UTC). Plan de ejecución ítem por ítem con owners (REPO-YA vs HUMANO):
+`docs/SUBMISSION-CHECKLIST.md`.
+
+- **Textos del submit**: `docs/SUBMISSION.md` (EN, copy-paste ready; 7
+  secciones; tabla N=10 verificada contra README; framing honesto: rig
+  rules-only, narración TTS declarada, jamás se presenta audio sintético
+  como audio de sesión). Mapeo campo-plataforma → sección en §3 del
+  checklist.
+- **Revisión del video en ≤10 min**: `docs/VIDEO-REVIEW-GUIDE.md` — 2
+  pasadas (1x ficha+captions / 1.5x audio+luces) + tabla minuto-a-minuto de
+  los 12 beats + check-off de los 15 valores de la escena de métricas +
+  **DECISIÓN #1**: el video se renderizó antes de METRICS-N10 y cita la
+  tabla N=5 (11/15 valores difieren del README actual) — o se acepta la
+  discrepancia (ya declarada en SUBMISSION) o se regenera el beat
+  `m-metrics` (determinista, $0, protocolo abajo).
+- **Regeneración del video**: `docs/VIDEO-REGEN-PROTOCOL.md` — 7 casos con
+  comandos exactos del workspace de edición externo, matriz
+  determinista(A)/re-grabar(B)/humano(C), gate obligatorio 9/9 lanes.
+- **Portadas**: `cover-a.png` (escena de métricas 01:59) · `cover-b.png`
+  (read-back 01:06) · `cover-c.png` (apertura 00:05), 1920x1080 extraídas
+  del mp4 final al directorio de entregables — elección humana (ítem 7).
+- **Auditoría pre-publicación** (`docs/AUDIT-SUBMISSION-2026-09-16.md`):
+  veredicto **PUSH-SAFE** — 0 autoría-atribución, 0 paths del host, 0
+  secretos, 0 identificadores de proyectos hermanos en el contenido a
+  publicar. 3 fixes aplicados (2 neutralizaciones en este STATUS; 1 en
+  SUBMISSION.md revertido por el orquestador: nombrar la herramienta de
+  narración es tool-credit, no atribución — veto humano abierto).
+- **Historia git**: el mensaje del commit D6-video (único blocker de la
+  auditoría) fue reword-eado vía cherry-pick sin cambio de árbol; respaldo
+  local `backup-pre-reword`. **Sin push** (regla: ninguno sin "YES"
+  explícito del usuario).
+
+Commits del bloque (lógicos): C1 textos+checklist · C2 guías de video · C3
+auditoría+fixes de STATUS · C4 este bloque. Verde final verificado:
+`npm run selftest` + `npm run smoke:mock`.
