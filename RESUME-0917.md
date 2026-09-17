@@ -38,6 +38,40 @@ Claims refreshed:
 - `STATUS.md` — PASO 0 row (Spanish, re-audit results).
 - Metrics table: UNTOUCHED (frozen, N=10).
 
+## ✅ Checkpoint 2 — T-AAI-2 real-session clip (DONE 2026-09-17)
+
+Deliverables (NOT in the repo — sibling deliverables dir):
+
+- `~/projects/field-service-voice-logger-deliverables/real-session-clip.mp4`
+  — **55.0 s** (spec 45–60), 800×1760@8fps, silent, 1.3 MB, six beats:
+  consent → dictation + `set_que_paso` → i2 PROD/STAGING disambiguation →
+  tool-burst ficha fill → end screen → full artifact JSON (`GET /api/sessions?id=`).
+  Persistent on-screen band: "REAL SESSION — live AssemblyAI Voice Agent API" +
+  scripted-wav / never-stored / silent disclosure.
+- `REAL-SESSION-NOTES.md` — commands, durations, cost ledger (~$1.0, five live
+  takes), honest caveats (estado `en_proceso`, 1/many timeline hours captured,
+  servicios `confirmado:false`, silent clip rationale).
+- Working material: `real-session-take/take5-success/` (raw 189.4 s take,
+  ws-trace, timeline, ficha/transcript snapshots) + `clip-driver.mjs`,
+  `json-beat.mjs`, `probe-worklet.mjs` harness.
+
+Key facts: session `sess_202609171957182` (mode real, i2, IC-2001), 169.6 s
+audio, **58,312 input.audio frames, zero gaps >1.5 s** (max 0.31 s), 21 turns,
+104 events, severidad corrected media→alta by voice, `audio_retained:false`.
+Full artifact in repo `.data/sessions/sess_202609171957182.json`
+(sha256 head cd21306e). Recording method: full Chromium + Xvfb + external
+ffmpeg x11grab **8 fps ultrafast** — every CDP-capture and faster-x11grab
+variant starves the AudioContext render thread (isolation matrix in the notes
+and `clip-driver.mjs` header); 8 fps is the fastest rate that provably
+coexists with the audio pipeline on this host.
+
+## ✅ Checkpoint 3 — T-AAI-4 barge-in row (DONE 2026-09-17)
+
+Row delivered by sibling session (README commit 007157b). This session pasted
+the same row + compressed honest note into `docs/SUBMISSION.md` (metrics table
+after "Confirmation-loop precision" + honest-notes bullet) — **kept uncommitted
+with the other SUBMISSION.md hunks** (see entanglement below).
+
 ## ⚠️ Entanglement — read before committing anything
 
 A sibling session (video d6) left uncommitted hunks in **STATUS.md,
@@ -56,14 +90,9 @@ that reference the SUPERSEDED 178.1 s / 2:58 master. The CURRENT master is
 
 ## ⏳ Remaining tasks
 
-- **T-AAI-2** — real-session clip 45–60 s vs live API → deliverables/
-  `real-session-clip.mp4` + `REAL-SESSION-NOTES.md`. Harness:
-  `scripts/realgate.mjs` (+ `npm run smoke:mock` for the UI). Key: `.env`
-  (mode 600), NEVER print/commit. If key missing → STOP + document human gate.
-- **T-AAI-4** — barge-in real-session row from `.data/gate/artifact-i*.json`
-  (+ D2-gate artifacts) → README §Metrics + SUBMISSION.md table, or honest
-  omission note.
-- Final: update this file per sub-task; 6-line closing summary.
+- ~~T-AAI-2~~ DONE (checkpoint 2). ~~T-AAI-4~~ DONE (checkpoint 3).
+- Human gates (unchanged): push, submission text finalization, the four
+  entangled doc files' commit, video review.
 
 ## Repo facts a sibling session needs
 
