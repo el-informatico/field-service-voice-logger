@@ -12,7 +12,9 @@ confirmation-loop precision/recall, end-of-speech→tool-call latency (p50/p95),
 WER clean vs +noise, and barge-in respected-vs-stolen. See [Metrics](#metrics).
 
 > Built for the [AssemblyAI Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) (Sept 2026).
-> Status: pre-sprint scaffold — real voice sessions start D1 of the sprint. See [STATUS.md](STATUS.md).
+> Status: built and measured — **10 real voice sessions** against the live
+> AssemblyAI API (metrics below), demo video recorded, submission pack in
+> [docs/SUBMISSION.md](docs/SUBMISSION.md). Live progress: [STATUS.md](STATUS.md).
 
 ## Why (the 45-minute problem)
 
@@ -21,7 +23,8 @@ memory. Existing "voice to form" tools are one-shot dictation; conversational
 copilots exist (Aquant Roger, Oxmaint, Arrival AI), and read-back loops are
 appearing in adjacent verticals (phone intake, operating rooms) — but **nobody
 applies the spoken confirmation loop to field-service work orders, and nobody in
-this hackathon's 61 submissions publishes measured extraction accuracy**. That
+this hackathon's 63 submissions (re-audited 2026-09-17) publishes measured
+extraction accuracy**. That
 loop — read-back of part numbers and quantities that sound alike (3/4" vs 3/8") —
 is what makes a voice-filled work order trustworthy enough to invoice against.
 Technicians ask for exactly this ([r/FieldService](https://www.reddit.com/r/FieldService/comments/1ldrsr2/could_calling_an_ai_help_field_service_workers/)).
@@ -118,8 +121,10 @@ table.
 
 ## How we differ from Relay (and the field)
 
-Based on the gallery audit of 2026-09-15 (61 submissions; full evidence in
-[docs/research/competitor-landscape-2026-09-15.md](docs/research/competitor-landscape-2026-09-15.md)):
+Based on the gallery audits of 2026-09-15 and 2026-09-17 (61 → 63 submissions;
+full evidence in
+[docs/research/competitor-landscape-2026-09-15.md](docs/research/competitor-landscape-2026-09-15.md)
+and [docs/GALLERY-AUDIT-0917.md](docs/GALLERY-AUDIT-0917.md)):
 
 - **[Relay](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/relay/relay-voice-operations-for-field-work)** is the direct field-service entry. They say it best themselves:
   *"Relay is not a voice form filler. It is a voice operations agent that executes work."*
@@ -129,23 +134,32 @@ Based on the gallery audit of 2026-09-15 (61 submissions; full evidence in
   inventory, transfers — not to data captured from speech), a work order that
   fills live with a per-field audit trail, **PDF/CSV export**, and **measured
   extraction accuracy + noise/latency tests**. None of those appear in their
-  public materials as of 2026-09-15.
+  public materials as of the 2026-09-17 re-audit.
 - **[QuoteReady](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/quoteready/quoteready)** is the closest in *form* — corrected read-back, transcript evidence per answer, caller approval — but in *domain* it is inbound phone intake for pre-work quotes (5 fields, JSON draft). We log the **post-work repair record** for a hands-busy technician: parts SKUs validated against a catalog, quantities, work time, invoicing-grade output. Their own materials mark real-speaker and interruption evaluation as "future work"; measured accuracy is our deliverable, not an afterthought.
-- **Zero of 61 submissions publish measured extraction accuracy.** The
-  "evidence-linked intake" pattern is crowding adjacent verticals (EvidenTurn —
-  consumer complaints; AegisOR — OR read-back compliance; Voicemed — SOAP notes),
-  so we don't claim the pattern — we claim **the domain (field service +
-  industrial noise) plus the published numbers**: accuracy per field type vs
-  seeded ground truth, confirmation-loop precision/recall, latency p50/p95,
-  WER clean vs +noise (DEMAND), barge-in respected vs stolen.
+- **Zero of 63 submissions publish measured extraction accuracy** (audits of
+  2026-09-15 and 2026-09-17). The closest is Robin Voice Ops, which publishes a
+  scenario pass-rate and decision-latency percentiles — not per-field
+  precision/recall vs ground truth, not WER, not confirmation-loop precision;
+  nothing in the gallery does. Meanwhile the "evidence-linked intake" pattern
+  keeps crowding adjacent verticals (EvidenTurn — consumer complaints; AegisOR —
+  OR read-back compliance; Voicemed — SOAP notes; since 09-15 also: insurance
+  claim intake, investor debriefs), so we don't claim the pattern — we claim
+  **the domain (field service + industrial noise) plus the published numbers**:
+  accuracy per field type vs seeded ground truth, confirmation-loop
+  precision/recall, latency p50/p95, WER clean vs +noise (DEMAND), barge-in
+  respected vs stolen.
 - vs. market tools (Salesforce Voice-to-Form, Benetics, Hardline, Neuron7,
   Valoon — dictation; Aquant Roger, Oxmaint, Arrival AI — conversational CMMS):
   same wedge — **measured, published confirmation quality**, not claims.
 
-> Caveat from the audit: AutoCopilot (fleet technicians) and KiaOra Dispatch
-> could not be verified (empty JS-rendered pages). The gallery moves fast
-> (+6 submissions on audit day); we re-audit before finalizing the video pitch
-> (see docs/plan.md, D6).
+> Caveat from the audits: KiaOra Dispatch was verified at the 2026-09-17
+> re-audit — NZ property-maintenance **emergency dispatch** (inbound tenant
+> calls, P1/P2/P3 tiers), not post-visit documentation, and it publishes no
+> accuracy. AutoCopilot (fleet technicians) still renders an empty page and
+> stays unverifiable. The gallery moved 61 → 63 in two days (+8 flagged on
+> re-audit day); evidence with URLs and access dates in
+> [docs/GALLERY-AUDIT-0917.md](docs/GALLERY-AUDIT-0917.md), and a final
+> count-check lands with the submission itself.
 
 ## Architecture
 
