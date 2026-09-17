@@ -20,6 +20,7 @@ import { createIncidentStore } from './domain/incident/store.js';
 import { createIncidentToolRunner } from './domain/incident/tool-runner.js';
 import { createIncidentMockAgentChannel } from './domain/incident/mock-agent.js';
 import { buildIncidentToolDefinitions } from './domain/incident/tools.js';
+import { buildIncidentAgentConfig } from './domain/incident/agent-config.js';
 import { prepareIncidentGuion } from './domain/incident/guion-sim.js';
 
 const $ = (id) => document.getElementById(id);
@@ -434,7 +435,8 @@ async function startSession() {
     const guion = prepareIncidentGuion(state.guion, gt, state.servicios);
     const tools = buildIncidentToolDefinitions(state.servicios.map((s) => s.id));
     if (state.mode === 'real' && state.token) {
-      channel = createRealAgentChannel({ token: state.token, tools });
+      const caso = state.incidentes.find((i) => i.id === (state.guion.incidente_id ?? state.orderId));
+      channel = createRealAgentChannel({ token: state.token, tools, config: buildIncidentAgentConfig(caso) });
     } else {
       channel = createIncidentMockAgentChannel({
         incidentes: state.incidentes, servicios: state.servicios, guion, speed: 1,
