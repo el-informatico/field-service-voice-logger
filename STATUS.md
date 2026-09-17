@@ -263,11 +263,11 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
   384×288) y `BorderStyle=3,Outline=0` no dibuja caja en este build de libass
   → gemelo **.ass con PlayRes 1920×1080** (estilo en píxeles reales, caja
   opaca y980–1060, nada sobre y930) + lane `captions-visible` anti-regresión.
-  (6) **QA visual residual GLM-5.3-Flash** (secundario): 3 runs. Run 1 (4
+  (6) **QA visual residual con modelo de visión externo** (secundario): 3 runs. Run 1 (4
   FAIL) detectó 1 defecto real (ventana e-exports por el drift, corregido);
   run 2 (8 FAIL) **invirtió veredictos sobre píxeles idénticos** → inestable
   en frames borderline, se documentó sin iterar; run 3 sobre el final (post
-  -fix): **7/11 PASS** y GLM ahora LEE el texto del caption (confirma el
+  -fix): **7/11 PASS** y el modelo ahora LEE el texto del caption (confirma el
   fix). Los 4 FAIL restantes analizados contra evidencia determinista = 0
   defectos accionables: 2 son límites naturales entre cues encadenadas
   ("The agent reads"→"it back, naming both catalog services."; "…entries.
