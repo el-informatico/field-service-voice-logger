@@ -64,6 +64,7 @@ documented in [STATUS.md](STATUS.md) METRICS-N10; artifacts under `.data/gate/`)
 | Servicios afectados set recall | 70.6% (5 FN) | 10 | see notes |
 | Timeline horas exactas | 19/35 GT events (54.3%) | 10 | hora exacta; see notes |
 | Confirmation-loop precision (read-backs → correction) | 62.1% | 29 read-backs | real dialogue |
+| Barge-in respected (designed interrupt → reply cut ≤500 ms) | **0/3** (1,338 / 9,034 / 20,501 ms) | 3 designed interrupts | hour-correction script; see notes |
 
 Prompt-v4 sessions alone (same scripts, same conditions): service set
 precision/recall **100%/100%** (9 TP / 0 FP / 0 FN), timeline hours **13/18
@@ -89,7 +90,16 @@ content ("producción") instead of yes/no. (6) No session (v3 or v4) reached
 `enviar_reporte` — the rig closes the socket after the last scripted reply,
 so `estado` stays `en_proceso` in every artifact. (7) Aggregate chronological
 WER and agent-first-word latency stay excluded as driver artifacts —
-matched-pair WER is the reported figure.
+matched-pair WER is the reported figure. (8) Designed barge-ins never made
+the 500 ms respect window: the hour-correction turn (the one scripted
+interrupt, three i3 runs — R3a/R3b/R5c) measured 1,338 / 9,034 / 20,501 ms
+speech-start → reply-cut with `interrupt_response: true,
+interruption_delay: 0` configured throughout; 25 further opportunistic
+`barge_in` events carry no timing anchor and are excluded by the canonical
+metric ([metrics/lib/bargein.js](metrics/lib/bargein.js)). This is the same
+C3 weakness that failed the work-order D2 gate (1/3, 0/3 at 10 dB,
+[docs/D2-GATE-RESULTS.md](docs/D2-GATE-RESULTS.md)) and drove the pivot to
+quiet post-visit dictation with a spoken confirmation loop.
 
 CI-proven in mock mode (`npm run smoke:mock`, deterministic, no API key): the
 session artifacts match the seeded ground truth exactly — services/timeline/
