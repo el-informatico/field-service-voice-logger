@@ -72,32 +72,63 @@ the same row + compressed honest note into `docs/SUBMISSION.md` (metrics table
 after "Confirmation-loop precision" + honest-notes bullet) — **kept uncommitted
 with the other SUBMISSION.md hunks** (see entanglement below).
 
-## ⚠️ Entanglement — read before committing anything
+## ✅ Entanglement — RESUELTA (T7, 2026-09-17): commit `0e6b261`
 
-A sibling session (video d6) left uncommitted hunks in **STATUS.md,
-docs/SUBMISSION-CHECKLIST.md, docs/SUBMISSION.md, docs/VIDEO-REVIEW-GUIDE.md**
-that reference the SUPERSEDED 178.1 s / 2:58 master. The CURRENT master is
-**180.2 s (3:00), sha256 prefix `60f71f8e`** (full sha recorded in
-`~/projects/field-service-voice-logger-deliverables/VIDEO-AUDIT-d6.md`)
-(round 3, 2026-09-17 09:21, `~/projects/field-service-voice-logger-deliverables/demo-video-d6.mp4`).
+Los 4 archivos (STATUS.md, docs/SUBMISSION-CHECKLIST.md, docs/SUBMISSION.md,
+docs/VIDEO-REVIEW-GUIDE.md) se commitearon JUNTOS en **`0e6b261`** tras
+refrescar todas las referencias de duración al master final. El master
+CURRENT es **180.3 s (3:00), sha256 prefix `e662bb5f`** (iteración-3 final,
+15:03; el `60f71f8e` / 180.2 s / 8.65 que esta sección registraba era el
+baseline PRE-iteraciones — linaje completo en
+`~/projects/field-service-voice-logger-deliverables/VIDEO-STATUS.md`; score
+final 8.75). Sin push (sigue human-gated).
 
-- My T-AAI-1 edits to SUBMISSION.md (:5, :29, :61, :66) and STATUS.md (:10)
-  are **in the working tree, intentionally uncommitted** — they are correct
-  and copy-paste-critical for submission; the video session (or the human)
-  should commit them together with its own doc updates, ideally after
-  refreshing the 2:58→3:00 references in those same files.
-- NEVER `git add` those four files as part of an evidence-session commit.
+- Refrescos de duración incluidos en el commit: tabla de beats de la GUIDE
+  re-anclada al SRT de 56 cues (10 filas + ventana del check-off + anclas de
+  residuos/print-view), STATUS (7)/(389)/header, CHECKLIST ya estaba al día.
+- Fix extra: pairing barge-in en SUBMISSION.md — artefactos reales
+  R3a=9,034 / R3b=1,338 / R5c=20,501 ms (antes emparejados ascendente).
 
 ## ⏳ Remaining tasks
 
-- ~~T-AAI-2~~ DONE (checkpoint 2). ~~T-AAI-4~~ DONE (checkpoint 3).
-- Human gates (unchanged): push, submission text finalization, the four
-  entangled doc files' commit, video review.
+- ~~T-AAI-2~~ DONE. ~~T-AAI-4~~ DONE. ~~Commit de los 4 archivos~~ DONE
+  (`0e6b261`, T7).
+- Human gates (unchanged): push, submission text finalization, video review.
+- **Flag-only (para el gate humano del ítem 7 del checklist):** `cover-c.png`
+  (09:21) es píxel-stale vs el master final — frame 00:05 del it3 difiere en
+  93% de píxeles (intro oscura nueva vs apertura vieja). cover-a/cover-b
+  escenas no tocadas por it3 (solo zoom lento it1 podría desplazar píxeles).
+  Regenerar cover-c del master final si se elige.
 
 ## Repo facts a sibling session needs
 
 - Live deployment runs mock channel by design (no API key on Vercel).
 - `npm run selftest` / `npm run smoke:mock` green as of the judge audit (09-17).
 - Push is HUMAN-gated (checklist) — this session does not push.
-- Video rounds are CLOSED 3/3 at 8.65 (`VIDEO-ITERATION-STATE.md`) — do not
-  reopen T-AAI-3.
+- Video rounds are CLOSED 3/3 at **8.75** (master final `e662bb5f`, 180.3 s;
+  `VIDEO-STATUS.md` en el dir de entregables — el 8.65 era el baseline
+  pre-iteraciones) — do not reopen T-AAI-3.
+
+## ✅ T7 — CERRADO (2026-09-17, sesión de continuación tras turn muerto 16:09)
+
+Despacho: barrido de huérfanos + verificación T-AAI-2/4 + commit de los 4
+archivos entangled + este cierre. Resumen en 5 líneas:
+
+1. **Huérfanos**: kill del bash dev-server 1458778 + node 1458780 (puerto
+   3199), únicos atribuibles al turn muerto; NO existía ningún monitor (la
+   creencia del despacho era errónea); nada ambiguo pendiente.
+2. **Clip T-AAI-2: REAL.** 55.0 s (spec 45–60), UI real variando + bandas de
+   disclosure persistentes en cada frame (comando de ensamblado recuperado del
+   transcript + varianza de píxeles PIL; sin visión in-env); silencioso POR
+   DISEÑO documentado (banda + `-an`; AudioContext starved) — desviación del
+   enunciado del despacho, reportada tal cual.
+3. **Barge-in T-AAI-4: REAL.** 0/3 respetados; trazado a artefactos
+   R3a=9,034 / R3b=1,338 / R5c=20,501 ms (`.data/gate/artifact-i3-*.json`,
+   `interrupt_response:true`); pairing corregido en SUBMISSION.md; README
+   nota (8) con el mismo desorden posicional — fuera de alcance, anotado.
+4. **Commit**: `0e6b261` — 4 archivos, +119/−126, mensaje español sin
+   atribución, sin rutas host; SIN push (human-gated).
+5. **Duraciones**: todas las referencias vivas ahora dicen 180.3 s / 3:00 /
+   31 MB / 56 cues (GUIDE re-anclada al SRT; STATUS codas; CHECKLIST ya
+   al día). Flag-only: cover-c.png stale vs intro it3 (93% píxeles);
+   "8.65" del despacho era baseline — final 8.75.
