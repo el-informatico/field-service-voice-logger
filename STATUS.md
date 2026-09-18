@@ -1,13 +1,13 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-16** (pack de submit completo: textos, guía de revisión del video, auditoría PUSH-SAFE; únicos gates restantes: revisión humana del video + push).
+Bitácora por bloque. Última actualización: **2026-09-17** (re-audit galería a 63 envíos + fila barge-in real-session en docs de submit + refresh a master de video 3:00 tras 3 iteraciones; únicos gates restantes: revisión humana del video + push).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
 
 | Bloque | Estado | Evidencia |
 |---|---|---|
-| PASO 0 — vigilancia competitiva | ✅ | `docs/research/competitor-landscape-2026-09-15.md`. **Wedge libre**: Relay renuncia al carril ("not a voice form filler"), QuoteReady ocupa read-back en otro dominio (intake de presupuestos), 0/61 submissions publican accuracy. Riesgos no verificables: AutoCopilot, KiaOra → re-auditar antes del video (D6) |
+| PASO 0 — vigilancia competitiva | ✅ | `docs/research/competitor-landscape-2026-09-15.md` + re-auditoría 2026-09-17 (`docs/GALLERY-AUDIT-0917.md`). **Wedge libre**: Relay renuncia al carril ("not a voice form filler", cita reverificada 09-17), QuoteReady ocupa read-back en otro dominio (intake de presupuestos, cita reverificada), 0/63 submissions publican accuracy (el más cercano: Robin Voice Ops publica pass-rate de escenarios + p50/p95 de latencia, NO accuracy de extracción). KiaOra YA verificado (dispatch de emergencias, no documenta, sin accuracy); AutoCopilot sigue sin verificar. Queda 1 conteo final el día del submit |
 | Investigación docs AssemblyAI | ✅ | `docs/research/assemblyai-notes.md` (contrato verificado). Correcciones al brief: min_silence adaptativo (no fijar), interrupt_response true por defecto, token GET, audio PCM16 24 kHz base64-en-JSON, tool.result como string, siempre session.end |
 | Scaffold + contrato | ✅ | `docs/architecture.md` (esquemas §4–§9), LICENSE Apache-2.0, CI (`npm run selftest` + `smoke:mock`) |
 | Datos sembrados + GT | ✅ | `node data/validate.js` OK: 10 órdenes (5 HVAC + 5 eléctrico), 25 piezas con pares confundibles, 3 guiones, 3 GT (s2: error sembrado 3/4→3/8; s3: 3 interrupciones) |
@@ -247,10 +247,11 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
   speaking them back."
   (4) **Edición**: ffmpeg xfade/acrossfade (12 segmentos: 4 escenas estáticas
   + 8 cortes del take), captions quemadas con aserción dura narración==cues
-  (47 cues / 377 palabras, verificada en SRT y en el .ass quemado), loudnorm
+  (47 cues / 377 palabras, verificada en SRT y en el .ass quemado; re-render
+  2026-09-16: 50 cues / 404 palabras), loudnorm
   I=−14 LUFS (−14.1 medido), 1080p30 H264+AAC.
   (5) **QA determinista** (`tools/qa-lanes.mjs`, 9 lanes) — **9/9 PASS**:
-  duración 193.0 s · word-count SRT==ASS==narración (377) · decode 0 errores ·
+  duración 193.0 s (re-render 2026-09-16: 178.1 s) · word-count SRT==ASS==narración (377; re-render: 404) · decode 0 errores ·
   0 blank frames >0.5 s · 15 valores del README §Metrics verbatim en la escena
   · 14/14 assertions del take · −14.1 LUFS · streams video+audio ·
   captions-visible (Δluma 18–20 en banda inferior, Δ=0 sobre contenido).
@@ -275,7 +276,11 @@ npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1],
   banner (el read-back legible está), 1 footer del print sheet bajo el
   pliegue (comportamiento real de la app, no del encode). Gate = lanes
   deterministas. Reporte: `build/qa-report.md` dentro del workspace externo de video.
-  (7) **Entregable**: `demo-video-d6.mp4` (12.1 MB, 193.0 s = 3:13 < 5:00) +
+  (7) **Entregable**: `demo-video-d6.mp4` (re-render 2026-09-16: 14.3 MB,
+  178.1 s = 2:58 < 5:00; el original 12.1 MB / 193.0 s queda como
+  `demo-video-d6-prev.mp4`; pass de 3 iteraciones 2026-09-17 → master final
+  **31.0 MB, 180.3 s = 3:00**, cadena -prev2/-N1/N2/N3, QA 9/9 re-pasada —
+  fila video en `docs/SUBMISSION-CHECKLIST.md`) +
   `demo-video-d6.srt` (captions EN) en el directorio de entregables externo
   acordado (fuera del repo; >10 MB como se especificó). Sin push. Workspace
   completo de edición (escenas, TTS, take, herramientas, reportes QA) fuera
@@ -380,10 +385,14 @@ UTC). Plan de ejecución ítem por ítem con owners (REPO-YA vs HUMANO):
 - **Revisión del video en ≤10 min**: `docs/VIDEO-REVIEW-GUIDE.md` — 2
   pasadas (1x ficha+captions / 1.5x audio+luces) + tabla minuto-a-minuto de
   los 12 beats + check-off de los 15 valores de la escena de métricas +
-  **DECISIÓN #1**: el video se renderizó antes de METRICS-N10 y cita la
-  tabla N=5 (11/15 valores difieren del README actual) — o se acepta la
-  discrepancia (ya declarada en SUBMISSION) o se regenera el beat
-  `m-metrics` (determinista, $0, protocolo abajo).
+  **DECISIÓN #1 — RESUELTA (2026-09-16)**: el video se re-renderizó contra
+  la tabla N=10 (beat `m-metrics` regenerado + narración re-grabada; 15/15
+  valores verbatim contra README; lane metrics-verbatim re-anclada). Master
+  nuevo 178.1 s entregado como `demo-video-d6.mp4` (anterior conservado como
+  `demo-video-d6-prev.mp4`; 09-17: superseded por el master final 180.3 s =
+  3:00 tras 3 iteraciones); validación GLM-vision 1 ronda, 8/8 ítems del
+  audit resueltos o N/A documentado — detalle en
+  `VIDEO-AUDIT-d6.md §8 ROUND RESULTS`.
 - **Regeneración del video**: `docs/VIDEO-REGEN-PROTOCOL.md` — 7 casos con
   comandos exactos del workspace de edición externo, matriz
   determinista(A)/re-grabar(B)/humano(C), gate obligatorio 9/9 lanes.

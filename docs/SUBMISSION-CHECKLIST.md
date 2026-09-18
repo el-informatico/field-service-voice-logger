@@ -17,12 +17,12 @@ Referencias rápidas:
 
 | Qué | Evidencia / ruta | Owner |
 |---|---|---|
-| Video demo final, QA determinista 9/9 | `~/projects/field-service-voice-logger-deliverables/demo-video-d6.mp4` — **3:13** (193.0 s), 1080p30 H264+AAC, **12.1 MB**, captions EN quemadas (verificado con ffprobe 2026-09-16). Subtítulos: `demo-video-d6.srt` (47 cues) | REPO-YA |
+| Video demo final, QA determinista 9/9 | `~/projects/field-service-voice-logger-deliverables/demo-video-d6.mp4` — **3:00** (180.3 s), 1080p30 H264+AAC, **31 MB**, captions EN quemadas (iteración-1 2026-09-17 sobre el re-render del 09-16: narración acorde a pantalla en r2, banda de captions más fina, zoom lento en escenas largas; iteración-2 2026-09-17: badge DETERMINISTIC REPLAY movido bajo el header (dejaba de tapar el indicador mock); iteración-3 2026-09-17: intro re-estilizada como apertura oscura (reloj 7:00 PM, tarjetas de dolor compactas) — interés de hook 3→7 según auditoría de visión; duración/cues idénticos, QA 9/9 re-pasada (carril 9 ahora también detecta tinta de captions sobre fondos oscuros); anteriores 193.0 s → `demo-video-d6-prev.mp4`, 178.1 s → `demo-video-d6-prev2.mp4`, 180.2 s → `demo-video-d6-prev-N1.mp4`). Subtítulos: `demo-video-d6.srt` (56 cues) | REPO-YA |
 | Tabla N=10 en README (LOCAL) | Commits `75b8334` + `e68afed` (METRICS-N10). **OJO: aún NO pusheados** → ítem 3 del checklist. El repo público hoy muestra la tabla N=5 vieja | REPO-YA |
 | Deploy live verificado | curl 2026-09-16: `/` → **HTTP 200** (0.54 s); `/api/token` → **HTTP 200** con `"mode":"mock"` (esperado: el server no lleva key; el modo real se activa con key en `.env`) | REPO-YA |
 | Re-auditoría de galería pre-video | Hecha antes de grabar la línea de diferenciación (ver STATUS, bloque D6): wedge intacto | REPO-YA |
 | Guion + plan + setup de grabación | `docs/video-script-en.md` · `docs/video-recording-plan.md` · `docs/video-demo-setup.md` · `scripts/demo-video.sh` | REPO-YA |
-| Portadas candidatas (3 PNG 1920x1080) | `~/projects/field-service-voice-logger-deliverables/cover-a.png` (frame **01:59**, escena de métricas) · `cover-b.png` (frame **01:06**, read-back PROD/STG) · `cover-c.png` (frame **00:05**, apertura). Extraídas hoy del mp4; elección = ítem 7 | REPO-AGREGADO-HOY |
+| Portadas candidatas (3 PNG 1920x1080) | `~/projects/field-service-voice-logger-deliverables/cover-a.png` (frame **01:52**, escena de métricas **N=10** — re-extraída del re-render) · `cover-b.png` (frame **01:06**, read-back PROD/STG) · `cover-c.png` (frame **00:05**, apertura). Elección = ítem 7 | REPO-AGREGADO-HOY |
 | Textos base del submit | `docs/SUBMISSION.md` — completo: 7 secciones (ver §3), tabla N=10 verificada contra README | REPO-YA |
 | Guía de revisión del video + protocolo de regeneración | `docs/VIDEO-REVIEW-GUIDE.md` (12 beats, check-off de 15 valores, DECISIÓN #1 N=5/N=10) · `docs/VIDEO-REGEN-PROTOCOL.md` (7 casos: determinista / re-grabar / humano) | REPO-YA |
 | Auditoría pre-publicación | `docs/AUDIT-SUBMISSION-2026-09-16.md` — veredicto **PUSH-SAFE**; único blocker (mensaje del commit D6-video) ya reword-eado sin tocar contenido | REPO-YA |
@@ -37,7 +37,7 @@ Referencias rápidas:
 | 3 | **Push del repo — CRÍTICO**: sin push, el link del submit muestra la tabla N=5 (METRICS-N10 vive en commits locales) | HUMANO (regla del proyecto: NINGÚN push sin "YES" explícito tuyo) | Antes de pegar cualquier link | PENDIENTE | `git push origin main` — publica METRICS-N10 (README N=10, prompt v4, guion i4) + el pack de submit. Auditorías hechas: pre-push D5 (STATUS) y pre-submission (`docs/AUDIT-SUBMISSION-2026-09-16.md`, PUSH-SAFE; el mensaje del commit D6-video ya fue reword-eado sin tocar contenido). Verificar antes: `git status -sb` |
 | 4 | Verificación post-push en GitHub | HUMANO | 5 min tras el push | PENDIENTE | README §Metrics dice "10 REAL voice sessions" con la tabla N=10 (refrescar sin caché); CI verde: pestaña Actions, job `selftest` (`npm run selftest` + `npm run smoke:mock`); `git status -sb` → "up to date" |
 | 5 | Verificación Vercel tras el push | HUMANO | Tras el ítem 4 | PENDIENTE | Integración Git → redeploy automático esperado. Verificar: `curl -s -o /dev/null -w "%{http_code}\n" https://field-service-voice-logger.vercel.app/` → 200, y `curl -s https://field-service-voice-logger.vercel.app/api/token` → 200 + `"mode":"mock"`. Si no redeploya o falla: dashboard Vercel → Deployments → Redeploy / logs |
-| 6 | Hosting del video: subir a YouTube unlisted (o Streamable) y subir el SRT como subtítulos; probar EN EL TELÉFONO antes de pegar el link | HUMANO | Cuanto antes (bloquea el submit) | PENDIENTE | `~/projects/field-service-voice-logger-deliverables/demo-video-d6.mp4` + `demo-video-d6.srt`. Si la plataforma pide archivo directo: el mp4 (12.1 MB) cumple de sobra |
+| 6 | Hosting del video: subir a YouTube unlisted (o Streamable) y subir el SRT como subtítulos; probar EN EL TELÉFONO antes de pegar el link | HUMANO | Cuanto antes (bloquea el submit) | PENDIENTE | `~/projects/field-service-voice-logger-deliverables/demo-video-d6.mp4` + `demo-video-d6.srt`. Si la plataforma pide archivo directo: el mp4 (31 MB) cumple de sobra |
 | 7 | Elegir portada/thumbnail (1 min) | HUMANO | Junto al ítem 6 | PENDIENTE | `cover-a.png` (tabla de métricas) / `cover-b.png` (momento read-back, el diferencial) / `cover-c.png` (apertura). Mismas rutas de entregables |
 | 8 | Rellenar los textos del formulario copiando de `docs/SUBMISSION.md` (mapeo en §3) | HUMANO (fuente: REPO) | Día del submit (o antes) | LISTO PARA COPIAR | `~/projects/field-service-voice-logger/docs/SUBMISSION.md` (7 secciones, tabla N=10 verificada contra README) |
 | 9 | Metadatos de equipo/perfil en la plataforma (foto, bio, miembros del equipo) | HUMANO | Día del submit (o antes) | PENDIENTE | Perfil de la plataforma; usar el mismo nombre/avatar que firma el repo |
@@ -64,11 +64,11 @@ nombres de campo.
 
 1. **La plataforma rechaza el video** (formato/peso): el camino primario ya es un
    link (YouTube unlisted / Streamable); el archivo directo `demo-video-d6.mp4`
-   (12.1 MB) es el fallback si pide upload. Último recurso, solo si exigiera menos
+   (31 MB) es el fallback si pide upload. Último recurso, solo si exigiera menos
    peso:
    `ffmpeg -i demo-video-d6.mp4 -c:v libx264 -crf 28 -preset slow -c:a aac -b:a 96k demo-video-d6-small.mp4`
    — las captions están quemadas en el cuadro, sobreviven cualquier re-encode;
-   verificar duración 3:13 y audio audible antes de subir.
+   verificar duración 3:00 y audio audible antes de subir.
 2. **El deploy cae**: el repo corre local — `cp .env.example .env` (opcional; sin
    key = modo mock determinista), `npm run dev` → http://localhost:3000 (en WSL2,
    si 127.0.0.1 cuelga usar `[::1]`); demo guiada de un comando:

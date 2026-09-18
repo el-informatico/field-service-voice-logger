@@ -2,7 +2,7 @@
 
 Closes 2026-09-30 15:00 UTC. Everything below is copy-paste ready; sources: README.md,
 STATUS.md, docs/video-script-en.md, docs/D2-GATE-RESULTS.md,
-docs/research/competitor-landscape-2026-09-15.md.
+docs/research/competitor-landscape-2026-09-15.md, docs/GALLERY-AUDIT-0917.md.
 
 ## Submission metadata
 
@@ -26,7 +26,7 @@ A voice agent that interviews the technician after a visit, fills the incident r
 
 **The problem**
 
-Field technicians spend 30–60 minutes per job writing up the visit — often after hours, in a truck, from memory. Notes get lost, reports get thin, and nothing is auditable. Voice-to-text exists, but dictation alone cannot tell a report from a guess: "production" and "staging" servers, rack A3 and A8, 3/4" and 3/8" valves all sound close enough to end up on an invoice. Of the 61 submissions live at our 2026-09-15 gallery audit, none published measured extraction accuracy — every voice demo we could find either fills a form or dispatches autonomously; none publish accuracy, and none rescue capture errors by speaking them back.
+Field technicians spend 30–60 minutes per job writing up the visit — often after hours, in a truck, from memory. Notes get lost, reports get thin, and nothing is auditable. Voice-to-text exists, but dictation alone cannot tell a report from a guess: "production" and "staging" servers, rack A3 and A8, 3/4" and 3/8" valves all sound close enough to end up on an invoice. Of the 61 submissions at our 2026-09-15 gallery audit — and the 63 at the 2026-09-17 re-audit — none published measured extraction accuracy (the closest, Robin Voice Ops, publishes a scenario pass-rate and latency percentiles, not field-level accuracy): every voice demo we could find either fills a form or dispatches autonomously; none publish accuracy, and none rescue capture errors by speaking them back.
 
 **What it does**
 
@@ -44,7 +44,7 @@ After the visit, the technician opens the incident and starts a voice session �
 **Honest rig & framing**
 
 - **All published metrics come from 10 real voice sessions against the live AssemblyAI API**, driven by a rules-only measurement rig: scripted operator utterances (pre-generated wav played at real pace), seeded ground truth, no free-form human turns. The rig is why the numbers are reproducible — and why we do not claim spontaneous-conversation performance.
-- **The demo video's roleplay beats are a deterministic replay of the mock channel.** The burned on-screen label says so: "DETERMINISTIC REPLAY — scripted session (mock channel)". The narration is synthetic text-to-speech made for the video. We never present synthesized audio as the assistant's real session audio — real-session evidence lives in the per-session artifacts and the metrics table, not in acting. (The narration was recorded against the earlier five-session table; the N=10 numbers below are the superset — same rig, five more sessions, matched-pair WER unchanged at 0.231.)
+- **The demo video's roleplay beats are a deterministic replay of the mock channel.** The burned on-screen label says so: "DETERMINISTIC REPLAY — scripted session (mock channel)" — and the narration says it out loud too ("What you're watching is a deterministic replay — the scripted session on a mock channel, in the operator's Spanish UI. The numbers later come from real API runs."). The narration is synthetic text-to-speech made for the video. We never present synthesized audio as the assistant's real session audio — real-session evidence lives in the per-session artifacts and the metrics table, not in acting. (The video was re-rendered 2026-09-16 against the N=10 table below — on-screen values and spoken numbers match the README verbatim.)
 - **The noise-gate pivot was an evidence-driven decision, not a hidden failure.** The original plan — live voice during the repair — went through a pre-registered gate at 10 dB SNR with DEMAND noise (16 real sessions, runbook in docs/D2-GATE.md, results in docs/D2-GATE-RESULTS.md). Clean audio converged (WER 0.080, ground-truth-exact card). At 10 dB, every pre-registered criterion failed: false turn-endings 2–4 per session (criterion ≤1), provoked barge-ins 1/3 and 0/3 (criterion ≥2/3), WER 0.17–0.25 in babble, tool calls collapsing from 7 to 0–2; `voice_focus: near-field` did not help. Gate failed → we pivoted to post-visit quiet dictation and designed the failure mode out, keeping the read-back loop and the published numbers.
 - **The live deployment runs the deterministic mock channel** (no API key on the public server, by design). Real sessions run locally against the live API with a one-use token.
 
@@ -58,12 +58,12 @@ After the visit, the technician opens the incident and starts a voice session �
 
 **Accomplishments**
 
-- **10 real, measured, published sessions — failures included.** Turn completion, WER, latency percentiles, per-field precision/recall, confirmation-loop precision: all on the table, reproducible from the repo. Zero of 61 gallery submissions published measured extraction accuracy at audit time.
+- **10 real, measured, published sessions — failures included.** Turn completion, WER, latency percentiles, per-field precision/recall, confirmation-loop precision: all on the table, reproducible from the repo. Zero of 63 gallery submissions published measured extraction accuracy at the 2026-09-17 re-audit (61 at the original audit).
 - **The seeded capture error was rescued by the spoken loop in a real session** (rack A8 captured → disambiguation read-back naming both catalog services → A3 confirmed; recorded in the session artifact).
 - **A measured prompt fix, not a vibe**: the v3→v4 comparison above was run on the same scripts under the same conditions, and the pure-narrative script went from 1 tool call and 0/8 hours to 10–15 tool calls and 7/8 hours.
 - **CI-proven end-to-end**: one command (`npm run smoke:mock`) runs sessions, artifacts, and the metrics table deterministically with zero dependencies and zero API cost.
 - **Privacy enforced in code, not in a policy page**: consent before the mic, audio never uploaded, and the server rejects any artifact with `audio_retained ≠ false` or audio-typed payloads (33 backend self-checks).
-- **Evidence-linked differentiation**: a dated gallery audit with cited quotes (docs/research/competitor-landscape-2026-09-15.md), and a re-audit of the one unverifiable field-service-adjacent entry before recording the pitch line.
+- **Evidence-linked differentiation**: two dated gallery audits with cited quotes (docs/research/competitor-landscape-2026-09-15.md, docs/GALLERY-AUDIT-0917.md); the previously unverifiable field-service-adjacent entry (KiaOra Dispatch) is now verified as dispatch-intake with no published accuracy, and competitor quotes were re-checked verbatim on 2026-09-17.
 
 **What's next**
 
@@ -86,6 +86,7 @@ After the visit, the technician opens the incident and starts a voice session �
 | Servicios afectados set recall | 70.6% (5 FN) | 10 | see notes |
 | Timeline horas exactas | 19/35 GT events (54.3%) | 10 | hora exacta; see notes |
 | Confirmation-loop precision (read-backs → correction) | 62.1% | 29 read-backs | real dialogue |
+| Barge-in respected (designed interrupt → reply cut ≤500 ms) | **0/3** (1,338 / 9,034 / 20,501 ms) | 3 designed interrupts | hour-correction script; see notes |
 
 *(Spanish row labels are the artifact's literal field names: severidad = severity, servicios afectados = affected services, horas exactas = hour-exact entries.)*
 
@@ -99,6 +100,7 @@ After the visit, the technician opens the incident and starts a voice session �
 - Strict timeline match (hour + event text similarity) is 0 TP in every session: the agent captures the operator's verbatim phrasing while the ground truth stores clean phrases — hour-exact match is the reported signal.
 - No session (v3 or v4) reached `enviar_reporte`: the rig closes the socket after the last scripted reply, so `estado` stays `en_proceso` in every artifact.
 - Turn-completion misses are VAD splits of long turns and empty final transcripts (driver artifacts), not agent refusals; rescue counts undercount when the operator answers with content ("Producción") instead of yes/no.
+- Designed barge-ins never made the 500 ms respect window: the hour-correction turn (the one scripted interrupt, three i3 runs — R3a/R3b/R5c) measured 9,034 / 1,338 / 20,501 ms speech-start → reply-cut with `interrupt_response: true, interruption_delay: 0` configured throughout; 25 further opportunistic `barge_in` events carry no timing anchor and are excluded by the canonical metric (metrics/lib/bargein.js). Same C3 weakness that failed the work-order D2 gate and drove the pivot to quiet post-visit dictation with a spoken confirmation loop.
 
 ## Built with
 
@@ -114,7 +116,7 @@ After the visit, the technician opens the incident and starts a voice session �
 
 - **GitHub:** https://github.com/el-informatico/field-service-voice-logger
 - **Live demo:** https://field-service-voice-logger.vercel.app (runs the deterministic mock channel — no API key on the public server, by design)
-- **Demo video:** <to be linked at submission time — file demo-video-d6.mp4, 3:13>
+- **Demo video:** <to be linked at submission time — file demo-video-d6.mp4, 3:00>
 
 ## Platform mapping
 
