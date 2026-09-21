@@ -20,7 +20,7 @@ against LOCAL state (no push needed).
 ## Pre-flight (once)
 
 ```bash
-cd ~/projects/field-service-voice-logger
+cd <repo>
 npm run selftest && npm run smoke:mock      # everything green before recording
 bash scripts/demo-video.sh                  # one-command demo (see docs/video-demo-setup.md)
 # → prints http://[::1]:3199  (open in browser on the Windows side via the

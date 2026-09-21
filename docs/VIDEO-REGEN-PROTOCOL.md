@@ -6,20 +6,20 @@ los flags de ffmpeg citados son los que usan los scripts (no hay flags inventado
 
 ## Nota operativa: dónde vive cada cosa
 
-- **Workspace de edición = EXTERNO al repo**: directorio hermano
-  `~/projects/video-d6-work` (de aquí en adelante `$VIDEO_WORKSPACE`). Contiene
+- **Workspace de edición = EXTERNO al repo**: directorio hermano de edición
+  (de aquí en adelante `$VIDEO_WORKSPACE`). Contiene
   escenas, TTS, take, herramientas, reportes QA. El repo NO lo referencia; el
   único punto de contacto con el repo es `scripts/demo-video.sh` (boot del
   dev-server para el take).
 - **Entregables** (fuera del repo, el mp4 pesa >10 MB):
-  `$DELIVER = ~/projects/field-service-voice-logger-deliverables`.
+  `$DELIVER` = directorio hermano de entregables del proyecto.
 - Convenciones: `$REPO` = este repo; `$VIDEO_WORKSPACE` como arriba. Los comandos
   del workspace se ejecutan desde su raíz.
 
 ```bash
-REPO=~/projects/field-service-voice-logger
-VIDEO_WORKSPACE=~/projects/video-d6-work
-DELIVER=~/projects/field-service-voice-logger-deliverables
+REPO=<repo>
+VIDEO_WORKSPACE=~/projects/<workspace-hermano-de-video>
+DELIVER=~/projects/<dir-hermano-de-entregables>
 ```
 
 **Requisitos verificados del entorno:** node ≥ 22 · ffmpeg/ffprobe del sistema ·

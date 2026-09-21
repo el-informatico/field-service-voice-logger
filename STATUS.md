@@ -390,7 +390,7 @@ UTC). Plan de ejecución ítem por ítem con owners (REPO-YA vs HUMANO):
   valores verbatim contra README; lane metrics-verbatim re-anclada). Master
   nuevo 178.1 s entregado como `demo-video-d6.mp4` (anterior conservado como
   `demo-video-d6-prev.mp4`; 09-17: superseded por el master final 180.3 s =
-  3:00 tras 3 iteraciones); validación GLM-vision 1 ronda, 8/8 ítems del
+  3:00 tras 3 iteraciones); validación con modelo de visión externo 1 ronda, 8/8 ítems del
   audit resueltos o N/A documentado — detalle en
   `VIDEO-AUDIT-d6.md §8 ROUND RESULTS`.
 - **Regeneración del video**: `docs/VIDEO-REGEN-PROTOCOL.md` — 7 casos con

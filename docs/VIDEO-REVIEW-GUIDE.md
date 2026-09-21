@@ -10,11 +10,11 @@ de la auditoría independiente (`VIDEO-AUDIT-d6.md` §6/§8): tabla de métricas
 cadena de encode CRF 16/17, captions del print-view arriba. El master
 anterior (193.0 s, tabla N=5) queda como `demo-video-d6-prev.mp4`.
 
-**Dónde está:** `~/projects/field-service-voice-logger-deliverables/demo-video-d6.mp4`
+**Dónde está:** `<entregables>/demo-video-d6.mp4`
 (+ `demo-video-d6.srt`, 56 cues / 429 palabras — byte-idéntico al quemado en el video).
 
 **Fuente de verdad de los timestamps:** el `.srt` entregable y `build/segments.json`
-del workspace de edición (directorio hermano `video-d6-work`, fuera del repo).
+del workspace de edición (directorio hermano, fuera del repo).
 Los cortes entre segmentos son fundidos de 0.4 s: los límites de la tabla tienen
 ±1 s de tolerancia.
 
@@ -159,4 +159,4 @@ determinista = **0 defectos accionables** (gate = 9/9 lanes deterministas):
 
 → **[docs/VIDEO-REGEN-PROTOCOL.md](VIDEO-REGEN-PROTOCOL.md)** — matriz
 cambio→comando con los pasos exactos, verificados contra el workspace de edición
-(`video-d6-work`, directorio hermano del repo), y el gate de re-QA (9/9 lanes).
+(directorio hermano del repo), y el gate de re-QA (9/9 lanes).

@@ -2,7 +2,7 @@
 
 Session: T-AAI-1 / T-AAI-2 / T-AAI-4 from the internal judge-audit report,
 §P1 (local workspace path redacted per CONTRIBUTING token policy).
-Rules: local commits only, NO push; don't touch video-d6-work/, skill dir,
+Rules: local commits only, NO push; don't touch the video-editing sibling workspace, skill dir,
 other projects. Deadline: submit closes 30-sep 15:00 UTC (internal 28-sep).
 
 ## ✅ Checkpoint 1 — T-AAI-1 gallery re-audit + claims refresh (DONE 2026-09-17)
@@ -42,7 +42,7 @@ Claims refreshed:
 
 Deliverables (NOT in the repo — sibling deliverables dir):
 
-- `~/projects/field-service-voice-logger-deliverables/real-session-clip.mp4`
+- `<entregables>/real-session-clip.mp4`
   — **55.0 s** (spec 45–60), 800×1760@8fps, silent, 1.3 MB, six beats:
   consent → dictation + `set_que_paso` → i2 PROD/STAGING disambiguation →
   tool-burst ficha fill → end screen → full artifact JSON (`GET /api/sessions?id=`).
@@ -80,7 +80,7 @@ refrescar todas las referencias de duración al master final. El master
 CURRENT es **180.3 s (3:00), sha256 prefix `e662bb5f`** (iteración-3 final,
 15:03; el `60f71f8e` / 180.2 s / 8.65 que esta sección registraba era el
 baseline PRE-iteraciones — linaje completo en
-`~/projects/field-service-voice-logger-deliverables/VIDEO-STATUS.md`; score
+`<entregables>/VIDEO-STATUS.md`; score
 final 8.75). Sin push (sigue human-gated).
 
 - Refrescos de duración incluidos en el commit: tabla de beats de la GUIDE
