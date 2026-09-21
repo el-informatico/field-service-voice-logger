@@ -268,7 +268,7 @@
     <tr><td>Confirmation-loop precision (read-backs → correction)</td><td class="n">62.1%</td><td class="n">29 read-backs</td><td>real dialogue</td></tr>
     <tr><td>Barge-in respected (interrupt → reply cut ≤500 ms)</td><td class="n"><span class="hl">0/3</span> (1,338 / 9,034 / 20,501 ms)</td><td class="n">3 designed interrupts</td><td>hour-correction script</td></tr>
   </table>
-  <p style="margin-top:14px;font-size:15px;color:#8a8f9c;">Definitions exact and reproducible from metrics/ in the repo · three sample session artifacts committed as evidence (docs/evidence/gate/) · honest notes on slide 10.</p>
+  <p style="margin-top:14px;font-size:15px;color:#8a8f9c;">Definitions exact and reproducible from metrics/ in the repo · four session artifacts committed as evidence (docs/evidence/gate/) · honest notes on slide 10.</p>
   <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>8</span></div>
 </section>
 
@@ -307,7 +307,7 @@
     <li><b>WER 0.231 on matched pairs</b> — roughly one word in four. Not hidden; it is the reason the product is a confirmation loop and not a transcriber.</li>
     <li><b>The rig is rules-only:</b> scripted operator utterances at natural pace, seeded ground truth, no free-form human turns. Reproducible numbers — and no claim of spontaneous-conversation performance.</li>
     <li><b>2 of 10 sessions hit the 300 s driver watchdog</b> and lost their final turns — one severity miss is the correction turn that never played.</li>
-    <li><b>0 of 10 reached <span style="font-family:DejaVu Sans Mono,monospace;font-size:19px;">enviar_reporte</span></b> — the rig closes the socket after the last scripted reply, so the report status stays in-process in every artifact.</li>
+    <li><b>0 of 10 reached <span style="font-family:DejaVu Sans Mono,monospace;font-size:19px;">enviar_reporte</span></b> — post-audit, that was a driver close-out race, not an agent refusal: fixed in the rig, and one post-fix session completed the send (<b>estado: enviada</b>, artifact committed; not in the N=10 table).</li>
     <li><b>Designed barge-ins never made the 500 ms window: 0/3</b> (1,338 / 9,034 / 20,501 ms) with interruption configured throughout — the same weakness that failed the 10 dB noise gate and drove the post-visit pivot.</li>
     <li><b>Run-to-run variance persists</b> — one v4 session spoke read-backs without registering the timeline. v4 mitigates; it does not eliminate.</li>
   </ul>
@@ -321,7 +321,7 @@
   <div class="row" style="margin-bottom:20px;">
     <div class="col card">
       <h3>Reproducible</h3>
-      <p><b>npm run smoke:mock</b> — deterministic, no API key, no cost: services/timeline/action-items/severity precision &amp; recall <b>100%</b> vs seeded ground truth, <b>4/4 seeded capture errors rescued</b> by the spoken loop, WER 0.006. Three real-session artifacts committed as evidence.</p>
+      <p><b>npm run smoke:mock</b> — deterministic, no API key, no cost: services/timeline/action-items/severity precision &amp; recall <b>100%</b> vs seeded ground truth, <b>4/4 seeded capture errors rescued</b> by the spoken loop, WER 0.006. Four real-session artifacts committed as evidence.</p>
     </div>
     <div class="col card">
       <h3>Private by code, not policy</h3>

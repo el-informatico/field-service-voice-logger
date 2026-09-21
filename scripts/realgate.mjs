@@ -448,9 +448,20 @@ async function run() {
     await playTurn(t);
     turnIdx++;
   }
-  // cierre: último reply + tools drenadas
-  const deadline = performance.now() + 30000;
-  while ((agentReplyActive || pendingToolResults.length) && performance.now() < deadline) await sleep(200);
+  // cierre: el reply final del agente puede tardar en ABRIRSE (EOS→tool p50
+  // ~1.5 s); esperar solo replies YA abiertos mataba el reply final — y con él
+  // cualquier enviar_reporte del "mándalo". Ahora: esperar a que abra (≤10 s),
+  // a que termine (≤30 s), y repetir mientras abra uno nuevo (read-back →
+  // confirmación → despedida), con tope global de 60 s.
+  const closeDeadline = performance.now() + 60000;
+  for (;;) {
+    const tOpen = performance.now();
+    while (!agentReplyActive && performance.now() - tOpen < 10000) await sleep(80);
+    if (!agentReplyActive) break; // quiet: nadie abrió reply nuevo
+    while (agentReplyActive && performance.now() - tOpen < 30000) await sleep(80);
+    while (pendingToolResults.length && performance.now() < closeDeadline) await sleep(100);
+    if (performance.now() >= closeDeadline) break;
+  }
   await sleep(800);
   finish('completed');
   clearTimeout(watchdog);

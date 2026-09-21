@@ -65,9 +65,9 @@ Produced by [metrics/](metrics/README.md) from session artifacts; definitions ar
 exact and reproducible. **10 REAL voice sessions** (Voice Incident Reporter,
 post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API;
 5 sessions on interview prompt v3 + 5 on prompt v4, the narrative-capture fix
-documented in [STATUS.md](STATUS.md) METRICS-N10; three sample artifacts are
-committed as evidence in [docs/evidence/gate/](docs/evidence/gate/), the full
-set stays local):
+documented in [STATUS.md](STATUS.md) METRICS-N10; three sample artifacts plus
+one post-audit session are committed as evidence in
+[docs/evidence/gate/](docs/evidence/gate/), the full set stays local):
 
 | Metric | Value | N | Condition |
 |---|---|---|---|
@@ -101,9 +101,17 @@ captures the operator's verbatim phrasing while the ground truth stores clean
 phrases — hour-exact match is the reported signal. (5) The designed
 capture-error rescue (rack A8 heard → corrected to A3) completed in real
 session R5d; derived rescue counts undercount when the operator answers with
-content ("producción") instead of yes/no. (6) No session (v3 or v4) reached
-`enviar_reporte` — the rig closes the socket after the last scripted reply,
-so `estado` stays `en_proceso` in every artifact. (7) Aggregate chronological
+content ("producción") instead of yes/no. (6) No session in the N=10 set
+reached `enviar_reporte` — post-audit diagnosis found a driver close-out
+race: the close loop only waited for already-open replies, and the final
+reply (which carries the send) takes ~1.5 s to open, so it died with
+`session.end`. The fix in `scripts/realgate.mjs` (cycled close-out: wait for
+the reply to open, then drain, repeat) is confirmed by one post-audit run —
+R6a, same script and prompt — which completed the arc: 23 tool calls ending
+in `enviar_reporte`, `estado: enviada` in the final form, services 100/100
+and severity exact vs ground truth (artifact committed as evidence). R6a is
+not added to the N=10 table: the rig changed after the audit.
+(7) Aggregate chronological
 WER and agent-first-word latency stay excluded as driver artifacts —
 matched-pair WER is the reported figure. (8) Designed barge-ins never made
 the 500 ms respect window: the hour-correction turn (the one scripted
