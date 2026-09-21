@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Pre-push gate: refuses the push when the commits TRAVELING to the remote
+# would introduce configured sensitive tokens — in their cumulative tree
+# diff against the remote ref or in their commit messages. Reads the
+# standard pre-push stdin (one line per pushed ref) and delegates:
+#   scripts/guard-history.sh (range semantics, exit codes, honest limits)
+# Wired via: git config core.hooksPath scripts/hooks
+#
+# Honest limits: `git push --no-verify` bypasses this hook, and the range
+# scan does not see tokens that were added AND removed within the same
+# unpushed range (they still travel in the intermediate patches) — the
+# whole-history sweep is `scripts/guard-history.sh --full`, a manual
+# audit step. Tripwire, not containment.
+set -u
+ROOT="$(git rev-parse --show-toplevel)" || {
+  echo "pre-push: cannot determine repo root" >&2
+  exit 1
+}
+rc=0
+bash "$ROOT/scripts/guard-history.sh" || rc=1
+exit "$rc"
