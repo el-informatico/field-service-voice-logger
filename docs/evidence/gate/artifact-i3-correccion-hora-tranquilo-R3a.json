@@ -1,0 +1,1021 @@
+{
+  "schema_version": 1,
+  "session_id": "gate_R3a_mu3gpdbt",
+  "scenario_id": "i3-correccion-hora",
+  "mode": "real",
+  "order_id": "IC-2005",
+  "started_at": "2026-09-16T02:08:56.250Z",
+  "ended_at": "2026-09-16T02:11:49.889Z",
+  "audio_retained": false,
+  "turn_detection": {
+    "vad_threshold": 0.4,
+    "interrupt_response": true,
+    "interruption_delay": 0,
+    "transcription_mode": "balanced",
+    "voice_focus": null,
+    "label": "R3a",
+    "reason": "completed"
+  },
+  "noise_condition": "tranquilo",
+  "events": [
+    {
+      "t_ms": 1642,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 12154,
+      "type": "agent_turn_end",
+      "text": "¡Buen día! Ya cargué el incidente IC-2005 de Condominio Torre Horizonte. Cuéntame con calma qué pasó y armo la ficha. "
+    },
+    {
+      "t_ms": 13981,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 14609,
+      "type": "user_turn_end",
+      "text": "Aló."
+    },
+    {
+      "t_ms": 14609,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 15234,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 15234,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 22961,
+      "type": "user_turn_end",
+      "text": "Ya acabé con lo de la bomba del edificio, voy en la camioneta, todo tranquilo por acá, échame el reporte del incidente."
+    },
+    {
+      "t_ms": 35071,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 47704,
+      "type": "user_turn_end",
+      "text": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era."
+    },
+    {
+      "t_ms": 47704,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 48671,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-aa7bd986e31dd8be",
+      "tool": "set_que_paso",
+      "args": {
+        "texto": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era."
+      }
+    },
+    {
+      "t_ms": 48671,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-aa7bd986e31dd8be",
+      "tool": "set_que_paso",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "campo": "que_paso",
+        "caracteres": 206
+      }
+    },
+    {
+      "t_ms": 48672,
+      "type": "form_update",
+      "changed": [
+        "que_paso"
+      ],
+      "form": {
+        "incidente_id": "IC-2005",
+        "resumen": "",
+        "que_paso": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+        "timeline": [],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:set_que_paso"
+    },
+    {
+      "t_ms": 50738,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 50891,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 54438,
+      "type": "agent_turn_end",
+      "text": "Listo,  ya  quedó  grabada  la  narrativa.  Ahora  para  el  timeline, ¿ a  qué  hora  empezó  todo? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 54438,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 54439,
+      "type": "barge_in",
+      "agent_text_cut": "Listo,  ya  quedó  grabada  la  narrativa.  Ahora  para  el  timeline, ¿ a  qué  hora  empezó  todo? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 61380,
+      "type": "user_turn_end",
+      "text": "El primer síntoma fue como a las 8:10, que la intendencia me marcó que andaba arrancando y parando, apúntale esa."
+    },
+    {
+      "t_ms": 64452,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 64914,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-9f0c902f993a326d",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "la intendencia me marcó que andaba arrancando y parando",
+        "hora": "8:10"
+      }
+    },
+    {
+      "t_ms": 64915,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-9f0c902f993a326d",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:10",
+        "evento": "la intendencia me marcó que andaba arrancando y parando",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 64915,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2005",
+        "resumen": "",
+        "que_paso": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+        "timeline": [
+          {
+            "hora": "08:10",
+            "evento": "la intendencia me marcó que andaba arrancando y parando"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 67255,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 67409,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 73064,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 73065,
+      "type": "agent_turn_end",
+      "text": "Evento  a  las  ocho  diez,  la  intendencia  te  marcó  que  andaba  arrancando  y  parando, ¿ correcto? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 73065,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 73065,
+      "type": "barge_in",
+      "agent_text_cut": "Evento  a  las  ocho  diez,  la  intendencia  te  marcó  que  andaba  arrancando  y  parando, ¿ correcto? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 77876,
+      "type": "user_turn_end",
+      "text": "Luego a las 9:40 llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada."
+    },
+    {
+      "t_ms": 77876,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 80960,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 81439,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-a875387446135ed7",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada",
+        "hora": "9:40"
+      }
+    },
+    {
+      "t_ms": 81440,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-a875387446135ed7",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "09:40",
+        "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 81440,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2005",
+        "resumen": "",
+        "que_paso": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+        "timeline": [
+          {
+            "hora": "08:10",
+            "evento": "la intendencia me marcó que andaba arrancando y parando"
+          },
+          {
+            "hora": "09:40",
+            "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 83772,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 83925,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 88904,
+      "type": "agent_turn_end",
+      "text": "Evento  a  las  nueve  cuarenta,  llegaste  al  cuarto  de  bombas  y  ya  estaba  parada  del  todo,  nomás  hacía  el  intento  y  nada, ¿ correcto? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 88904,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 88904,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 88906,
+      "type": "barge_in",
+      "agent_text_cut": "Evento  a  las  nueve  cuarenta,  llegaste  al  cuarto  de  bombas  y  ya  estaba  parada  del  todo,  nomás  hacía  el  intento  y  nada, ¿ correcto? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 97004,
+      "type": "user_turn_end",
+      "text": "9:20. No, era 9:40, casi las 10 era cuando llegué, las 9:40."
+    },
+    {
+      "t_ms": 97004,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 100186,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 100766,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-b9bd8a832f187082",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada",
+        "hora": "9:40"
+      }
+    },
+    {
+      "t_ms": 100767,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-b9bd8a832f187082",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "09:40",
+        "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 103115,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 103269,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 109199,
+      "type": "agent_turn_end",
+      "text": "Anotado,  a  las  nueve  cuarenta  llegaste  al  cuarto  de  bombas  y  ya  estaba  parada  del  todo, ¿ correcto? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 109199,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 109199,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 109200,
+      "type": "barge_in",
+      "agent_text_cut": "Anotado,  a  las  nueve  cuarenta  llegaste  al  cuarto  de  bombas  y  ya  estaba  parada  del  todo, ¿ correcto? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 117936,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "confirmed": true,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 117937,
+      "type": "user_turn_end",
+      "text": "Eso, y como a las 11:05 quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos."
+    },
+    {
+      "t_ms": 118920,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 119538,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-84ce3fd741236129",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos",
+        "hora": "11:05"
+      }
+    },
+    {
+      "t_ms": 119539,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-84ce3fd741236129",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "11:05",
+        "evento": "quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 119539,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2005",
+        "resumen": "",
+        "que_paso": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+        "timeline": [
+          {
+            "hora": "08:10",
+            "evento": "la intendencia me marcó que andaba arrancando y parando"
+          },
+          {
+            "hora": "09:40",
+            "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada"
+          },
+          {
+            "hora": "11:05",
+            "evento": "quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 121873,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 122026,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 129261,
+      "type": "agent_turn_end",
+      "text": "Evento  a  las  once  cero  cinco,  la  bomba  quedó  arrancando  bien  con  el  relevador  nuevo  y  la  presión  se  estabilizó, ¿ correcto? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 129261,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 129261,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 129262,
+      "type": "barge_in",
+      "agent_text_cut": "Evento  a  las  once  cero  cinco,  la  bomba  quedó  arrancando  bien  con  el  relevador  nuevo  y  la  presión  se  estabilizó, ¿ correcto? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 136122,
+      "type": "user_turn_end",
+      "text": "Pues la bomba primaria, esa fue la que se paró. La secundaria ni la arrancamos, esa es manual y nomás es para emergencias."
+    },
+    {
+      "t_ms": 136122,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      },
+      "confirmed": true,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 137103,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 137542,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-bfdc73312e7d0ba3",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "la bomba primaria"
+      }
+    },
+    {
+      "t_ms": 137546,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-bfdc73312e7d0ba3",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "la bomba primaria",
+        "found": [
+          {
+            "id": "SRV-BOMBA-PRIMARIA",
+            "nombre": "Bomba de agua primaria del edificio",
+            "score": 9
+          },
+          {
+            "id": "SRV-BOMBA-SECUNDARIA",
+            "nombre": "Bomba de agua secundaria (respaldo manual)",
+            "score": 3
+          }
+        ],
+        "best": {
+          "id": "SRV-BOMBA-PRIMARIA",
+          "nombre": "Bomba de agua primaria del edificio"
+        },
+        "confusable_warning": {
+          "id": "SRV-BOMBA-SECUNDARIA",
+          "nombre": "Bomba de agua secundaria (respaldo manual)",
+          "mensaje": "«Bomba de agua primaria del edificio» se confunde fácilmente con «Bomba de agua secundaria (respaldo manual)». Pregunta la desambiguación en voz alta nombrando AMBOS antes de dar por bueno el servicio."
+        },
+        "siguiente_paso": "DESVIACIÓN: pregunta la desambiguación en voz alta («¿Bomba de agua primaria del edificio o Bomba de agua secundaria (respaldo manual)?») y agrega SOLO el que confirme."
+      }
+    },
+    {
+      "t_ms": 139862,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 140016,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 147557,
+      "type": "agent_turn_end",
+      "text": "¿Decías  la  bomba  de  agua  primaria  del  edificio  o  la  bomba  de  agua  secundaria  que  es  la  de  respaldo  manual? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 147557,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 147558,
+      "type": "barge_in",
+      "agent_text_cut": "¿Decías  la  bomba  de  agua  primaria  del  edificio  o  la  bomba  de  agua  secundaria  que  es  la  de  respaldo  manual? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 150852,
+      "type": "user_turn_end",
+      "text": "Así es, la primaria, la secundaria ni se tocó."
+    },
+    {
+      "t_ms": 151942,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 152406,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-9b6778598e28f576",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-BOMBA-PRIMARIA"
+      }
+    },
+    {
+      "t_ms": 152406,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-9b6778598e28f576",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-BOMBA-PRIMARIA",
+        "nombre": "Bomba de agua primaria del edificio",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 152406,
+      "type": "form_update",
+      "changed": [
+        "servicios_afectados"
+      ],
+      "form": {
+        "incidente_id": "IC-2005",
+        "resumen": "",
+        "que_paso": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+        "timeline": [
+          {
+            "hora": "08:10",
+            "evento": "la intendencia me marcó que andaba arrancando y parando"
+          },
+          {
+            "hora": "09:40",
+            "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada"
+          },
+          {
+            "hora": "11:05",
+            "evento": "quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-BOMBA-PRIMARIA",
+            "nombre": "Bomba de agua primaria del edificio",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_servicio_afectado"
+    },
+    {
+      "t_ms": 154743,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 154896,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 162955,
+      "type": "agent_turn_end",
+      "text": "Anotado,  queda  la  bomba  de  agua  primaria  del  edificio  como  el  servicio  afectado. ¿ Qué  más  sigue? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 162955,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 162955,
+      "type": "barge_in",
+      "agent_text_cut": "Anotado,  queda  la  bomba  de  agua  primaria  del  edificio  como  el  servicio  afectado. ¿ Qué  más  sigue? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 163296,
+      "type": "user_turn_end",
+      "text": "Media."
+    },
+    {
+      "t_ms": 163296,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 163815,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 163815,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 167577,
+      "type": "user_turn_end",
+      "text": "Que ya quedó funcionando, pero hay que echarle ojo unos días."
+    },
+    {
+      "t_ms": 168561,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-89566f620e5f835b",
+      "tool": "set_severidad",
+      "args": {
+        "severidad": "media"
+      }
+    },
+    {
+      "t_ms": 168561,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-89566f620e5f835b",
+      "tool": "set_severidad",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "severidad": "media",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 168561,
+      "type": "form_update",
+      "changed": [
+        "severidad"
+      ],
+      "form": {
+        "incidente_id": "IC-2005",
+        "resumen": "",
+        "que_paso": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+        "timeline": [
+          {
+            "hora": "08:10",
+            "evento": "la intendencia me marcó que andaba arrancando y parando"
+          },
+          {
+            "hora": "09:40",
+            "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada"
+          },
+          {
+            "hora": "11:05",
+            "evento": "quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-BOMBA-PRIMARIA",
+            "nombre": "Bomba de agua primaria del edificio",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": "media",
+        "estado": "en_proceso"
+      },
+      "why": "tool:set_severidad"
+    },
+    {
+      "t_ms": 170475,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 172563,
+      "type": "agent_turn_end",
+      "text": "Anoto  severidad  media, ¿ correcto?  Por  cierto, ¿ qué  pendiente  quedó?  Me  dijiste  que  había  que  echarle  ojo  unos  días. ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 172563,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 172564,
+      "type": "barge_in",
+      "agent_text_cut": "Anoto  severidad  media, ¿ correcto?  Por  cierto, ¿ qué  pendiente  quedó?  Me  dijiste  que  había  que  echarle  ojo  unos  días. ",
+      "user_text": "",
+      "latency_ms": 9034
+    },
+    {
+      "t_ms": 181188,
+      "type": "user_turn_end",
+      "text": "Me faltó un pendiente: que pidan el relevador de arranque de repuesto, el que quedaba ya se usó, y que el intendente— Ya con eso queda bien, mándala."
+    }
+  ],
+  "transcript": [
+    {
+      "role": "agent",
+      "text": "¡Buen día! Ya cargué el incidente IC-2005 de Condominio Torre Horizonte. Cuéntame con calma qué pasó y armo la ficha. ",
+      "t_start_ms": 1642,
+      "t_end_ms": 12154
+    },
+    {
+      "role": "user",
+      "text": "Aló.",
+      "t_start_ms": 13981,
+      "t_end_ms": 14609
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 14609,
+      "t_end_ms": 15234
+    },
+    {
+      "role": "user",
+      "text": "Ya acabé con lo de la bomba del edificio, voy en la camioneta, todo tranquilo por acá, échame el reporte del incidente.",
+      "t_start_ms": 15234,
+      "t_end_ms": 22961
+    },
+    {
+      "role": "user",
+      "text": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+      "t_start_ms": 35071,
+      "t_end_ms": 47704
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 47704,
+      "t_end_ms": 50738
+    },
+    {
+      "role": "agent",
+      "text": "Listo,  ya  quedó  grabada  la  narrativa.  Ahora  para  el  timeline, ¿ a  qué  hora  empezó  todo? ",
+      "t_start_ms": 50891,
+      "t_end_ms": 54438
+    },
+    {
+      "role": "user",
+      "text": "El primer síntoma fue como a las 8:10, que la intendencia me marcó que andaba arrancando y parando, apúntale esa.",
+      "t_start_ms": 54438,
+      "t_end_ms": 61380
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 64452,
+      "t_end_ms": 67255
+    },
+    {
+      "role": "agent",
+      "text": "Evento  a  las  ocho  diez,  la  intendencia  te  marcó  que  andaba  arrancando  y  parando, ¿ correcto? ",
+      "t_start_ms": 67409,
+      "t_end_ms": 73064
+    },
+    {
+      "role": "user",
+      "text": "Luego a las 9:40 llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada.",
+      "t_start_ms": 73065,
+      "t_end_ms": 77876
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 80960,
+      "t_end_ms": 83772
+    },
+    {
+      "role": "agent",
+      "text": "Evento  a  las  nueve  cuarenta,  llegaste  al  cuarto  de  bombas  y  ya  estaba  parada  del  todo,  nomás  hacía  el  intento  y  nada, ¿ correcto? ",
+      "t_start_ms": 83925,
+      "t_end_ms": 88904
+    },
+    {
+      "role": "user",
+      "text": "9:20. No, era 9:40, casi las 10 era cuando llegué, las 9:40.",
+      "t_start_ms": 88904,
+      "t_end_ms": 97004
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 100186,
+      "t_end_ms": 103115
+    },
+    {
+      "role": "agent",
+      "text": "Anotado,  a  las  nueve  cuarenta  llegaste  al  cuarto  de  bombas  y  ya  estaba  parada  del  todo, ¿ correcto? ",
+      "t_start_ms": 103269,
+      "t_end_ms": 109199
+    },
+    {
+      "role": "user",
+      "text": "Eso, y como a las 11:05 quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos.",
+      "t_start_ms": 109199,
+      "t_end_ms": 117936
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 118920,
+      "t_end_ms": 121873
+    },
+    {
+      "role": "agent",
+      "text": "Evento  a  las  once  cero  cinco,  la  bomba  quedó  arrancando  bien  con  el  relevador  nuevo  y  la  presión  se  estabilizó, ¿ correcto? ",
+      "t_start_ms": 122026,
+      "t_end_ms": 129261
+    },
+    {
+      "role": "user",
+      "text": "Pues la bomba primaria, esa fue la que se paró. La secundaria ni la arrancamos, esa es manual y nomás es para emergencias.",
+      "t_start_ms": 129261,
+      "t_end_ms": 136122
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 137103,
+      "t_end_ms": 139862
+    },
+    {
+      "role": "agent",
+      "text": "¿Decías  la  bomba  de  agua  primaria  del  edificio  o  la  bomba  de  agua  secundaria  que  es  la  de  respaldo  manual? ",
+      "t_start_ms": 140016,
+      "t_end_ms": 147557
+    },
+    {
+      "role": "user",
+      "text": "Así es, la primaria, la secundaria ni se tocó.",
+      "t_start_ms": 147557,
+      "t_end_ms": 150852
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 151942,
+      "t_end_ms": 154743
+    },
+    {
+      "role": "agent",
+      "text": "Anotado,  queda  la  bomba  de  agua  primaria  del  edificio  como  el  servicio  afectado. ¿ Qué  más  sigue? ",
+      "t_start_ms": 154896,
+      "t_end_ms": 162955
+    },
+    {
+      "role": "user",
+      "text": "Media.",
+      "t_start_ms": 162955,
+      "t_end_ms": 163296
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 163296,
+      "t_end_ms": 163815
+    },
+    {
+      "role": "user",
+      "text": "Que ya quedó funcionando, pero hay que echarle ojo unos días.",
+      "t_start_ms": 163815,
+      "t_end_ms": 167577
+    },
+    {
+      "role": "agent",
+      "text": "Anoto  severidad  media, ¿ correcto?  Por  cierto, ¿ qué  pendiente  quedó?  Me  dijiste  que  había  que  echarle  ojo  unos  días. ",
+      "t_start_ms": 170475,
+      "t_end_ms": 172563
+    },
+    {
+      "role": "user",
+      "text": "Me faltó un pendiente: que pidan el relevador de arranque de repuesto, el que quedaba ya se usó, y que el intendente— Ya con eso queda bien, mándala.",
+      "t_start_ms": 172563,
+      "t_end_ms": 181188
+    }
+  ],
+  "final_form": {
+    "incidente_id": "IC-2005",
+    "resumen": "",
+    "que_paso": "Pues la bomba primaria andaba tripeando desde temprano, arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión. Le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+    "timeline": [
+      {
+        "hora": "08:10",
+        "evento": "la intendencia me marcó que andaba arrancando y parando"
+      },
+      {
+        "hora": "09:40",
+        "evento": "llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada"
+      },
+      {
+        "hora": "11:05",
+        "evento": "quedó la bomba arrancando ya bien con el relevador nuevo y la presión se estabilizó en todos los pisos"
+      }
+    ],
+    "servicios_afectados": [
+      {
+        "id": "SRV-BOMBA-PRIMARIA",
+        "nombre": "Bomba de agua primaria del edificio",
+        "afectados": null,
+        "confirmado": true
+      }
+    ],
+    "action_items": [],
+    "severidad": "media",
+    "estado": "en_proceso"
+  }
+}

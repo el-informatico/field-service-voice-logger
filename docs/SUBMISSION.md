@@ -6,11 +6,13 @@ docs/research/competitor-landscape-2026-09-15.md, docs/GALLERY-AUDIT-0917.md.
 
 ## Submission metadata
 
-**Title options** (pick one):
+**Title options** (pick one — justification and recommendation below):
 
-1. **Voice Incident Reporter** — the product's literal name; what the video and the metrics table describe.
-2. **Field Service Voice Logger** — the repo's name; the plainest description of the lane.
-3. **The Report That Reads Itself Back** — leads with the differentiator.
+1. **Voice Incident Reporter** — the product's literal name; what the video and the metrics table describe. Safest match to every artifact (video end card, README hero, live UI); a judge going title → repo → video gets one consistent name.
+2. **Field Service Voice Logger** — the repo's name; the plainest description of the lane. Costs a rename mismatch: the video end card and the app itself say "Voice Incident Reporter".
+3. **The Report That Reads Itself Back** — leads with the differentiator. Most memorable in a 94-entry gallery, but names a feature, not the product; weaker anchor for repo/video cross-checks.
+
+*Recommendation (owner ratifies):* **#1 Voice Incident Reporter** — consistency across submission → repo → video → live demo beats cleverness for judge verification; #3's hook already lives in the tagline.
 
 **Tagline:** Voice in, evidence out — post-visit incident reports with a spoken read-back loop and published accuracy.
 
@@ -26,7 +28,7 @@ A voice agent that interviews the technician after a visit, fills the incident r
 
 **The problem**
 
-Field technicians spend 30–60 minutes per job writing up the visit — often after hours, in a truck, from memory. Notes get lost, reports get thin, and nothing is auditable. Voice-to-text exists, but dictation alone cannot tell a report from a guess: "production" and "staging" servers, rack A3 and A8, 3/4" and 3/8" valves all sound close enough to end up on an invoice. Of the 61 submissions at our 2026-09-15 gallery audit — and the 63 at the 2026-09-17 re-audit — none published measured extraction accuracy (the closest, Robin Voice Ops, publishes a scenario pass-rate and latency percentiles, not field-level accuracy): every voice demo we could find either fills a form or dispatches autonomously; none publish accuracy, and none rescue capture errors by speaking them back.
+Field technicians spend 30–60 minutes per job writing up the visit — often after hours, in a truck, from memory. Notes get lost, reports get thin, and nothing is auditable. Voice-to-text exists, but dictation alone cannot tell a report from a guess: "production" and "staging" servers, rack A3 and A8, 3/4" and 3/8" valves all sound close enough to end up on an invoice. Of the submissions we audited — 61 at the 2026-09-15 gallery audit, 63 at the 2026-09-17 re-audit, with the dashboard showing 94 live at our 2026-09-21 check — none published measured extraction accuracy (the closest, Robin Voice Ops, publishes a scenario pass-rate and latency percentiles, not field-level accuracy; spot-checks of the new top-voted entries' blurbs on 09-21 found none either): every voice demo we could find either fills a form or dispatches autonomously; none publish accuracy, and none rescue capture errors by speaking them back.
 
 **What it does**
 
@@ -58,7 +60,7 @@ After the visit, the technician opens the incident and starts a voice session �
 
 **Accomplishments**
 
-- **10 real, measured, published sessions — failures included.** Turn completion, WER, latency percentiles, per-field precision/recall, confirmation-loop precision: all on the table, reproducible from the repo. Zero of 63 gallery submissions published measured extraction accuracy at the 2026-09-17 re-audit (61 at the original audit).
+- **10 real, measured, published sessions — failures included.** Turn completion, WER, latency percentiles, per-field precision/recall, confirmation-loop precision: all on the table, reproducible from the repo, with three sample session artifacts committed as evidence (docs/evidence/gate/). Zero of the audited gallery submissions published measured extraction accuracy (61 at the 2026-09-15 audit, 63 at the 09-17 re-audit; 94 live at the 09-21 dashboard check, spot-checked).
 - **The seeded capture error was rescued by the spoken loop in a real session** (rack A8 captured → disambiguation read-back naming both catalog services → A3 confirmed; recorded in the session artifact).
 - **A measured prompt fix, not a vibe**: the v3→v4 comparison above was run on the same scripts under the same conditions, and the pure-narrative script went from 1 tool call and 0/8 hours to 10–15 tool calls and 7/8 hours.
 - **CI-proven end-to-end**: one command (`npm run smoke:mock`) runs sessions, artifacts, and the metrics table deterministically with zero dependencies and zero API cost.
@@ -74,7 +76,7 @@ After the visit, the technician opens the incident and starts a voice session �
 
 ## Metrics (N=10 real sessions)
 
-10 real voice sessions: Voice Incident Reporter, post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API. 5 sessions on interview prompt v3 + 5 on prompt v4 (the narrative-capture fix documented in STATUS.md, METRICS-N10). Produced by `metrics/` from per-session artifacts (`.data/gate/`, local); definitions are exact and reproducible.
+10 real voice sessions: Voice Incident Reporter, post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API. 5 sessions on interview prompt v3 + 5 on prompt v4 (the narrative-capture fix documented in STATUS.md, METRICS-N10). Produced by `metrics/` from per-session artifacts (three committed as evidence in docs/evidence/gate/, the full set local); definitions are exact and reproducible.
 
 | Metric | Value | N | Condition |
 |---|---|---|---|
@@ -116,8 +118,10 @@ After the visit, the technician opens the incident and starts a voice session �
 
 - **GitHub:** https://github.com/el-informatico/field-service-voice-logger
 - **Live demo:** https://field-service-voice-logger.vercel.app (runs the deterministic mock channel — no API key on the public server, by design)
-- **Demo video:** <to be linked at submission time — file demo-video-d6.mp4, 3:00>
+- **Demo video (3:00, EN, captions burned):** <link at submission time — owner hosts unlisted; file demo-video-d6.mp4 + demo-video-d6.srt>
+- **Real-session clip (0:55, silent by design, disclosure bands burned):** <link at submission time — owner hosts unlisted; file real-session-clip.mp4>
+- **Slide deck (PDF, required field):** https://github.com/el-informatico/field-service-voice-logger/blob/main/docs/deck/voice-incident-reporter-deck.pdf — 11 slides, 16:9, EN, shipped in the repo (`docs/deck/`, source `deck.html`, rebuild notes in its README); a copy lives with the owner's deliverables. *(Verify the raw view renders after the push: `raw.githubusercontent.com/…/main/docs/deck/voice-incident-reporter-deck.pdf`.)*
 
 ## Platform mapping
 
-These sections map 1:1 to Devpost-style fields: metadata → title/tagline/team, Short description → the card blurb (≤280 chars), Full description → the long description, Metrics → append to the description, Built with → the tech list, Links → link fields. For lablab.ai's single description field, paste **Short description + Full description + Metrics** in that order; put the repo, video, and live-demo URLs in the dedicated link fields.
+These sections map 1:1 to Devpost-style fields: metadata → title/tagline/team, Short description → the card blurb (≤280 chars), Full description → the long description, Metrics → append to the description, Built with → the tech list, Links → link fields. For lablab.ai's single description field, paste **Short description + Full description + Metrics** in that order; put the repo, video, live-demo, and slide-deck URLs in the dedicated fields (the deck is REQUIRED — build `voice-incident-reporter-deck.pdf` before submitting).

@@ -1,0 +1,1048 @@
+{
+  "schema_version": 1,
+  "session_id": "gate_R5d_mu496kdf",
+  "scenario_id": "i4-mixto",
+  "mode": "real",
+  "order_id": "IC-2002",
+  "started_at": "2026-09-16T15:26:07.780Z",
+  "ended_at": "2026-09-16T15:30:00.388Z",
+  "audio_retained": false,
+  "turn_detection": {
+    "vad_threshold": 0.4,
+    "interrupt_response": true,
+    "interruption_delay": 0,
+    "transcription_mode": "balanced",
+    "voice_focus": null,
+    "label": "R5d",
+    "reason": "completed"
+  },
+  "noise_condition": "tranquilo",
+  "events": [
+    {
+      "t_ms": 1634,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 16979,
+      "type": "agent_turn_end",
+      "text": "¡Buen día! Ya cargué el incidente IC-2002 de Despacho Contable Sifuentes y Asociados. Cuéntame con calma qué pasó, con horas y todo, y voy anotando cada cosa en el momento. "
+    },
+    {
+      "t_ms": 19584,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 20793,
+      "type": "user_turn_end",
+      "text": "¿Me oyes bien?"
+    },
+    {
+      "t_ms": 20794,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 21332,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 21332,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 31769,
+      "type": "user_turn_end",
+      "text": "Ya salí del despacho de los contadores, era lo del cuarto de redes que olía a recalentado. Échame el reporte del incidente antes de que se me vaya el detalle."
+    },
+    {
+      "t_ms": 53563,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 68692,
+      "type": "user_turn_end",
+      "text": "Pues llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada."
+    },
+    {
+      "t_ms": 68693,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 69719,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-aa54ee0b5127262e",
+      "tool": "set_que_paso",
+      "args": {
+        "texto": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada."
+      }
+    },
+    {
+      "t_ms": 69720,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-aa54ee0b5127262e",
+      "tool": "set_que_paso",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "campo": "que_paso",
+        "caracteres": 212
+      }
+    },
+    {
+      "t_ms": 69720,
+      "type": "form_update",
+      "changed": [
+        "que_paso"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+        "timeline": [],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:set_que_paso"
+    },
+    {
+      "t_ms": 69842,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-abe11006237b2163",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio",
+        "hora": "8:15"
+      }
+    },
+    {
+      "t_ms": 69843,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-abe11006237b2163",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:15",
+        "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 69843,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+        "timeline": [
+          {
+            "hora": "08:15",
+            "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 69911,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-93009731e92ccd43",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "gabinete del rack A3"
+      }
+    },
+    {
+      "t_ms": 69915,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-93009731e92ccd43",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "gabinete del rack A3",
+        "found": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+            "score": 11
+          },
+          {
+            "id": "SRV-RACK-A8",
+            "nombre": "Gabinete de servidores rack A8 (cuarto de telecomunicaciones)",
+            "score": 5
+          }
+        ],
+        "best": {
+          "id": "SRV-RACK-A3",
+          "nombre": "Gabinete de servidores rack A3 (cuarto de redes)"
+        },
+        "confusable_warning": {
+          "id": "SRV-RACK-A8",
+          "nombre": "Gabinete de servidores rack A8 (cuarto de telecomunicaciones)",
+          "mensaje": "«Gabinete de servidores rack A3 (cuarto de redes)» se confunde fácilmente con «Gabinete de servidores rack A8 (cuarto de telecomunicaciones)». Pregunta la desambiguación en voz alta nombrando AMBOS antes de dar por bueno el servicio."
+        },
+        "siguiente_paso": "DESVIACIÓN: pregunta la desambiguación en voz alta («¿Gabinete de servidores rack A3 (cuarto de redes) o Gabinete de servidores rack A8 (cuarto de telecomunicaciones)?») y agrega SOLO el que confirme."
+      }
+    },
+    {
+      "t_ms": 70690,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 70690,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 72095,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-bcf426f34122d3b1",
+      "tool": "set_que_paso",
+      "args": {
+        "texto": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada."
+      }
+    },
+    {
+      "t_ms": 72095,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-bcf426f34122d3b1",
+      "tool": "set_que_paso",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "campo": "que_paso",
+        "caracteres": 212
+      }
+    },
+    {
+      "t_ms": 72096,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-ac7873d3a7ac7b15",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio",
+        "hora": "8:15"
+      }
+    },
+    {
+      "t_ms": 72096,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-ac7873d3a7ac7b15",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:15",
+        "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 72096,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-94f7ea943f85fd62",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "rack A3"
+      }
+    },
+    {
+      "t_ms": 72098,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-94f7ea943f85fd62",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "rack A3",
+        "found": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+            "score": 9
+          },
+          {
+            "id": "SRV-RACK-A8",
+            "nombre": "Gabinete de servidores rack A8 (cuarto de telecomunicaciones)",
+            "score": 3
+          }
+        ],
+        "best": {
+          "id": "SRV-RACK-A3",
+          "nombre": "Gabinete de servidores rack A3 (cuarto de redes)"
+        },
+        "confusable_warning": {
+          "id": "SRV-RACK-A8",
+          "nombre": "Gabinete de servidores rack A8 (cuarto de telecomunicaciones)",
+          "mensaje": "«Gabinete de servidores rack A3 (cuarto de redes)» se confunde fácilmente con «Gabinete de servidores rack A8 (cuarto de telecomunicaciones)». Pregunta la desambiguación en voz alta nombrando AMBOS antes de dar por bueno el servicio."
+        },
+        "siguiente_paso": "DESVIACIÓN: pregunta la desambiguación en voz alta («¿Gabinete de servidores rack A3 (cuarto de redes) o Gabinete de servidores rack A8 (cuarto de telecomunicaciones)?») y agrega SOLO el que confirme."
+      }
+    },
+    {
+      "t_ms": 72683,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 72683,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 98221,
+      "type": "agent_turn_end",
+      "text": "Anotado  lo  que  pasó.  Oye,  registré  el  evento  a  las  ocho  quince  con  lo  del  rack  y  el  minisplit, ¿ ¿correcto?Y para el equipo afectado, ¿decías el Gabinete de servidores rack A3 (cuarto de redes) o el Gabinete de servidores rack A8 (cuarto de telecomunicaciones)? "
+    },
+    {
+      "t_ms": 108032,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 118618,
+      "type": "user_turn_end",
+      "text": "Esa. Luego a las 8:45 le metí un abanico industrial a la puerta del cuarto y como a las 10:30 ya tenía el gabinete en 28 grados, ya estable."
+    },
+    {
+      "t_ms": 118619,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 119647,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-9afe740f3a196589",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "le metí un abanico industrial a la puerta del cuarto",
+        "hora": "8:45"
+      }
+    },
+    {
+      "t_ms": 119647,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-9afe740f3a196589",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:45",
+        "evento": "le metí un abanico industrial a la puerta del cuarto",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 119647,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+        "timeline": [
+          {
+            "hora": "08:15",
+            "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio"
+          },
+          {
+            "hora": "08:45",
+            "evento": "le metí un abanico industrial a la puerta del cuarto"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 119648,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-b4d4d9d11fc48a24",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "ya tenía el gabinete en 28 grados, ya estable",
+        "hora": "10:30"
+      }
+    },
+    {
+      "t_ms": 119648,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-b4d4d9d11fc48a24",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "10:30",
+        "evento": "ya tenía el gabinete en 28 grados, ya estable",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 119648,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+        "timeline": [
+          {
+            "hora": "08:15",
+            "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio"
+          },
+          {
+            "hora": "08:45",
+            "evento": "le metí un abanico industrial a la puerta del cuarto"
+          },
+          {
+            "hora": "10:30",
+            "evento": "ya tenía el gabinete en 28 grados, ya estable"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 121845,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 122010,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 134312,
+      "type": "agent_turn_end",
+      "text": "Anotado.  Registré  los  eventos  a  las  ocho  cuarenta  y  cinco  con  lo  del  abanico,  y  a  las  diez  treinta  cuando  ya  bajó  la  temperatura  a  veintiocho  grados, ¿ correcto? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 134312,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 134312,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-RACK-A3"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 134313,
+      "type": "barge_in",
+      "agent_text_cut": "Anotado.  Registré  los  eventos  a  las  ocho  cuarenta  y  cinco  con  lo  del  abanico,  y  a  las  diez  treinta  cuando  ya  bajó  la  temperatura  a  veintiocho  grados, ¿ correcto? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 143410,
+      "type": "user_turn_end",
+      "text": "El que estaba sufriendo era el rack A3, el del cuarto de redes. El A8, el de telecomunicaciones, ese ni se inmutó, sigue sano."
+    },
+    {
+      "t_ms": 143410,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-RACK-A3"
+      },
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 146626,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 147135,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-99db44ef2ad93f95",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-RACK-A3"
+      }
+    },
+    {
+      "t_ms": 147135,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-99db44ef2ad93f95",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-RACK-A3",
+        "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 147135,
+      "type": "form_update",
+      "changed": [
+        "servicios_afectados"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+        "timeline": [
+          {
+            "hora": "08:15",
+            "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio"
+          },
+          {
+            "hora": "08:45",
+            "evento": "le metí un abanico industrial a la puerta del cuarto"
+          },
+          {
+            "hora": "10:30",
+            "evento": "ya tenía el gabinete en 28 grados, ya estable"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_servicio_afectado"
+    },
+    {
+      "t_ms": 149612,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 151723,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 161241,
+      "type": "agent_turn_end",
+      "text": "Entendido,  entonces  el  afectado  fue  el  Gabinete  de  servidores  rack  A3,  el  del  cuarto  de  redes, ¿ correcto? "
+    },
+    {
+      "t_ms": 161241,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-RACK-A3"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 164243,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 170354,
+      "type": "user_turn_end",
+      "text": "El A3, el del cuarto de redes. El A8 ni lo toqué, te digo que ese está sano."
+    },
+    {
+      "t_ms": 170354,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-RACK-A3"
+      },
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 170356,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 173585,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8fc3087190267bbc",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-RACK-A3"
+      }
+    },
+    {
+      "t_ms": 173586,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8fc3087190267bbc",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-RACK-A3",
+        "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 173818,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 178144,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 186759,
+      "type": "agent_turn_end",
+      "text": "Anotado,  el  A3  queda  registrado  como  el  afectado. ¿ Qué  más  pasó  o  qué  quedó  pendiente? "
+    },
+    {
+      "t_ms": 190514,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 200288,
+      "type": "user_turn_end",
+      "text": "Ese, y la VPN también se cayó un rato, los contadores de fuera no podían entrar a sacar sus reportes, eso fue todo lo que se afectó."
+    },
+    {
+      "t_ms": 200289,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 203489,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-94e3ca5dec5f5961",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "VPN"
+      }
+    },
+    {
+      "t_ms": 203503,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-94e3ca5dec5f5961",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "VPN",
+        "found": [
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "VPN de acceso remoto del personal",
+            "score": 6
+          }
+        ],
+        "best": {
+          "id": "SRV-VPN-REMOTO",
+          "nombre": "VPN de acceso remoto del personal"
+        },
+        "confusable_warning": null,
+        "siguiente_paso": "AGREGA YA este servicio con agregar_servicio_afectado({\"id\":\"SRV-VPN-REMOTO\"}) y haz el read-back del nombre."
+      }
+    },
+    {
+      "t_ms": 203717,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 210618,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 211144,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8d941da39808689f",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-VPN-REMOTO"
+      }
+    },
+    {
+      "t_ms": 211144,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8d941da39808689f",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-VPN-REMOTO",
+        "nombre": "VPN de acceso remoto del personal",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 211145,
+      "type": "form_update",
+      "changed": [
+        "servicios_afectados"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+        "timeline": [
+          {
+            "hora": "08:15",
+            "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio"
+          },
+          {
+            "hora": "08:45",
+            "evento": "le metí un abanico industrial a la puerta del cuarto"
+          },
+          {
+            "hora": "10:30",
+            "evento": "ya tenía el gabinete en 28 grados, ya estable"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "VPN de acceso remoto del personal",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": null,
+        "estado": "en_proceso"
+      },
+      "why": "tool:agregar_servicio_afectado"
+    },
+    {
+      "t_ms": 213564,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 221412,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 225581,
+      "type": "agent_turn_end",
+      "text": "Entendido.  Entonces,  además  del  rack,  se  afectó  la  VPN  de  acceso  remoto  del  personal, ¿ correcto? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 225581,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 225581,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-RACK-A3"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 225582,
+      "type": "barge_in",
+      "agent_text_cut": "Entendido.  Entonces,  además  del  rack,  se  afectó  la  VPN  de  acceso  remoto  del  personal, ¿ correcto? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 231170,
+      "type": "user_turn_end",
+      "text": "y ponle alta. Si ese rack se llega a apagarse, paran las declaraciones de 11 clientes, mejor alta."
+    },
+    {
+      "t_ms": 231170,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-RACK-A3"
+      },
+      "confirmed": true,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 234380,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 234855,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-ac5fee1f941ee8b4",
+      "tool": "set_severidad",
+      "args": {
+        "severidad": "alta"
+      }
+    },
+    {
+      "t_ms": 234856,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-ac5fee1f941ee8b4",
+      "tool": "set_severidad",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "severidad": "alta",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 234856,
+      "type": "form_update",
+      "changed": [
+        "severidad"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+        "timeline": [
+          {
+            "hora": "08:15",
+            "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio"
+          },
+          {
+            "hora": "08:45",
+            "evento": "le metí un abanico industrial a la puerta del cuarto"
+          },
+          {
+            "hora": "10:30",
+            "evento": "ya tenía el gabinete en 28 grados, ya estable"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "VPN de acceso remoto del personal",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": "alta",
+        "estado": "en_proceso"
+      },
+      "why": "tool:set_severidad"
+    },
+    {
+      "t_ms": 237256,
+      "type": "agent_turn_end",
+      "text": ""
+    }
+  ],
+  "transcript": [
+    {
+      "role": "agent",
+      "text": "¡Buen día! Ya cargué el incidente IC-2002 de Despacho Contable Sifuentes y Asociados. Cuéntame con calma qué pasó, con horas y todo, y voy anotando cada cosa en el momento. ",
+      "t_start_ms": 1634,
+      "t_end_ms": 16979
+    },
+    {
+      "role": "user",
+      "text": "¿Me oyes bien?",
+      "t_start_ms": 19584,
+      "t_end_ms": 20793
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 20794,
+      "t_end_ms": 21332
+    },
+    {
+      "role": "user",
+      "text": "Ya salí del despacho de los contadores, era lo del cuarto de redes que olía a recalentado. Échame el reporte del incidente antes de que se me vaya el detalle.",
+      "t_start_ms": 21332,
+      "t_end_ms": 31769
+    },
+    {
+      "role": "user",
+      "text": "Pues llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+      "t_start_ms": 53563,
+      "t_end_ms": 68692
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 68693,
+      "t_end_ms": 70690
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 70690,
+      "t_end_ms": 72683
+    },
+    {
+      "role": "agent",
+      "text": "Anotado  lo  que  pasó.  Oye,  registré  el  evento  a  las  ocho  quince  con  lo  del  rack  y  el  minisplit, ¿ ¿correcto?Y para el equipo afectado, ¿decías el Gabinete de servidores rack A3 (cuarto de redes) o el Gabinete de servidores rack A8 (cuarto de telecomunicaciones)? ",
+      "t_start_ms": 72683,
+      "t_end_ms": 98221
+    },
+    {
+      "role": "user",
+      "text": "Esa. Luego a las 8:45 le metí un abanico industrial a la puerta del cuarto y como a las 10:30 ya tenía el gabinete en 28 grados, ya estable.",
+      "t_start_ms": 108032,
+      "t_end_ms": 118618
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 118619,
+      "t_end_ms": 121845
+    },
+    {
+      "role": "agent",
+      "text": "Anotado.  Registré  los  eventos  a  las  ocho  cuarenta  y  cinco  con  lo  del  abanico,  y  a  las  diez  treinta  cuando  ya  bajó  la  temperatura  a  veintiocho  grados, ¿ correcto? ",
+      "t_start_ms": 122010,
+      "t_end_ms": 134312
+    },
+    {
+      "role": "user",
+      "text": "El que estaba sufriendo era el rack A3, el del cuarto de redes. El A8, el de telecomunicaciones, ese ni se inmutó, sigue sano.",
+      "t_start_ms": 134312,
+      "t_end_ms": 143410
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 146626,
+      "t_end_ms": 149612
+    },
+    {
+      "role": "agent",
+      "text": "Entendido,  entonces  el  afectado  fue  el  Gabinete  de  servidores  rack  A3,  el  del  cuarto  de  redes, ¿ correcto? ",
+      "t_start_ms": 151723,
+      "t_end_ms": 161241
+    },
+    {
+      "role": "user",
+      "text": "El A3, el del cuarto de redes. El A8 ni lo toqué, te digo que ese está sano.",
+      "t_start_ms": 164243,
+      "t_end_ms": 170354
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 170356,
+      "t_end_ms": 173818
+    },
+    {
+      "role": "agent",
+      "text": "Anotado,  el  A3  queda  registrado  como  el  afectado. ¿ Qué  más  pasó  o  qué  quedó  pendiente? ",
+      "t_start_ms": 178144,
+      "t_end_ms": 186759
+    },
+    {
+      "role": "user",
+      "text": "Ese, y la VPN también se cayó un rato, los contadores de fuera no podían entrar a sacar sus reportes, eso fue todo lo que se afectó.",
+      "t_start_ms": 190514,
+      "t_end_ms": 200288
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 200289,
+      "t_end_ms": 203717
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 210618,
+      "t_end_ms": 213564
+    },
+    {
+      "role": "agent",
+      "text": "Entendido.  Entonces,  además  del  rack,  se  afectó  la  VPN  de  acceso  remoto  del  personal, ¿ correcto? ",
+      "t_start_ms": 221412,
+      "t_end_ms": 225581
+    },
+    {
+      "role": "user",
+      "text": "y ponle alta. Si ese rack se llega a apagarse, paran las declaraciones de 11 clientes, mejor alta.",
+      "t_start_ms": 225581,
+      "t_end_ms": 231170
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 234380,
+      "t_end_ms": 237256
+    }
+  ],
+  "final_form": {
+    "incidente_id": "IC-2002",
+    "resumen": "",
+    "que_paso": "llegué como a las 7:50 y ya se sentía el olor a quemado desde la puerta. A las 8:15 el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio. Le di mantenimiento, le limpié los filtros y nada.",
+    "timeline": [
+      {
+        "hora": "08:15",
+        "evento": "el gabinete del rack A3 marcaba 36 grados y el minisplit nomás soplaba tibio"
+      },
+      {
+        "hora": "08:45",
+        "evento": "le metí un abanico industrial a la puerta del cuarto"
+      },
+      {
+        "hora": "10:30",
+        "evento": "ya tenía el gabinete en 28 grados, ya estable"
+      }
+    ],
+    "servicios_afectados": [
+      {
+        "id": "SRV-RACK-A3",
+        "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
+        "afectados": null,
+        "confirmado": true
+      },
+      {
+        "id": "SRV-VPN-REMOTO",
+        "nombre": "VPN de acceso remoto del personal",
+        "afectados": null,
+        "confirmado": false
+      }
+    ],
+    "action_items": [],
+    "severidad": "alta",
+    "estado": "en_proceso"
+  }
+}

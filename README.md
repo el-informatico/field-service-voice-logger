@@ -1,10 +1,14 @@
 # Field Service Voice Logger
 
-A real-time voice agent for field-service technicians. You narrate the repair with
-your hands busy; the agent **interviews you, fills the work order live via tools,
-and reads critical data back out loud** ("did you say the **3/4** valve?") until
-the work order is provably correct. No typing, no post-job paperwork, no
-transcribe-then-summarize.
+A voice agent for field-service technicians. After the visit — quiet, minutes
+after the work, hands free — the technician opens the incident and just talks;
+the agent **interviews them, fills the incident report live via tools, and
+reads critical values back out loud** ("did you say **production**? the catalog
+also has staging") until the record is provably correct. No typing, no
+post-job paperwork, no transcribe-then-summarize. (Live voice *during* the
+repair was tried and gated out by evidence — see
+[docs/D2-GATE-RESULTS.md](docs/D2-GATE-RESULTS.md); the product is the
+post-visit interview.)
 
 **The product is the confirmed accuracy.** Every session emits an auditable
 timeline artifact (JSON) and we publish measured extraction accuracy, spoken
@@ -22,8 +26,9 @@ Field technicians spend 30–60 min per job on paperwork, often after hours, fro
 memory. Existing "voice to form" tools are one-shot dictation; conversational
 copilots exist (Aquant Roger, Oxmaint, Arrival AI), and read-back loops are
 appearing in adjacent verticals (phone intake, operating rooms) — but **nobody
-applies the spoken confirmation loop to field-service work orders, and nobody in
-this hackathon's 63 submissions (re-audited 2026-09-17) publishes measured
+applies the spoken confirmation loop to field-service records, and nobody in
+this hackathon's audited submissions (61 at the 2026-09-15 audit, 63 at the
+09-17 re-audit, 94 live at the 2026-09-21 dashboard check) publishes measured
 extraction accuracy**. That
 loop — read-back of part numbers and quantities that sound alike (3/4" vs 3/8") —
 is what makes a voice-filled work order trustworthy enough to invoice against.
@@ -31,20 +36,28 @@ Technicians ask for exactly this ([r/FieldService](https://www.reddit.com/r/Fiel
 
 ## How it works
 
-1. Technician opens the job on their phone, **consent screen first** (audio is
+1. Technician opens the incident on their phone, **consent screen first** (audio is
    never stored — see [Privacy](#privacy-by-design)), taps start.
-2. Real-time duplex session with the AssemblyAI Voice Agent API: VAD tuned for
-   **long working pauses** (low `vad_threshold`, high `min_silence`) and real
-   **barge-in** ("wait — it was the other valve!") — turn detection parameters
+2. Real-time duplex session with the AssemblyAI Voice Agent API (raw WebSocket,
+   no SDK): VAD tolerant of working pauses, **barge-in** enabled ("wait — it
+   started at five forty, not seven") — turn detection parameters
    per the [official docs](https://www.assemblyai.com/docs/voice-agents/voice-agent-api/turn-detection-and-interruptions).
 3. Every statement becomes a **client-side tool call with JSON Schema**:
-   `get_orden`, `buscar_pieza`, `agregar_pieza_a_reporte` (SKU validated against
-   the catalog via `enum`), `set_problema`, `set_solucion`, `get_tiempo_trabajo`,
-   `enviar_reporte`. The work order fills in live on screen.
-4. Critical values (parts, quantities) are **read back out loud** and confirmed.
-   Confusable SKUs are caught twice: by the schema `enum` and by the spoken loop.
-5. Session ends → work order artifact (timeline JSON + final form) → **PDF/CSV
+   `get_incidente`, `buscar_servicio`, `set_que_paso`, `set_resumen`,
+   `set_severidad`, `agregar_evento_timeline`, `agregar_servicio_afectado`
+   (service validated against the catalog via `enum`), `agregar_action_item`,
+   `enviar_reporte`. The incident card (the "ficha") fills in live on screen,
+   each field carrying its own audit trail (which tool set it, when, confirmed
+   by voice or edited by hand).
+4. Critical values — services, severity, timeline hours — are **read back out
+   loud** and confirmed. Confusable services are caught twice: by the schema
+   `enum` and by the spoken loop.
+5. Session ends → incident artifact (timeline JSON + final form) → **PDF/CSV
    export** and a metrics run. Raw audio is discarded by design.
+
+The original work-order variant (same engine; tools for parts/SKUs and
+quantities) remains in the repo — ~70% of the code is shared, and its
+noise-gate evidence is what drove the post-visit pivot.
 
 ## Metrics
 
@@ -52,7 +65,9 @@ Produced by [metrics/](metrics/README.md) from session artifacts; definitions ar
 exact and reproducible. **10 REAL voice sessions** (Voice Incident Reporter,
 post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API;
 5 sessions on interview prompt v3 + 5 on prompt v4, the narrative-capture fix
-documented in [STATUS.md](STATUS.md) METRICS-N10; artifacts under `.data/gate/`):
+documented in [STATUS.md](STATUS.md) METRICS-N10; three sample artifacts are
+committed as evidence in [docs/evidence/gate/](docs/evidence/gate/), the full
+set stays local):
 
 | Metric | Value | N | Condition |
 |---|---|---|---|
@@ -111,6 +126,12 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 
 ## Demo video (D6)
 
+**Watch (3:00, EN, captions burned):** *link added at submission — hosted
+unlisted by the owner; `demo-video-d6.srt` ships alongside it.* A 55-second
+companion clip of a **real live-API session** (silent by design, disclosure
+bands burned in: scripted wav, audio never stored) is submitted with it:
+`real-session-clip.mp4`.
+
 Script beat-by-beat with timestamps: [docs/video-script-en.md](docs/video-script-en.md) ·
 recording plan: [docs/video-recording-plan.md](docs/video-recording-plan.md) ·
 one-command demo: `bash scripts/demo-video.sh` ([docs/video-demo-setup.md](docs/video-demo-setup.md)).
@@ -131,7 +152,8 @@ table.
 
 ## How we differ from Relay (and the field)
 
-Based on the gallery audits of 2026-09-15 and 2026-09-17 (61 → 63 submissions;
+Based on the gallery audits of 2026-09-15 and 2026-09-17 (61 → 63 submissions
+audited; the dashboard showed 94 live on 2026-09-21, +11 that day;
 full evidence in
 [docs/research/competitor-landscape-2026-09-15.md](docs/research/competitor-landscape-2026-09-15.md)
 and [docs/GALLERY-AUDIT-0917.md](docs/GALLERY-AUDIT-0917.md)):
@@ -146,8 +168,11 @@ and [docs/GALLERY-AUDIT-0917.md](docs/GALLERY-AUDIT-0917.md)):
   extraction accuracy + noise/latency tests**. None of those appear in their
   public materials as of the 2026-09-17 re-audit.
 - **[QuoteReady](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon/quoteready/quoteready)** is the closest in *form* — corrected read-back, transcript evidence per answer, caller approval — but in *domain* it is inbound phone intake for pre-work quotes (5 fields, JSON draft). We log the **post-work repair record** for a hands-busy technician: parts SKUs validated against a catalog, quantities, work time, invoicing-grade output. Their own materials mark real-speaker and interruption evaluation as "future work"; measured accuracy is our deliverable, not an afterthought.
-- **Zero of 63 submissions publish measured extraction accuracy** (audits of
-  2026-09-15 and 2026-09-17). The closest is Robin Voice Ops, which publishes a
+- **Zero of the audited submissions publish measured extraction accuracy**
+  (full audits of 2026-09-15 and 2026-09-17, 61 → 63 entries; the 2026-09-21
+  dashboard check counted 94 live and a spot-check of the new top-voted
+  entries' public blurbs found none publishing it either). The closest is
+  Robin Voice Ops, which publishes a
   scenario pass-rate and decision-latency percentiles — not per-field
   precision/recall vs ground truth, not WER, not confirmation-loop precision;
   nothing in the gallery does. Meanwhile the "evidence-linked intake" pattern
@@ -167,7 +192,10 @@ and [docs/GALLERY-AUDIT-0917.md](docs/GALLERY-AUDIT-0917.md)):
 > calls, P1/P2/P3 tiers), not post-visit documentation, and it publishes no
 > accuracy. AutoCopilot (fleet technicians) still renders an empty page and
 > stays unverifiable. The gallery moved 61 → 63 in two days (+8 flagged on
-> re-audit day); evidence with URLs and access dates in
+> re-audit day) and kept growing to 94 by the 2026-09-21 dashboard check —
+> the accuracy claim stays anchored to the two dated full audits, and a
+> final count-check lands with the submission itself; evidence with URLs and
+> access dates in
 > [docs/GALLERY-AUDIT-0917.md](docs/GALLERY-AUDIT-0917.md), and a final
 > count-check lands with the submission itself.
 

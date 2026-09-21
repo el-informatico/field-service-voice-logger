@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Voice Incident Reporter — slide deck</title>
+<style>
+  /* Build: chrome-headless-shell --headless --print-to-pdf (see docs/deck/README.md).
+     16:9 slides, one page each; all numbers verbatim from README.md / docs/SUBMISSION.md. */
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #14213d; }
+  body { font-family: "Segoe UI", "DejaVu Sans", "Liberation Sans", sans-serif; color: #1c1e26; }
+
+  .slide {
+    width: 1280px; height: 720px; padding: 42px 64px 54px;
+    background: #faf9f6; page-break-after: always; position: relative; overflow: hidden;
+    display: flex; flex-direction: column;
+  }
+  .slide.dark { background: #14213d; color: #f4f3ee; }
+
+  .footer {
+    position: absolute; bottom: 18px; left: 64px; right: 64px;
+    display: flex; justify-content: space-between;
+    font-size: 14px; color: #8a8f9c; letter-spacing: 0.4px;
+  }
+  .dark .footer { color: #6b7285; }
+
+  .kicker {
+    font-size: 16px; font-weight: 700; letter-spacing: 3.5px; text-transform: uppercase;
+    color: #e8871e; margin-bottom: 12px;
+  }
+  h2 { font-size: 41px; line-height: 1.1; letter-spacing: -0.5px; margin-bottom: 8px; }
+  .sub { font-size: 20px; color: #5a5f6e; margin-bottom: 18px; line-height: 1.32; }
+  .dark .sub { color: #aab1c4; }
+
+  .row { display: flex; gap: 24px; }
+  .col { flex: 1; }
+
+  .bigstat { font-size: 84px; font-weight: 800; color: #e8871e; line-height: 1; letter-spacing: -2px; }
+  .bigstat small { font-size: 28px; font-weight: 700; color: #1c1e26; letter-spacing: 0; }
+  .bigstat-label { font-size: 18px; color: #5a5f6e; margin-top: 8px; line-height: 1.4; }
+
+  ul.plain { list-style: none; }
+  ul.plain li { font-size: 20px; line-height: 1.45; margin-bottom: 12px; padding-left: 28px; position: relative; }
+  ul.plain li::before { content: ""; position: absolute; left: 0; top: 10px; width: 12px; height: 12px; background: #e8871e; }
+  ul.plain li b { color: #14213d; }
+
+  .card {
+    background: #ffffff; border: 1px solid #e4e1d8; border-radius: 10px;
+    padding: 17px 20px; box-shadow: 0 1px 3px rgba(20,33,61,0.06);
+  }
+  .card h3 { font-size: 19px; margin-bottom: 7px; color: #14213d; letter-spacing: 0.2px; }
+  .card p, .card li { font-size: 16.5px; line-height: 1.42; color: #3c4050; }
+
+  .strip {
+    margin-top: auto; background: #14213d; color: #e9e8e2; border-radius: 10px;
+    padding: 14px 22px; font-size: 18px; line-height: 1.42;
+  }
+  .strip b { color: #ffb454; }
+  .strip.light { background: #fdf1e3; color: #6b4a12; border: 1px solid #f0d9b8; }
+  .strip.light b { color: #b45f06; }
+
+  table { border-collapse: collapse; width: 100%; }
+  th { text-align: left; font-size: 14.5px; letter-spacing: 0.6px; text-transform: uppercase;
+       color: #8a8f9c; border-bottom: 2px solid #d8d4c8; padding: 5px 10px 5px 0; }
+  td { font-size: 16.5px; padding: 6px 10px 6px 0; border-bottom: 1px solid #eceade; vertical-align: top; line-height: 1.3; }
+  td.n { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  td b { color: #14213d; }
+  .hl { color: #b45f06; font-weight: 700; }
+
+  .flow { display: flex; gap: 12px; }
+  .step { flex: 1; background: #fff; border: 1px solid #e4e1d8; border-top: 4px solid #e8871e;
+          border-radius: 8px; padding: 13px 12px; }
+  .step .n { font-size: 13px; font-weight: 800; color: #e8871e; letter-spacing: 1.5px; margin-bottom: 5px; }
+  .step h4 { font-size: 16px; margin-bottom: 5px; color: #14213d; }
+  .step p { font-size: 13.5px; line-height: 1.38; color: #4a4f5e; }
+
+  .quote { font-size: 24px; line-height: 1.42; font-style: italic; color: #14213d; }
+  .quote b { color: #b45f06; font-style: normal; }
+
+  .arch { display: flex; gap: 18px; align-items: stretch; }
+  .archbox { border-radius: 10px; padding: 15px 18px; }
+  .archbox h3 { font-size: 18px; margin-bottom: 8px; letter-spacing: 0.3px; }
+  .archbox ul { list-style: none; }
+  .archbox li { font-size: 15.5px; line-height: 1.48; padding-left: 16px; position: relative; }
+  .archbox li::before { content: "·"; position: absolute; left: 4px; font-weight: 800; }
+
+  .title-slide { justify-content: center; }
+  .title-slide h1 { font-size: 88px; letter-spacing: -2px; line-height: 1.02; margin-bottom: 22px; }
+  .title-slide .tagline { font-size: 28px; line-height: 1.45; color: #c8cede; max-width: 980px; }
+  .title-slide .tagline b { color: #ffb454; font-weight: 700; }
+  .title-slide .meta { margin-top: 44px; font-size: 20px; color: #8a92a8; line-height: 1.7; }
+</style>
+</head>
+<body>
+
+<!-- 1 · Title -->
+<section class="slide dark title-slide">
+  <div class="kicker">AssemblyAI Voice Agent Hackathon · September 2026</div>
+  <h1>Voice Incident Reporter</h1>
+  <p class="tagline"><b>Voice in, evidence out.</b> Post-visit incident reports with a spoken
+  read-back loop and published accuracy — the technician just talks; the agent interviews,
+  fills the report live via tools, and reads critical values back out loud until the record
+  is provably correct.</p>
+  <p class="meta">Team el-informatico · 10 real measured sessions against the live API · failures published · audio never stored<br>
+  github.com/el-informatico/field-service-voice-logger · field-service-voice-logger.vercel.app</p>
+  <div class="footer"><span>Voice Incident Reporter</span><span>1</span></div>
+</section>
+
+<!-- 2 · Problem -->
+<section class="slide">
+  <div class="kicker">The problem</div>
+  <h2>The 45-minute problem</h2>
+  <p class="sub">Field technicians spend most of an hour per job on paperwork — and dictation alone cannot fix it.</p>
+  <div class="row">
+    <div class="col" style="flex:0 0 380px;">
+      <div class="bigstat">30–60<small> min</small></div>
+      <p class="bigstat-label">per job writing up the visit — often after hours, in a truck, from memory. Notes get lost, reports get thin, nothing is auditable.</p>
+    </div>
+    <div class="col">
+      <ul class="plain">
+        <li><b>Voice-to-text exists</b> — but dictation cannot tell a report from a guess.</li>
+        <li><b>production</b> vs <b>staging</b> servers · rack <b>A3</b> vs <b>A8</b> · 3/4" vs 3/8" valves — all sound close enough to end up on an invoice.</li>
+        <li>Conversational copilots exist in adjacent verticals — <b>nobody applies the spoken confirmation loop to field-service records</b>.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="strip light"><b>The wedge:</b> a voice-filled record you can invoice against — which means the captured values must be <b>confirmed out loud</b>, not just transcribed.</div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>2</span></div>
+</section>
+
+<!-- 3 · Gap -->
+<section class="slide">
+  <div class="kicker">The gap</div>
+  <h2>Nobody in this gallery publishes accuracy</h2>
+  <p class="sub">We audited the hackathon gallery before building the claim, and re-checked it as it grew.</p>
+  <div class="row">
+    <div class="col card">
+      <h3>61 → 63 → 94 submissions audited / counted</h3>
+      <p>Full gallery audits on <b>2026-09-15</b> (61) and <b>2026-09-17</b> (63) with cited quotes; the dashboard showed <b>94 live</b> at our 09-21 check, spot-checked. Evidence with URLs and access dates in the repo.</p>
+    </div>
+    <div class="col card">
+      <h3>Zero publish measured extraction accuracy</h3>
+      <p>The closest entry publishes a scenario pass-rate and latency percentiles — not per-field precision/recall vs ground truth, not WER, not confirmation-loop precision. A 09-21 spot-check of the new top-voted entries found none either.</p>
+    </div>
+    <div class="col card">
+      <h3>Every demo fills a form or dispatches</h3>
+      <p>Voice demos we could find either fill forms or execute operations autonomously. <b>None rescue capture errors by speaking them back</b> before they count.</p>
+    </div>
+  </div>
+  <div class="strip">So the differentiator is not "voice" and not "forms" — it is <b>the confirmed record</b>: read-back of confusable values, an audit trail per field, and <b>published, reproducible numbers, failures included</b>.</div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>3</span></div>
+</section>
+
+<!-- 4 · What it does -->
+<section class="slide">
+  <div class="kicker">What it does</div>
+  <h2>After the visit, the technician just talks</h2>
+  <p class="sub">One voice session replaces the write-up — and ends as evidence, not as audio.</p>
+  <div class="flow">
+    <div class="step"><div class="n">1</div><h4>Consent first</h4><p>Visible consent screen before the mic ever opens; session only on an explicit tap.</p></div>
+    <div class="step"><div class="n">2</div><h4>Live interview</h4><p>Raw WebSocket to the AssemblyAI Voice Agent API. One thing at a time; VAD tolerant of working pauses; barge-in enabled.</p></div>
+    <div class="step"><div class="n">3</div><h4>Card fills live</h4><p>Every statement becomes a client-side JSON-Schema tool call. Each field carries its own audit trail: which tool set it, when, voice-confirmed or hand-edited.</p></div>
+    <div class="step"><div class="n">4</div><h4>Read-back loop</h4><p>Critical values — services, severity, timeline hours — are spoken back and confirmed before they count.</p></div>
+    <div class="step"><div class="n">5</div><h4>Evidence out</h4><p>CSV for the ticket system, print-ready PDF, and a JSON timeline artifact powering replay + metrics. Audio discarded by design.</p></div>
+  </div>
+  <div class="strip"><b>Why after the visit:</b> live voice during the repair was tried and <b>gated out by evidence</b> — a pre-registered 10 dB noise gate failed every criterion (runbook and results committed). The pivot is documented, not hidden.</div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>4</span></div>
+</section>
+
+<!-- 5 · Demo -->
+<section class="slide">
+  <div class="kicker">Demo</div>
+  <h2>What you can watch</h2>
+  <p class="sub">Three artifacts, each labeled for what it is — nothing synthesized is presented as real session audio.</p>
+  <div class="row">
+    <div class="col card">
+      <h3>Pitch video — 3:00, EN, captions burned</h3>
+      <p>Problem → live UI filling via tools → read-back rescue → metrics table. On-screen label and narration both state it is a <b>deterministic replay of the scripted session on the mock channel</b>; the numbers shown come from the real API runs. Narration is synthetic TTS, disclosed as such.</p>
+    </div>
+    <div class="col card">
+      <h3>Real-session clip — 0:55</h3>
+      <p>A real live-API session: the incident card filling from actual tool calls. <b>Silent by design</b> (audio is never stored); disclosure bands burned in state the operator audio was a scripted wav.</p>
+    </div>
+    <div class="col card">
+      <h3>Live demo</h3>
+      <p>The deployed app runs the <b>deterministic mock channel</b> — no API key on the public server, by design. Same engine, same tools, same artifacts as the real channel; real sessions run locally with a one-use token.</p>
+    </div>
+  </div>
+  <div class="strip light"><b>Judge-verifiable from the repo alone:</b> one command (<b>npm run smoke:mock</b>) runs sessions → artifacts → metrics deterministically, no API key, no cost.</div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>5</span></div>
+</section>
+
+<!-- 6 · Architecture -->
+<section class="slide">
+  <div class="kicker">Architecture</div>
+  <h2>One engine, two channels, zero npm dependencies</h2>
+  <p class="sub">Static browser app with no build step; a DOM-free session engine shared by browser and Node — which is what makes the pipeline CI-able.</p>
+  <div class="arch">
+    <div class="archbox" style="flex:1.35;background:#eef2f8;border:1px solid #d5dcea;">
+      <h3>Browser — static, no build</h3>
+      <ul>
+        <li><b>Raw WebSocket</b> to the AssemblyAI Voice Agent API — contract verified from official docs; <b>no SDK exists for the web</b>, so we wrote the client</li>
+        <li><b>Tools defined client-side</b> with JSON Schema + catalog <span style="font-family:DejaVu Sans Mono,monospace;font-size:15px;">enum</span>s — the agent can only pick services that exist</li>
+        <li>Incident state + per-field audit trail + artifact builder</li>
+        <li><b>Audio: memory only</b> — never disk, never upload</li>
+      </ul>
+    </div>
+    <div class="archbox" style="flex:1;background:#14213d;color:#e9e8e2;">
+      <h3 style="color:#ffb454;">Serverless — Vercel</h3>
+      <ul>
+        <li style="color:#c8cede;">api/token — issues <b style="color:#fff;">one-use temp tokens</b>; the API key never reaches the browser</li>
+        <li style="color:#c8cede;">api/sessions — stores transcript + tool state, <b style="color:#fff;">never audio</b>; rejects artifacts claiming otherwise</li>
+      </ul>
+    </div>
+    <div class="archbox" style="flex:1;background:#fdf1e3;border:1px solid #f0d9b8;">
+      <h3 style="color:#b45f06;">Mock channel — CI</h3>
+      <ul>
+        <li style="color:#6b4a12;">Same interface as the real channel; deterministic rule-based interviewer</li>
+        <li style="color:#6b4a12;"><b>npm run selftest</b> + <b>npm run smoke:mock</b> = the whole CI</li>
+        <li style="color:#6b4a12;">Node 22, ESM, zero runtime deps</li>
+      </ul>
+    </div>
+  </div>
+  <div class="strip">The incident product was a pivot: <b>~70% of the code</b> (channel, engine, artifact, metrics, export) is shared with the original work-order variant, which remains in the repo with its noise-gate evidence.</div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>6</span></div>
+</section>
+
+<!-- 7 · Read-back loop -->
+<section class="slide">
+  <div class="kicker">The core mechanism</div>
+  <h2>Confusables are caught twice</h2>
+  <p class="sub">The schema rejects what cannot exist; the spoken loop rescues what exists but is wrong.</p>
+  <div class="row" style="margin-bottom:22px;">
+    <div class="col card">
+      <h3>Catch 1 — catalog enum in the schema</h3>
+      <p>A service the catalog does not define is <b>rejected before the read-back even asks</b>. The agent cannot invent entries; services set precision across the 10 real sessions: <b>100% (12 TP / 0 FP)</b>.</p>
+    </div>
+    <div class="col card">
+      <h3>Catch 2 — the spoken read-back</h3>
+      <p>Real-but-wrong values survive the schema — that is what the loop is for. Read-back precision (read-backs that caught a real error): <b>62.1% over 29 read-backs</b> in real dialogue.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:22px;">
+    <p class="quote">"did you say <b>production</b>? the catalog also has <b>staging</b> — which one was it?"</p>
+  </div>
+  <div class="card" style="border-left:5px solid #e8871e;">
+    <h3>A seeded capture error, rescued in a real session</h3>
+    <p>Rack <b>A8</b> captured → disambiguation read-back naming both catalog services → operator confirms <b>A3</b>. Recorded in the session artifact (committed as evidence): gate_R5d, script i4.</p>
+  </div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>7</span></div>
+</section>
+
+<!-- 8 · Metrics table -->
+<section class="slide">
+  <div class="kicker">Measured results</div>
+  <h2>N=10 real sessions — the whole table</h2>
+  <p class="sub">Real voice sessions against the live AssemblyAI Voice Agent API: scripted operator at natural pace, seeded ground truth, quiet post-visit dictation. 5 sessions on prompt v3 + 5 on v4.</p>
+  <table>
+    <tr><th style="width:42%;">Metric</th><th>Value</th><th>N</th><th>Condition</th></tr>
+    <tr><td>Turn completion (scripted turns transcribed)</td><td class="n">7–10 of 9–11 per session</td><td class="n">10 sessions</td><td>quiet dictation</td></tr>
+    <tr><td>WER, matched pairs</td><td class="n"><b>0.231</b> (0.164–0.382/session)</td><td class="n">2,134 ref words</td><td>quiet dictation</td></tr>
+    <tr><td>End-of-speech → tool call, p50 / p95</td><td class="n">1,554 ms / 4,810 ms</td><td class="n">53 tool turns</td><td>real API</td></tr>
+    <tr><td>Severidad exacta</td><td class="n">6/10 sessions</td><td class="n">10</td><td>read-back loop</td></tr>
+    <tr><td>Servicios afectados set precision</td><td class="n">100% (12 TP / 0 FP)</td><td class="n">10</td><td>catalog enum</td></tr>
+    <tr><td>Servicios afectados set recall</td><td class="n">70.6% (5 FN)</td><td class="n">10</td><td>see notes</td></tr>
+    <tr><td>Timeline horas exactas</td><td class="n">19/35 GT events (54.3%)</td><td class="n">10</td><td>hora exacta; see notes</td></tr>
+    <tr><td>Confirmation-loop precision (read-backs → correction)</td><td class="n">62.1%</td><td class="n">29 read-backs</td><td>real dialogue</td></tr>
+    <tr><td>Barge-in respected (interrupt → reply cut ≤500 ms)</td><td class="n"><span class="hl">0/3</span> (1,338 / 9,034 / 20,501 ms)</td><td class="n">3 designed interrupts</td><td>hour-correction script</td></tr>
+  </table>
+  <p style="margin-top:14px;font-size:15px;color:#8a8f9c;">Definitions exact and reproducible from metrics/ in the repo · three sample session artifacts committed as evidence (docs/evidence/gate/) · honest notes on slide 10.</p>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>8</span></div>
+</section>
+
+<!-- 9 · Prompt fix -->
+<section class="slide">
+  <div class="kicker">Under the hood</div>
+  <h2>A measured prompt fix, not a vibe</h2>
+  <p class="sub">Same scripts, same conditions — only the interview prompt changed, and the numbers moved.</p>
+  <div class="row" style="margin-bottom:20px;">
+    <div class="col card">
+      <h3>The collapse (v3)</h3>
+      <p>Pure-narrative capture — continuous dictation, no pauses, no markers — ended in <b>1 tool call and 0/8 timeline hours, twice in a row</b>. Services recall 37.5%, hour-exact timeline 35.3%, severity 2/5, EOS→tool p50 1,775 ms.</p>
+    </div>
+    <div class="col card">
+      <h3>The fix (v4) — a "registrar" reframe</h3>
+      <p>One rule set: no spoken datum goes unregistered, <b>one tool call per datum</b>, read-back grouped at the close, hour-conversion few-shots ("eight fifty" → 8:50).</p>
+    </div>
+    <div class="col card">
+      <h3>The result</h3>
+      <p>Services <b>100%/100%</b> precision/recall (9 TP / 0 FP / 0 FN) · timeline hours <b>72.2%</b> (13/18) · severity <b>4/5</b> · EOS→tool p50 <b>1,139 ms</b>. The collapsed script now registers 10–15 tool calls and 7/8 hours.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:18px;">
+    <p><b>WER is 0.231 in both halves</b> — the fix changed tool-call discipline, not hearing. That is the point: the loop, not the transcriber, carries correctness.</p>
+  </div>
+  <div class="strip light"><b>And the discipline about the discipline:</b> a v5 attempt (three targeted edits) regressed in its only measured run — read-backs spoken without tool calls — and was <b>fully reverted</b>. The two-iteration budget was pre-registered and exhausted; the variance is documented, not iterated away.</div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>9</span></div>
+</section>
+
+<!-- 10 · Honest limits -->
+<section class="slide">
+  <div class="kicker">Honest rig &amp; framing</div>
+  <h2>The limits, published with the numbers</h2>
+  <p class="sub">Everything below is in the README and the submission text — the failures are part of the deliverable.</p>
+  <ul class="plain" style="max-width:1120px;">
+    <li><b>WER 0.231 on matched pairs</b> — roughly one word in four. Not hidden; it is the reason the product is a confirmation loop and not a transcriber.</li>
+    <li><b>The rig is rules-only:</b> scripted operator utterances at natural pace, seeded ground truth, no free-form human turns. Reproducible numbers — and no claim of spontaneous-conversation performance.</li>
+    <li><b>2 of 10 sessions hit the 300 s driver watchdog</b> and lost their final turns — one severity miss is the correction turn that never played.</li>
+    <li><b>0 of 10 reached <span style="font-family:DejaVu Sans Mono,monospace;font-size:19px;">enviar_reporte</span></b> — the rig closes the socket after the last scripted reply, so the report status stays in-process in every artifact.</li>
+    <li><b>Designed barge-ins never made the 500 ms window: 0/3</b> (1,338 / 9,034 / 20,501 ms) with interruption configured throughout — the same weakness that failed the 10 dB noise gate and drove the post-visit pivot.</li>
+    <li><b>Run-to-run variance persists</b> — one v4 session spoke read-backs without registering the timeline. v4 mitigates; it does not eliminate.</li>
+  </ul>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>10</span></div>
+</section>
+
+<!-- 11 · Close -->
+<section class="slide">
+  <div class="kicker">Reproducible · private · next</div>
+  <h2>Judge-verifiable end to end</h2>
+  <div class="row" style="margin-bottom:20px;">
+    <div class="col card">
+      <h3>Reproducible</h3>
+      <p><b>npm run smoke:mock</b> — deterministic, no API key, no cost: services/timeline/action-items/severity precision &amp; recall <b>100%</b> vs seeded ground truth, <b>4/4 seeded capture errors rescued</b> by the spoken loop, WER 0.006. Three real-session artifacts committed as evidence.</p>
+    </div>
+    <div class="col card">
+      <h3>Private by code, not policy</h3>
+      <p>Consent before the mic. Audio never uploaded or persisted — the artifact carries <b>audio_retained: false</b> and the server <b>rejects</b> anything claiming otherwise (33 backend self-checks).</p>
+    </div>
+    <div class="col card">
+      <h3>What's next</h3>
+      <p>Confirmation + new data in one turn (action items went 0/2 when the confirmation rule swallowed the new data) · variance reduction · verbatim-vs-normalized capture policy · mobile/headset validation.</p>
+    </div>
+  </div>
+  <div class="strip" style="background:#14213d;">
+    <b>Voice in, evidence out</b> — the field-service record you can invoice against, because the values were read back out loud and the numbers (failures included) are on the table.<br>
+    <span style="font-size:17px;color:#aab1c4;">github.com/el-informatico/field-service-voice-logger · field-service-voice-logger.vercel.app · docs/SUBMISSION.md · docs/evidence/gate/</span>
+  </div>
+  <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>11</span></div>
+</section>
+
+</body>
+</html>
