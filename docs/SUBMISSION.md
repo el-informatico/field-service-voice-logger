@@ -118,7 +118,7 @@ After the visit, the technician opens the incident and starts a voice session �
 
 - **GitHub:** https://github.com/el-informatico/field-service-voice-logger
 - **Live demo:** https://field-service-voice-logger.vercel.app (runs the deterministic mock channel — no API key on the public server, by design)
-- **Demo video (3:00, EN, captions burned):** <link at submission time — owner hosts unlisted; file demo-video-d6.mp4 + demo-video-d6.srt>
+- **Demo video (3:00, EN, captions burned):** <link at submission time — owner hosts unlisted; file `demo-video-d6.mp4` — identical to `aai-demo-final.mp4`, reconciled 2026-09-23 — plus `demo-video-d6.srt` (56 cues, cued to this master). Pre-upload check: `sha256sum demo-video-d6.mp4` must start `d1f7bc04ec2a27b9` (the audited 8.85 final; anything starting `31420938…` is the older 8.80 iteration)>
 - **Real-session clip (0:55, silent by design, disclosure bands burned):** <link at submission time — owner hosts unlisted; file real-session-clip.mp4>
 - **Slide deck (PDF, required field):** https://github.com/el-informatico/field-service-voice-logger/blob/main/docs/deck/voice-incident-reporter-deck.pdf — 11 slides, 16:9, EN, shipped in the repo (`docs/deck/`, source `deck.html`, rebuild notes in its README); a copy lives with the owner's deliverables. *(Verify the raw view renders after the push: `raw.githubusercontent.com/…/main/docs/deck/voice-incident-reporter-deck.pdf`.)*
 
