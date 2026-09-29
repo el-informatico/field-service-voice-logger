@@ -2,10 +2,11 @@
 
 Operativo para el humano. Actualizado: **2026-09-29**.
 
-**Fecha límite: 30-sep-2026 15:00 UTC.** Regla de margen: entregar ≥24–48 h antes
-→ **objetivo: submit completo el 28-sep-2026**, límite interno duro 29-sep 15:00 UTC.
-Razón extra para no apurar: ventana de aprobación manual de la plataforma (~6 h,
-documentada en `docs/video-recording-plan.md`) — jamás dejar el submit para el 30.
+**Fecha límite: 30-sep-2026 15:00 UTC (10:00 Lima).** Endgame real (actualizado
+29-sep tarde): el nivel final se decide esta noche (G1-a / PNR-1) y el **submit
+es la mañana del mié 30-sep — objetivo 08:00 Lima**, con margen antes del corte.
+La ventana de aprobación manual de la plataforma (~6 h, documentada en
+`docs/video-recording-plan.md`) sigue siendo razón para someter temprano, no al filo.
 
 Referencias rápidas:
 
