@@ -13,7 +13,8 @@ post-visit interview.)
 **The product is the confirmed accuracy.** Every session emits an auditable
 timeline artifact (JSON) and we publish measured extraction accuracy, spoken
 confirmation-loop precision/recall, end-of-speech→tool-call latency (p50/p95),
-WER clean vs +noise, and barge-in respected-vs-stolen. See [Metrics](#metrics).
+and WER — plus the work-order noise-gate evidence and the development set's
+barge-in numbers. See [Metrics](#metrics).
 
 > Built for the [AssemblyAI Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) (Sept 2026).
 > Status: built and measured — **10 real voice sessions on the English
@@ -116,8 +117,9 @@ break protocol identity — declined as metric-gaming. (2) Prompt v4-en was
 frozen with zero iterations: every prompt-controlled metric was green at
 freeze — turn completion 100%, severity 9/10, services 100/100, timeline
 hours 80.0%, confirm precision 71.0% (stop criterion and full rationale in
-[STATUS.md](STATUS.md) METRICS-N10-EN). (3) All 10 sessions close with the
-report-send tool call (`enviar_reporte`); 0 of 10 hit the 300 s driver
+[STATUS.md](STATUS.md) METRICS-N10-EN). (3) All 10 sessions execute the
+report-send tool call (`enviar_reporte` — in three of them a final
+`set_resumen` follows in the same closing turn); 0 of 10 hit the 300 s driver
 watchdog (the Spanish set: 2 of 10 — its close-out race was fixed before
 these runs). (4) N08's severity was never set (ground truth: medium) despite
 a complete session — agent variance under 8 barge-ins; published as
@@ -127,8 +129,10 @@ and cause as the Spanish set: verbatim agent phrasing vs clean ground-truth
 phrases — hour-exact is the reported signal. (6) End-of-speech → tool p50 is
 3,031 ms vs 1,554 ms on the Spanish set: the English prompt's few-shots
 (hours, multi-fact narrative) lengthen agent turns before the tool call;
-documented, no plan target. (7) One run per scenario — run-to-run variance
-was measured on the Spanish set, not re-measured here. (8)
+documented, no plan target. (7) No re-rolls: every completed run is published
+as measured (scenario repeats — i1×3, i2×3, i3×2, i4×2 — stand, which is why
+N08's severity miss is in the table); the Spanish set's dedicated run-to-run
+variance study was not repeated. (8)
 Confirm-precision derivation undercounts rescues when the operator answers
 with content instead of yes/no (same as the Spanish set); the
 designed-rescue chain was measured separately by the WP7 gate takes
@@ -217,8 +221,9 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 **Watch (3:40, EN, captions burned):** *link added at submission —
 hosted unlisted by the owner; the caption track `demo-video-d6-v5.srt`
 (68 cues) ships alongside it and doubles as the closed-captions
-upload.* Re-recorded on the English UI in the final 24 hours; the development
-evidence below is the original Spanish-language build. A 66-second
+upload.* Re-recorded on the English UI in the final 24 hours; the
+development-evidence table above and the companion clip below are the
+original Spanish-language build. A 66-second
 companion clip of a **real live-API session** (silent by design, disclosure
 bands burned in: scripted wav, audio never stored) is submitted with it:
 `real-session-clip-v4.mp4` — the session replayed frame-by-frame from its own
