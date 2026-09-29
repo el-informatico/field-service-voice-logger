@@ -12,13 +12,13 @@ Referencias rápidas:
 
 - Repo: https://github.com/el-informatico/field-service-voice-logger
 - Live: https://field-service-voice-logger.vercel.app
-- Video: `<entregables>/demo-video-d6-v4.mp4`
+- Video: `<entregables>/demo-video-d6-v5.mp4`
 
 ## 1. Ya resuelto (REPO) — esto NO hay que hacerlo
 
 | Qué | Evidencia / ruta | Owner |
 |---|---|---|
-| Video demo final, QA visión 3/3 | `<entregables>/demo-video-d6-v4.mp4` — **[ACTUALIZADO 2026-09-29]** master final = **v4 (re-render determinista, QA de visión aprobado iter-3/3)**, sha256 `8adfea08b83dd386…`, **3:39** (218.8 s), 43.7 MB, captions EN quemadas. Subtítulos: `demo-video-d6-v4.srt` (67 cues / 522 palabras, cueado a este master), sha256 `640cf3a3ebd01ada…`. Clip real que lo acompaña: `real-session-clip-v4.mp4` (**1:06**, sha256 `b76677c6…`, replay frame-a-frame del JSON de la sesión real, verbatim). **El master del 23-sep (`d1f7bc04…`, 3:00, 34.7 MB, 56 cues) queda como anterior — NO subir ese.** Historia previa de iteraciones (09-16/09-17/09-23) en git | REPO-YA |
+| Video demo final, QA visión 9/9 | `<entregables>/demo-video-d6-v5.mp4` — **[ACTUALIZADO 2026-09-29]** master final = **re-grabación sobre mock EN (QA de visión aprobado)**, sha256 `705e8022bdfe7992…`, **3:40** (220.0 s), 43.7 MB, captions EN quemadas. Subtítulos: `demo-video-d6-v5.srt` (68 cues / 530 palabras), sha256 `343fc261df6c32b9…`. Clip real que lo acompaña: `real-session-clip-v4.mp4` (**1:06**, sha256 `b76677c6…`, sesión real sobre la build ES original — replay verbatim del JSON). **NO subir:** el v4 del 29-sep (`8adfea08…`, UI ES, 3:39) ni el del 23-sep (`d1f7bc04…`, 3:00).** Historia previa de iteraciones en git | REPO-YA |
 | Tabla N=10 en README (LOCAL) | Commits `75b8334` + `e68afed` (METRICS-N10). **OJO: aún NO pusheados** → ítem 3 del checklist. El repo público hoy muestra la tabla N=5 vieja | REPO-YA |
 | Deploy live verificado | curl 2026-09-16: `/` → **HTTP 200** (0.54 s); `/api/token` → **HTTP 200** con `"mode":"mock"` (esperado: el server no lleva key; el modo real se activa con key en `.env`) | REPO-YA |
 | Re-auditoría de galería pre-video | Hecha antes de grabar la línea de diferenciación (ver STATUS, bloque D6): wedge intacto | REPO-YA |
@@ -33,12 +33,12 @@ Referencias rápidas:
 
 | # | Tarea | Owner | Momento | Estado | Cómo / ruta |
 |---|---|---|---|---|---|
-| 1 | Revisión humana del video (~10 min): audio, captions, cifras en pantalla, sin datos sensibles | HUMANO | Cuanto antes (hoy 16-sep) | PENDIENTE | Guía: `docs/VIDEO-REVIEW-GUIDE.md` (si aún no existe, revisar contra `docs/video-script-en.md` beat a beat). Archivo: `<entregables>/demo-video-d6-v4.mp4` |
+| 1 | Revisión humana del video (~10 min): audio, captions, cifras en pantalla, sin datos sensibles | HUMANO | Cuanto antes (hoy 16-sep) | PENDIENTE | Guía: `docs/VIDEO-REVIEW-GUIDE.md` (si aún no existe, revisar contra `docs/video-script-en.md` beat a beat). Archivo: `<entregables>/demo-video-d6-v5.mp4` |
 | 2 | Commit de los docs del submit | REPO-YA (2026-09-16) | Hecho | **HECHO** | Commits lógicos en `main` (ver bitácora de STATUS): SUBMISSION + CHECKLIST, guías de video, auditoría + fixes, bloque readiness. Si editás un doc después: `cd <repo> && git add docs/ && git commit` — los hooks corren solos; no usar `--no-verify` |
 | 3 | **Push del repo — CRÍTICO**: sin push, el link del submit muestra la tabla N=5 (METRICS-N10 vive en commits locales) | HUMANO (regla del proyecto: NINGÚN push sin "YES" explícito tuyo) | Antes de pegar cualquier link | PENDIENTE | `git push origin main` — publica METRICS-N10 (README N=10, prompt v4, guion i4) + el pack de submit. Auditorías hechas: pre-push D5 (STATUS) y pre-submission (`docs/AUDIT-SUBMISSION-2026-09-16.md`, PUSH-SAFE; el mensaje del commit D6-video ya fue reword-eado sin tocar contenido). Verificar antes: `git status -sb` |
 | 4 | Verificación post-push en GitHub | HUMANO | 5 min tras el push | PENDIENTE | README §Metrics dice "10 REAL voice sessions" con la tabla N=10 (refrescar sin caché); CI verde: pestaña Actions, job `selftest` (`npm run selftest` + `npm run smoke:mock`); `git status -sb` → "up to date" |
 | 5 | Verificación Vercel tras el push | HUMANO | Tras el ítem 4 | PENDIENTE | Integración Git → redeploy automático esperado. Verificar: `curl -s -o /dev/null -w "%{http_code}\n" https://field-service-voice-logger.vercel.app/` → 200, y `curl -s https://field-service-voice-logger.vercel.app/api/token` → 200 + `"mode":"mock"`. Si no redeploya o falla: dashboard Vercel → Deployments → Redeploy / logs |
-| 6 | Hosting del video: subir a YouTube unlisted (o Streamable) y subir el SRT como subtítulos; probar EN EL TELÉFONO antes de pegar el link | HUMANO | Cuanto antes (bloquea el submit) | PENDIENTE | `<entregables>/demo-video-d6-v4.mp4` + `demo-video-d6-v4.srt` (67 cues). Si la plataforma pide archivo directo: el mp4 (43.7 MB) cumple de sobra |
+| 6 | Hosting del video: subir a YouTube unlisted (o Streamable) y subir el SRT como subtítulos; probar EN EL TELÉFONO antes de pegar el link | HUMANO | Cuanto antes (bloquea el submit) | PENDIENTE | `<entregables>/demo-video-d6-v5.mp4` + `demo-video-d6-v5.srt` (68 cues). Si la plataforma pide archivo directo: el mp4 (43.7 MB) cumple de sobra |
 | 7 | Elegir portada/thumbnail (1 min) | HUMANO | Junto al ítem 6 | **RATIFICADA cover-a.png** (frame 01:52, tabla de métricas N=10 — decisión del owner 2026-09-23) | `cover-a.png` (tabla de métricas con 100% resaltado — legible en miniatura). Mismas rutas de entregables |
 | 8 | Rellenar los textos del formulario copiando de `docs/SUBMISSION.md` (mapeo en §3) | HUMANO (fuente: REPO) | Día del submit (o antes) | LISTO PARA COPIAR | `docs/SUBMISSION.md` del repo (7 secciones, tabla N=10 verificada contra README) |
 | 9 | Metadatos de equipo/perfil en la plataforma (foto, bio, miembros del equipo) | HUMANO | Día del submit (o antes) | PENDIENTE | Perfil de la plataforma; usar el mismo nombre/avatar que firma el repo |
@@ -64,12 +64,12 @@ nombres de campo.
 ## 4. Plan B (contingencias)
 
 1. **La plataforma rechaza el video** (formato/peso): el camino primario ya es un
-   link (YouTube unlisted / Streamable); el archivo directo `demo-video-d6-v4.mp4`
+   link (YouTube unlisted / Streamable); el archivo directo `demo-video-d6-v5.mp4`
    (43.7 MB) es el fallback si pide upload. Último recurso, solo si exigiera menos
    peso:
-   `ffmpeg -i demo-video-d6-v4.mp4 -c:v libx264 -crf 28 -preset slow -c:a aac -b:a 96k demo-video-d6-v4-small.mp4`
+   `ffmpeg -i demo-video-d6-v5.mp4 -c:v libx264 -crf 28 -preset slow -c:a aac -b:a 96k demo-video-d6-v5-small.mp4`
    — las captions están quemadas en el cuadro, sobreviven cualquier re-encode;
-   verificar duración 3:39 y audio audible antes de subir.
+   verificar duración 3:40 y audio audible antes de subir.
 2. **El deploy cae**: el repo corre local — `cp .env.example .env` (opcional; sin
    key = modo mock determinista), `npm run dev` → http://localhost:3000 (en WSL2,
    si 127.0.0.1 cuelga usar `[::1]`); demo guiada de un comando:
