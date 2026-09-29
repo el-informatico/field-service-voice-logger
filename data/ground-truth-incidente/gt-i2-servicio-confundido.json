@@ -23,17 +23,17 @@
     "estado": "sent"
   },
   "user_utterances": [
-    { "n": 1, "text": "Va, ya voy saliendo del cliente... fue lo de la tienda en línea caída, échame el reporte del incidente antes de que se me olvide todo." },
-    { "n": 3, "text": "Pos el monitoreo les marcó como a las cinco cuarenta de la mañana que el sitio no respondía... cuando llegué, el servidor web estaba arriba pero atorado, con el disco casi al tope... le limpié las bitácoras viejas, le ajusté la memoria y volvió." },
-    { "n": 5, "text": "La caída la marcó el monitoreo a las cinco cuarenta... esa es la primera." },
-    { "n": 7, "text": "Esa... yo llegué a las siete y media al cuarto de servidores... y a las ocho cuarenta y cinco quedó el sitio respondiendo otra vez." },
-    { "n": 9, "text": "Pues el que se cayó fue el servidor web de producción... y el de staging ni se enteró, ese se quedó arriba toda la noche." },
-    { "n": 11, "text": "¡Producción!... el de producción es el que se cayó, el de staging se quedó arriba, por eso digo que ni se enteró." },
-    { "n": 13, "text": "Eso, producción... y también se encoló la api de pagos, porque los pagos no pasaban aunque el sitio subiera... ya la probé con una compra de prueba y quedó bien." },
-    { "n": 15, "text": "Sí, esa... la de pagos." },
-    { "n": 17, "text": "Ponle... media, digo, porque al final ya quedó." },
-    { "n": 19, "text": "No, es alta, no media... tres horas caídos en horario de ventas, esa es alta... y apúntame dos pendientes: que le pidamos al proveedor más disco para el servidor, y que el monitoreo avise por sms y no nomás por correo." },
-    { "n": 21, "text": "Sí, alta... así está bien, mándalo." }
+    { "n": 1, "text": "Alright, I'm wrapped up at Uniformes Delta, heading out... it was the online store going down this morning... log the incident report for me before I forget it all." },
+    { "n": 3, "text": "Well, monitoring flagged at around five forty in the morning that the site wasn't responding... when I got there, the web server was up but stuck, with the disk nearly full... I cleaned out the old logs, tuned the memory, and it came back." },
+    { "n": 5, "text": "The outage was flagged by monitoring at five forty... that's the first one." },
+    { "n": 7, "text": "That's it... I got to the server room at seven thirty... and at eight forty-five the site was responding again." },
+    { "n": 9, "text": "Well, the one that went down was the production web server... and the staging one never even noticed, it stayed up all night." },
+    { "n": 11, "text": "Production!... the production one is the one that went down, staging stayed up, that's why I say it never even noticed." },
+    { "n": 13, "text": "That's it, production... and the payments API also queued up, because payments weren't going through even when the site came back up... I already tested it with a trial purchase and it's fine." },
+    { "n": 15, "text": "Yes, that one... the payments one." },
+    { "n": 17, "text": "Put down... medium, I guess, since it's working again in the end." },
+    { "n": 19, "text": "No, it's high, not medium... three hours down during sales hours, that's high... and note down two follow-ups: ask the provider for more disk on the web server, and have monitoring alert by SMS, not just email." },
+    { "n": 21, "text": "Yes, high... that's how it should be, send it." }
   ],
   "seeded_errors": [
     {

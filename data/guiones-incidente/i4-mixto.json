@@ -1,57 +1,57 @@
 {
   "scenario_id": "i4-mixto",
   "incidente_id": "IC-2002",
-  "description": "Mixto: dictado post-visita del despacho contable en flujo narrativo continuo (dos horas por turno, servicios y severidad entremezclados) CON un error sembrado de servicio confundible. El operador dice 'el rack A tres, el del cuarto de redes' pero la captura puede quedarse con el A ocho de telecomunicaciones (par confundible SRV-RACK-A3↔SRV-RACK-A8); el read-back de desambiguación lo rescata. La vpn se confirma limpia a la primera y la severidad alta se confirma sin corrección. Presión narrativa del i1 + rescate del i2 en una sola sesión.",
+  "description": "Mixed: post-visit dictation from the accounting office in a continuous narrative flow (two timestamps per turn, services and severity interwoven) WITH a confusable-service seeded error. The operator says 'rack A three, the one in the network room' but the capture may keep the telecom A eight (confusable pair SRV-RACK-A3<->SRV-RACK-A8); the disambiguation read-back rescues it. The VPN confirms clean on the first try and high severity confirms without correction. The narrative pressure of i1 plus the rescue of i2 in a single session.",
   "ambiente": "tranquilo",
   "turns": [
     {
       "n": 1,
       "role": "user",
-      "text": "¿Me oyes bien?... ya salí del despacho de los contadores, era lo del cuarto de redes que olía a recalentado... échame el reporte del incidente antes de que se me vaya el detalle.",
+      "text": "Can you hear me OK?... I'm out of the accountants' office now, it was that network room that smelled overheated... log the incident report for me before the detail slips away.",
       "expect": "tool:get_incidente",
-      "note": "dictado post-visita en el estacionamiento del despacho; ambiente tranquilo"
+      "note": "post-visit dictation at the office parking lot; quiet environment"
     },
     {
       "n": 2,
       "role": "agent",
-      "hint": "get_incidente(IC-2002); resume el reporte (olor a recalentado en el cuarto de redes, gabinete rack a 36 grados, minisplit que no enfría) y pide que narre qué pasó desde el principio."
+      "hint": "get_incidente(IC-2002); recap the report (burnt smell in the network room, rack cabinet at 36 degrees, minisplit not cooling) and ask her to walk through what happened from the beginning."
     },
     {
       "n": 3,
       "role": "user",
-      "text": "Pos llegué como a las siete cincuenta y ya se sentía el olor a quemado desde la puerta... a las ocho y cuarto el gabinete del rack A tres marcaba treinta y seis grados y el minisplit nomás soplaba tibio, le di mantenimiento, le limpié los filtros y nada.",
+      "text": "Well, I got there around seven fifty and you could already smell the burning from the doorway... at eight fifteen the rack A three cabinet was reading thirty-six degrees and the minisplit was only blowing warm, I serviced it, cleaned the filters, and nothing.",
       "expect": "tool:set_que_paso|tool:agregar_evento_timeline",
-      "note": "narrativa literal con DOS horas incrustadas (7:50 y 8:15); el guion mixto exige registrarlas en el momento o pedirlas después, pero ninguna se pierde"
+      "note": "literal narrative with TWO embedded timestamps (7:50 and 8:15); the mixed guion demands logging them in the moment or asking for them after, but none gets lost"
     },
     {
       "n": 4,
       "role": "agent",
-      "hint": "set_que_paso con el texto literal de la técnica; agregar_evento_timeline(hora '07:50', evento 'Llegada al cuarto de redes; olor a recalentado desde la puerta') y ('08:15', 'Gabinete rack A3 marcando 36 °C; minisplit soplando aire tibio'); read-back agrupado: 'siete cincuenta la llegada, ocho y cuarto los treinta y seis grados, ¿correcto?'."
+      "hint": "set_que_paso with the technician's literal text; agregar_evento_timeline(hora '07:50', evento 'Arrival at the network room; burnt smell from the doorway'); agregar_evento_timeline(hora '08:15', evento 'Rack cabinet A3 reading 36 °C; minisplit blowing warm air'); grouped read-back: 'seven fifty the arrival, eight fifteen the thirty-six degrees, correct?'."
     },
     {
       "n": 5,
       "role": "user",
-      "text": "Esa... luego a las ocho cuarenta y cinco le metí un abanico industrial a la puerta del cuarto... y como a las diez y media ya tenía el gabinete en veintiocho grados, ya estable.",
+      "text": "That's it... then at eight forty-five I put an industrial fan at the room door... and around ten thirty I had the cabinet down to twenty-eight degrees, steady.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "confirmación a la primera y DOS horas más en un solo turno"
+      "note": "first-try confirmation and TWO more timestamps in a single turn"
     },
     {
       "n": 6,
       "role": "agent",
-      "hint": "agregar_evento_timeline('08:45', 'Ventilación forzada con abanico industrial en la puerta del cuarto') y ('10:30', 'Gabinete enfriado a 28 °C, temperatura estable'); read-back agrupado de ambas; pregunta por los servicios afectados."
+      "hint": "agregar_evento_timeline(hora '08:45', evento 'Forced ventilation with an industrial fan at the room door'); agregar_evento_timeline(hora '10:30', evento 'Cabinet cooled to 28 °C, temperature stable'); grouped read-back of both; ask about the affected services."
     },
     {
       "n": 7,
       "role": "user",
-      "text": "El que estaba sufriendo era el rack A tres, el del cuarto de redes... el A ocho, el de telecomunicaciones, ese ni se inmutó, sigue sano.",
+      "text": "The one that was struggling was rack A three, the one in the network room... the A eight, the telecom one, never even flinched, still healthy.",
       "expect": "tool:buscar_servicio",
-      "note": "ERROR SEMBRADO: la transcripción de ESTE turno puede perder el calificativo 'del cuarto de redes' y/o trocar el número (habla rápido, A tres/A ocho suenan parecido) → buscar_servicio resuelve SRV-RACK-A8 y agregar_servicio_afectado lo registra. La verdad es SRV-RACK-A3. Lo debe atrapar el read-back de desambiguación del turno 8. El audio real del operador dice 'A tres'.",
-      "as_heard": "El que estaba sufriendo era el rack A ocho... ese ni se inmutó, sigue sano."
+      "note": "SEEDED ERROR: THIS turn's transcription may lose the qualifier 'the one in the network room' and/or swap the number (he speaks fast, A three / A eight sound alike) -> buscar_servicio resolves SRV-RACK-A8 and agregar_servicio_afectado registers it. The truth is SRV-RACK-A3. The turn-8 disambiguation read-back must catch it. The operator's real audio says 'A three'.",
+      "as_heard": "The one that was struggling was rack A eight... it never even flinched, still healthy."
     },
     {
       "n": 8,
       "role": "agent",
-      "hint": "buscar_servicio('rack') emite confusable_warning por el par SRV-RACK-A3↔SRV-RACK-A8; la captura inicial resuelve SRV-RACK-A8; agregar_servicio_afectado(SRV-RACK-A8) y read-back DE DESAMBIGUACIÓN nombrando AMBOS: '¿el rack A3 del cuarto de redes o el A8 de telecomunicaciones?' (confirm_request field=servicio value=SRV-RACK-A8). No debe dar por bueno el servicio sin este paso.",
+      "hint": "buscar_servicio('rack') raises confusable_warning for the SRV-RACK-A3<->SRV-RACK-A8 pair; the initial capture resolves to SRV-RACK-A8; agregar_servicio_afectado(SRV-RACK-A8) and DISAMBIGUATION read-back naming BOTH: 'rack A3 in the network room, or A8 in the telecom room?' (confirm_request field=servicio value=SRV-RACK-A8). Must not accept the service without this step.",
       "add_servicios": [
         {
           "id": "SRV-RACK-A8"
@@ -62,14 +62,14 @@
     {
       "n": 9,
       "role": "user",
-      "text": "El A tres, el del cuarto de redes... el A ocho ni lo toqué, te digo que ese está sano.",
+      "text": "A three, the one in the network room... I never touched A eight, I'm telling you that one is healthy.",
       "expect": "readback",
-      "note": "corrección explícita del error sembrado, apoyada en lo que ya dijo"
+      "note": "explicit correction of the seeded error, backed by what he already said"
     },
     {
       "n": 10,
       "role": "agent",
-      "hint": "Corrige la ficha: quita SRV-RACK-A8, agrega SRV-RACK-A3; re-read-back: 'rack A3 del cuarto de redes, ¿ahora sí confirmo?'.",
+      "hint": "Fix the form: remove SRV-RACK-A8, add SRV-RACK-A3; re-read-back: 'rack A3 in the network room, confirm now?'.",
       "correct_to": [
         {
           "id": "SRV-RACK-A3"
@@ -79,50 +79,50 @@
     {
       "n": 11,
       "role": "user",
-      "text": "Ese... y la vpn también se cayó un rato, los contadores de fuera no podían entrar a sacar sus reportes... eso fue todo lo que se afectó.",
+      "text": "That one... and the VPN also went down for a while, the outside accountants couldn't get in to pull their reports... that was everything that was affected.",
       "expect": "tool:buscar_servicio",
-      "note": "segundo servicio, sin confundibles; confirmación limpia a la primera (contraste con el turno 9)"
+      "note": "second service, no confusables; clean first-try confirmation (contrast with turn 9)"
     },
     {
       "n": 12,
       "role": "agent",
-      "hint": "buscar_servicio('vpn') resuelve SRV-VPN-REMOTO sin confusable_warning; agregar_servicio_afectado(SRV-VPN-REMOTO); read-back: 'vpn de acceso remoto, ¿correcto?'; pregunta la severidad."
+      "hint": "buscar_servicio('vpn') resolves SRV-VPN-REMOTO without confusable_warning; agregar_servicio_afectado(SRV-VPN-REMOTO); read-back: 'remote access vpn, correct?'; ask for the severity."
     },
     {
       "n": 13,
       "role": "user",
-      "text": "Sí, esa... y ponle alta, si ese rack se llega a apagar se paran las declaraciones de once clientes, mejor alta.",
+      "text": "Yes, that one... and put it down as high, if that rack had gone dark the filings for eleven clients would have stopped, better high.",
       "expect": "tool:set_severidad",
-      "note": "confirmación del servicio y severidad con justificación de negocio, sin corrección"
+      "note": "service confirmation and severity with a business justification, no correction"
     },
     {
       "n": 14,
       "role": "agent",
-      "hint": "set_severidad(alta); read-back SIEMPRE: 'severidad alta, ¿correcto?'; tras confirmar pide los pendientes."
+      "hint": "set_severidad(high); ALWAYS read back: 'noting high severity, correct?'; once confirmed ask for the follow-ups."
     },
     {
       "n": 15,
       "role": "user",
-      "text": "Alta, sí... y apunta dos pendientes: que mantenimiento revise el minisplit esta misma semana, y que compren un abanico industrial de repuesto para el cuarto.",
+      "text": "High, yes... and note two follow-ups: have maintenance check the minisplit this same week, and buy a spare industrial fan for the room.",
       "expect": "tool:agregar_action_item",
-      "note": "confirma severidad a la primera y dicta dos action items"
+      "note": "confirms severity on the first try and dictates two action items"
     },
     {
       "n": 16,
       "role": "agent",
-      "hint": "agregar_action_item('Reparar el minisplit del cuarto de redes (mantenimiento, esta misma semana)') y ('Comprar un abanico industrial de repuesto para el cuarto de redes'); read-back breve de ambos; arma set_resumen de una línea y pregunta si envía."
+      "hint": "agregar_action_item('Fix the network room minisplit (maintenance, this same week)'); agregar_action_item('Buy a spare industrial fan for the network room'); brief read-back of both; propose the summary: 'Overheated network room: rack cabinet A3 at 36 °C from a minisplit not cooling, brought down to 28 °C with forced ventilation; VPN briefly down for the remote accountants.' and ask whether to send."
     },
     {
       "n": 17,
       "role": "user",
-      "text": "Así está bien... mándalo ya, que traigo el siguiente servicio encima.",
+      "text": "That's fine... send it now, I've got the next job on top of me.",
       "expect": "tool:enviar_reporte",
-      "note": "cierre"
+      "note": "close"
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "enviar_reporte(); confirma en voz alta 'ficha de incidente enviada' (menciona la corrección del rack rescatada) y cierra la sesión."
+      "hint": "enviar_reporte(); confirm out loud 'incident form sent' (mention the rescued rack correction) and close the session."
     }
   ]
 }

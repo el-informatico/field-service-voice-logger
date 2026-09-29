@@ -1,128 +1,128 @@
 {
   "scenario_id": "i1-dictado-feliz",
   "incidente_id": "IC-2003",
-  "description": "Dictado feliz: corte de red general en las oficinas de la mensajería, dictado post-visita desde la camioneta con el motor apagado. La técnica narra el incidente con horas en palabras, agrega tres eventos al timeline, dos servicios (dns interno y vpn), severidad alta y dos pendientes. Ambiente tranquilo, habla clara y pausada: todas las confirmaciones pasan a la primera, sin errores sembrados.",
+  "description": "Happy dictation: office-wide network outage at the courier company, dictated post-visit from the van with the engine off. The technician narrates the incident with hours in words, adds four events to the timeline, two services (internal DNS and VPN), high severity and two follow-ups. Quiet environment, clear measured speech: every confirmation passes on the first try, no seeded errors.",
   "ambiente": "tranquilo",
   "turns": [
     {
       "n": 1,
       "role": "user",
-      "text": "¿Me oyes bien?... va, ya voy de salida, en la camioneta, ya terminé lo de la red en Kimsa... échame la mano con el reporte del incidente, ¿sí?",
+      "text": "Can you hear me OK?... OK, I'm on my way out, in the van, just finished the network job at Kimsa... help me out with the incident report, alright?",
       "expect": "tool:get_incidente",
-      "note": "dictado post-visita en la camioneta, motor apagado; ambiente tranquilo"
+      "note": "post-visit dictation in the van, engine off; quiet environment"
     },
     {
       "n": 2,
       "role": "agent",
-      "hint": "get_incidente(IC-2003); resume el reporte (corte de red general en las oficinas de Envíos y Mensajería Kimsa) y pide que narre qué pasó desde el principio."
+      "hint": "get_incidente(IC-2003); recap the report (office-wide network outage at the Kimsa courier offices) and ask the technician to walk through what happened from the beginning."
     },
     {
       "n": 3,
       "role": "user",
-      "text": "Pos el corte empezó temprano... como a las ocho cincuenta me llamaron de recepción que no había internet en toda la oficina, ni los teléfonos de ip... entré a checar y el switch de salida no respondía, nomás tenía el led de estatus en naranja.",
+      "text": "Well, the outage started early... around eight fifty reception called me that there was no internet in the whole office, no IP phones either... I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
       "expect": "tool:set_que_paso",
-      "note": "narrativa literal del operador; hora mencionada de paso, el timeline se pide aparte"
+      "note": "the operator's literal narrative; hour mentioned in passing, the timeline is asked for separately"
     },
     {
       "n": 4,
       "role": "agent",
-      "hint": "set_que_paso con el texto literal de la técnica; pide las horas en orden para armar el timeline."
+      "hint": "set_que_paso with the technician's literal text; ask for the times in order to build the timeline."
     },
     {
       "n": 5,
       "role": "user",
-      "text": "Va... la llamada de recepción fue a las ocho cincuenta, apúntale esa primero.",
+      "text": "OK... the reception call was at eight fifty, log that one first.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "hora dicha en palabras, clara"
+      "note": "hour said in words, clear"
     },
     {
       "n": 6,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '08:50', evento 'Llamada de recepción reportando el corte de red general'); read-back de la hora en voz alta: 'ocho cincuenta, ¿confirmo?'."
+      "hint": "agregar_evento_timeline(hora '08:50', evento 'Reception call reporting the office-wide network outage'); read the hour back out loud: 'eight fifty, confirm?'."
     },
     {
       "n": 7,
       "role": "user",
-      "text": "Esa... luego como a las nueve y cuarto ya tenía yo que era el switch de salida, porque lo probé con el equipo de diagnóstico y no contestaba.",
+      "text": "That's it... then around nine fifteen I had it pinned to the core switch, because I tested it with the diagnostic kit and it wouldn't answer.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "confirmación a la primera y evento nuevo"
+      "note": "first-try confirmation and a new event"
     },
     {
       "n": 8,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '09:15', evento 'Identificado el switch de salida como causa tras prueba de diagnóstico'); read-back de la hora; pide lo que sigue."
+      "hint": "agregar_evento_timeline(hora '09:15', evento 'Core switch identified as the cause after a diagnostic test'); read the hour back; ask for what comes next."
     },
     {
       "n": 9,
       "role": "user",
-      "text": "A las diez diez le puse el switch nuevo de repuesto que traía... y a las diez veinte ya tenía toda la red arriba, correos y teléfonos.",
+      "text": "At ten ten I put in the new spare switch I had with me... and by ten twenty I had the whole network back up, email and phones.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "dos eventos en un solo turno; horas en palabras"
+      "note": "two events in a single turn; hours in words"
     },
     {
       "n": 10,
       "role": "agent",
-      "hint": "agregar_evento_timeline('10:10', 'Sustitución del switch de salida por uno de repuesto') y ('10:20', 'Red restablecida: correos y telefonía ip arriba'); read-back de las dos horas juntas; pregunta por los servicios afectados."
+      "hint": "agregar_evento_timeline(hora '10:10', evento 'Core switch swapped for a spare unit'); agregar_evento_timeline(hora '10:20', evento 'Network restored: email and IP telephony back up'); read both hours back together; ask about the affected services."
     },
     {
       "n": 11,
       "role": "user",
-      "text": "Pues se cayó el dns interno, ese fue el primero... y la vpn también, porque la gente de reparto no podía entrar al sistema desde la calle.",
+      "text": "Well, the internal DNS went down, that was the first one... and the VPN too, because the delivery crew couldn't get into the system from the street.",
       "expect": "tool:buscar_servicio",
-      "note": "dos servicios, ninguno confundible; habla clara"
+      "note": "two services, neither confusable; clear speech"
     },
     {
       "n": 12,
       "role": "agent",
-      "hint": "buscar_servicio('dns interno') resuelve SRV-DNS-INTERNO sin confundibles; agregar_servicio_afectado(SRV-DNS-INTERNO); read-back: 'servidor dns interno, ¿correcto?'."
+      "hint": "buscar_servicio('internal dns') resolves SRV-DNS-INTERNO with no confusables; agregar_servicio_afectado(SRV-DNS-INTERNO); read-back: 'internal dns server, correct?'."
     },
     {
       "n": 13,
       "role": "user",
-      "text": "Sí, ese.",
+      "text": "Yes, that one.",
       "expect": "readback",
-      "note": "confirmación limpia a la primera"
+      "note": "clean first-try confirmation"
     },
     {
       "n": 14,
       "role": "agent",
-      "hint": "buscar_servicio('vpn') resuelve SRV-VPN-REMOTO; agregar_servicio_afectado(SRV-VPN-REMOTO); read-back: 'vpn de acceso remoto, ¿correcto?'; pregunta la severidad."
+      "hint": "buscar_servicio('vpn') resolves SRV-VPN-REMOTO; agregar_servicio_afectado(SRV-VPN-REMOTO); read-back: 'remote access vpn, correct?'; ask for the severity."
     },
     {
       "n": 15,
       "role": "user",
-      "text": "Ponle alta... estuvieron como hora y media sin facturar y sin despachar, eso les dolió.",
+      "text": "Put it down as high... they went about an hour and a half without invoicing or shipping, that hurt.",
       "expect": "tool:set_severidad",
-      "note": "severidad con justificación de negocio"
+      "note": "severity with a business justification"
     },
     {
       "n": 16,
       "role": "agent",
-      "hint": "set_severidad(alta); read-back SIEMPRE: 'severidad alta, ¿correcto?'; tras confirmar propone el resumen en una línea y pide pendientes."
+      "hint": "set_severidad(high); ALWAYS read back: 'noting high severity, correct?'; once confirmed propose a one-line summary and ask for follow-ups."
     },
     {
       "n": 17,
       "role": "user",
-      "text": "Sí, así va bien... y deja dos pendientes: que me compren otro switch de repuesto para el almacén, y que le avisen al jefe de sistemas cuando hagan el mantenimiento del nodo.",
+      "text": "Yes, that's right... and leave two follow-ups: get me another spare switch for the warehouse, and tell the systems lead when they do the node maintenance.",
       "expect": "tool:agregar_action_item",
-      "note": "confirma severidad a la primera y dicta dos action items"
+      "note": "confirms severity on the first try and dictates two action items"
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "agregar_action_item('Comprar otro switch de repuesto para el almacén') y ('Avisar al jefe de sistemas cuando hagan el mantenimiento del nodo'); read-back breve de ambos; lee el resumen: 'corte de red por falla del switch de salida, restablecida en hora y media'; pregunta si envía."
+      "hint": "agregar_action_item('Buy another spare switch for the warehouse'); agregar_action_item('Tell the systems lead when they do the node maintenance'); brief read-back of both; read the summary: 'Office-wide network outage from a failed core switch; network restored in an hour and a half with a spare switch.' and ask whether to send."
     },
     {
       "n": 19,
       "role": "user",
-      "text": "Así está bien... mándalo ya, que traigo otro pendiente.",
+      "text": "That's fine... send it now, I've got another job waiting.",
       "expect": "tool:enviar_reporte",
-      "note": "cierre"
+      "note": "close"
     },
     {
       "n": 20,
       "role": "agent",
-      "hint": "enviar_reporte(); confirma en voz alta 'ficha de incidente enviada' y cierra la sesión."
+      "hint": "enviar_reporte(); confirm out loud 'incident form sent' and close the session."
     }
   ]
 }

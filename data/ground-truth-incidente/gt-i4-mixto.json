@@ -24,15 +24,15 @@
     "estado": "sent"
   },
   "user_utterances": [
-    { "n": 1, "text": "¿Me oyes bien?... ya salí del despacho de los contadores, era lo del cuarto de redes que olía a recalentado... échame el reporte del incidente antes de que se me vaya el detalle." },
-    { "n": 3, "text": "Pos llegué como a las siete cincuenta y ya se sentía el olor a quemado desde la puerta... a las ocho y cuarto el gabinete del rack A tres marcaba treinta y seis grados y el minisplit nomás soplaba tibio, le di mantenimiento, le limpié los filtros y nada." },
-    { "n": 5, "text": "Esa... luego a las ocho cuarenta y cinco le metí un abanico industrial a la puerta del cuarto... y como a las diez y media ya tenía el gabinete en veintiocho grados, ya estable." },
-    { "n": 7, "text": "El que estaba sufriendo era el rack A tres, el del cuarto de redes... el A ocho, el de telecomunicaciones, ese ni se inmutó, sigue sano." },
-    { "n": 9, "text": "El A tres, el del cuarto de redes... el A ocho ni lo toqué, te digo que ese está sano." },
-    { "n": 11, "text": "Ese... y la vpn también se cayó un rato, los contadores de fuera no podían entrar a sacar sus reportes... eso fue todo lo que se afectó." },
-    { "n": 13, "text": "Sí, esa... y ponle alta, si ese rack se llega a apagar se paran las declaraciones de once clientes, mejor alta." },
-    { "n": 15, "text": "Alta, sí... y apunta dos pendientes: que mantenimiento revise el minisplit esta misma semana, y que compren un abanico industrial de repuesto para el cuarto." },
-    { "n": 17, "text": "Así está bien... mándalo ya, que traigo el siguiente servicio encima." }
+    { "n": 1, "text": "Can you hear me OK?... I'm out of the accountants' office now, it was that network room that smelled overheated... log the incident report for me before the detail slips away." },
+    { "n": 3, "text": "Well, I got there around seven fifty and you could already smell the burning from the doorway... at eight fifteen the rack A three cabinet was reading thirty-six degrees and the minisplit was only blowing warm, I serviced it, cleaned the filters, and nothing." },
+    { "n": 5, "text": "That's it... then at eight forty-five I put an industrial fan at the room door... and around ten thirty I had the cabinet down to twenty-eight degrees, steady." },
+    { "n": 7, "text": "The one that was struggling was rack A three, the one in the network room... the A eight, the telecom one, never even flinched, still healthy." },
+    { "n": 9, "text": "A three, the one in the network room... I never touched A eight, I'm telling you that one is healthy." },
+    { "n": 11, "text": "That one... and the VPN also went down for a while, the outside accountants couldn't get in to pull their reports... that was everything that was affected." },
+    { "n": 13, "text": "Yes, that one... and put it down as high, if that rack had gone dark the filings for eleven clients would have stopped, better high." },
+    { "n": 15, "text": "High, yes... and note two follow-ups: have maintenance check the minisplit this same week, and buy a spare industrial fan for the room." },
+    { "n": 17, "text": "That's fine... send it now, I've got the next job on top of me." }
   ],
   "seeded_errors": [
     {

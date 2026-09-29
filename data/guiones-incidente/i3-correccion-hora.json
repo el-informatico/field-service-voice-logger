@@ -1,74 +1,74 @@
 {
   "scenario_id": "i3-correccion-hora",
   "incidente_id": "IC-2005",
-  "description": "Corrección de hora: bomba de agua primaria del Condominio Torre Horizonte parada por relevador carbonizado, dictada post-visita desde el estacionamiento tranquilo. El operador dice 'a las nueve cuarenta llegué al cuarto de bombas' pero la transcripción captura 'nueve veinte': agregar_evento_timeline registra 09:20 y el read-back de la hora lo expone; el operador corrige y la ficha queda con 09:40. El par bomba primaria/secundaria se resuelve a la primera porque el operador lo aclara por su cuenta. Al final corta el resumen del agente con una interrupción provocada ('espera—') para agregar un pendiente que le faltaba.",
+  "description": "Hour correction: building primary water pump at Torre Horizonte stopped by a burnt relay, dictated post-visit from the quiet parking lot. The operator says 'at nine forty I got to the pump room' but the transcription captures 'nine twenty': agregar_evento_timeline registers 09:20 and the hour read-back exposes it; the operator corrects and the form keeps 09:40. The primary/secondary pump pair resolves on the first try because the operator clears it up on his own. At the end he cuts the agent's summary with a provoked interruption ('wait—') to add a follow-up he had missed.",
   "ambiente": "tranquilo",
   "turns": [
     {
       "n": 1,
       "role": "user",
-      "text": "¿Aló?... ya acabé con lo de la bomba del edificio, voy en la camioneta, todo tranquilo por acá... échame el reporte del incidente.",
+      "text": "Hello?... I'm done with the building pump job, I'm in the van now, all quiet over here... log the incident report for me.",
       "expect": "tool:get_incidente",
-      "note": "dictado post-visita en el estacionamiento, motor apagado; ambiente tranquilo"
+      "note": "post-visit dictation in the parking lot, engine off; quiet environment"
     },
     {
       "n": 2,
       "role": "agent",
-      "hint": "get_incidente(IC-2005); resume el reporte (la bomba de agua del edificio se paraba sola y los tinacos no se llenan) y pide que narre qué pasó."
+      "hint": "get_incidente(IC-2005); recap the report (the building water pump kept stopping on its own and the rooftop tanks weren't filling) and ask him to walk through what happened."
     },
     {
       "n": 3,
       "role": "user",
-      "text": "Pos la bomba primaria andaba tripeando desde temprano... arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión... le revisé el relevador de arranque y ya estaba carbonizado, eso era.",
+      "text": "Well, the primary pump had been tripping since early... it would start, then stop after a while, and the upper floors were losing pressure... I checked the starter relay and it was burnt out, that was it.",
       "expect": "tool:set_que_paso",
-      "note": "narrativa literal del operador; el timeline se pide aparte"
+      "note": "the operator's literal narrative; the timeline is asked for separately"
     },
     {
       "n": 4,
       "role": "agent",
-      "hint": "set_que_paso con el texto literal del operador; pide el timeline desde el primer síntoma."
+      "hint": "set_que_paso with the operator's literal text; ask for the timeline from the first symptom."
     },
     {
       "n": 5,
       "role": "user",
-      "text": "El primer síntoma fue como a las ocho diez, que la intendencia me marcó que andaba arrancando y parando... apúntale esa.",
+      "text": "The first symptom was around eight ten, when building maintenance called me that it was starting and stopping... log that one.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "hora dicha en palabras, clara"
+      "note": "hour said in words, clear"
     },
     {
       "n": 6,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '08:10', evento 'Primer síntoma: la bomba arrancaba y se paraba, reportado por intendencia'); read-back de la hora en voz alta: 'ocho diez, ¿confirmo?'."
+      "hint": "agregar_evento_timeline(hora '08:10', evento 'First symptom: the pump starting and stopping, reported by building maintenance'); read the hour back out loud: 'eight ten, confirm?'."
     },
     {
       "n": 7,
       "role": "user",
-      "text": "Luego a las nueve cuarenta llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada.",
+      "text": "Then at nine forty I got to the pump room and it was stopped for good, it would just try and nothing.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "ERROR SEMBRADO: la transcripción de ESTE turno oye 'nueve veinte' en lugar de 'nueve cuarenta' → agregar_evento_timeline registra 09:20 ('Llegada al cuarto de bombas, bomba parada del todo'). La verdad es 09:40. Lo debe atrapar el read-back de la hora del turno 8. El audio real del operador dice 'nueve cuarenta'.",
-      "as_heard": "Luego a las nueve veinte llegué al cuarto de bombas y ya estaba parada del todo, nomás hacía el intento y nada."
+      "note": "SEEDED ERROR: THIS turn's transcription hears 'nine twenty' instead of 'nine forty' -> agregar_evento_timeline registers 09:20 ('Arrival at the pump room, pump fully stopped'). The truth is 09:40. The turn-8 hour read-back must catch it. The operator's real audio says 'nine forty'.",
+      "as_heard": "Then at nine twenty I got to the pump room and it was stopped for good, it would just try and nothing."
     },
     {
       "n": 8,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '09:20', evento 'Llegada al cuarto de bombas; bomba primaria parada del todo') y read-back de la hora: 'nueve veinte, ¿confirmo?'.",
+      "hint": "agregar_evento_timeline(hora '09:20', evento 'Arrival at the pump room; primary pump fully stopped') and read the hour back: 'nine twenty, confirm?'.",
       "add_evento": {
         "hora": "09:20",
-        "evento": "Llegada al cuarto de bombas; bomba primaria parada del todo"
+        "evento": "Arrival at the pump room; primary pump fully stopped"
       },
       "note_seeded_error": true
     },
     {
       "n": 9,
       "role": "user",
-      "text": "¿Nueve veinte?... no, era nueve cuarenta... casi las diez era cuando llegué, las nueve cuarenta.",
+      "text": "Nine twenty?... no, it was nine forty... it was almost ten when I got there, nine forty.",
       "expect": "readback",
-      "note": "corrección explícita del error sembrado de hora"
+      "note": "explicit correction of the seeded hour error"
     },
     {
       "n": 10,
       "role": "agent",
-      "hint": "Corrige el evento: quita el registro de 09:20 y fija la hora en 09:40; re-read-back: 'nueve cuarenta, ¿ahora sí confirmo?'.",
+      "hint": "Fix the event: drop the 09:20 entry and set the hour to 09:40; re-read-back: 'nine forty, confirm now?'.",
       "correct_to": {
         "hora": "09:40"
       }
@@ -76,75 +76,75 @@
     {
       "n": 11,
       "role": "user",
-      "text": "Eso... y como a las once cero cinco quedó la bomba arrancando ya bien, con el relevador nuevo, y la presión se estabilizó en todos los pisos.",
+      "text": "That's it... and around eleven oh five the pump was starting fine, with the new relay, and pressure stabilized on every floor.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "evento de cierre; hora en palabras, clara"
+      "note": "closing event; hour in words, clear"
     },
     {
       "n": 12,
       "role": "agent",
-      "hint": "agregar_evento_timeline('11:05', 'Arranque correcto con relevador nuevo; presión estabilizada en todos los pisos'); read-back de la hora; pregunta por los servicios afectados."
+      "hint": "agregar_evento_timeline(hora '11:05', evento 'Clean start with the new relay; pressure stable on every floor'); read the hour back; ask about the affected services."
     },
     {
       "n": 13,
       "role": "user",
-      "text": "Pues la bomba primaria, esa fue la que se paró... la secundaria ni la arrancamos, esa es manual y nomás es para emergencias.",
+      "text": "Well, the primary pump, that's the one that stopped... we never even started the secondary, that one's manual and it's only for emergencies.",
       "expect": "tool:buscar_servicio",
-      "note": "resuelve el par confundible por su cuenta al mencionar que la secundaria ni se tocó"
+      "note": "resolves the confusable pair on his own by mentioning the secondary was never touched"
     },
     {
       "n": 14,
       "role": "agent",
-      "hint": "buscar_servicio('bomba primaria') emite confusable_warning por el par SRV-BOMBA-PRIMARIA↔SRV-BOMBA-SECUNDARIA; agregar_servicio_afectado(SRV-BOMBA-PRIMARIA) con read-back de desambiguación breve: '¿la bomba primaria, y la secundaria queda fuera, cierto?'."
+      "hint": "buscar_servicio('primary pump') raises confusable_warning for the SRV-BOMBA-PRIMARIA<->SRV-BOMBA-SECUNDARIA pair; agregar_servicio_afectado(SRV-BOMBA-PRIMARIA) with a brief disambiguation read-back: 'the primary pump, and the secondary stays out, right?'."
     },
     {
       "n": 15,
       "role": "user",
-      "text": "Así es, la primaria... la secundaria ni se tocó.",
+      "text": "That's right, the primary... the secondary wasn't touched at all.",
       "expect": "readback",
-      "note": "confirmación limpia a la primera pese al par confundible"
+      "note": "clean first-try confirmation despite the confusable pair"
     },
     {
       "n": 16,
       "role": "agent",
-      "hint": "Registra la confirmación; pregunta la severidad del incidente."
+      "hint": "Register the confirmation; ask for the incident severity."
     },
     {
       "n": 17,
       "role": "user",
-      "text": "Media... porque ya quedó funcionando, pero hay que echarle ojo unos días.",
+      "text": "Medium... because it's working again, but it needs watching for a few days.",
       "expect": "tool:set_severidad",
-      "note": "severidad con justificación de seguimiento"
+      "note": "severity with a follow-up justification"
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "set_severidad(media); read-back SIEMPRE: 'severidad media, ¿correcto?'; tras confirmar ARMA la ficha y arranca la lectura del resumen final en voz alta: 'Te resumo: bomba primaria del edificio parada por relevador carbonizado, sustituido a las once cero cinco, severidad media, y los pendientes que faltan—'. DEBE dejarse interrumpir en cuanto el usuario habla."
+      "hint": "set_severidad(medium); ALWAYS read back: 'noting medium severity, correct?'; once confirmed ASSEMBLE the form and start reading the final summary out loud: 'Let me sum up: building primary pump stopped by a burnt starter relay, replaced at eleven oh five, severity medium, and the follow-ups still missing—'. MUST let itself be interrupted as soon as the user speaks."
     },
     {
       "n": 19,
       "role": "user",
-      "text": "Espera—... me faltó un pendiente: que pidan el relevador de arranque de repuesto, el que quedaba ya se usó... y que el intendente del edificio firme la hoja de servicio mañana.",
+      "text": "Wait—... I missed a follow-up: have them order the spare starter relay, the last one has been used... and have the building superintendent sign the service sheet tomorrow.",
       "expect": "tool:agregar_action_item",
-      "note": "INTERRUPCIÓN 1: corta el resumen final del agente a media frase (agente_text_cut esperado: '...y los pendientes que faltan—'); el agente debe ceder <500 ms y no terminar la frase",
+      "note": "INTERRUPTION 1: cuts the agent's final summary mid-sentence (expected agent_text_cut: '...and the follow-ups still missing—'); the agent must yield within <500 ms and not finish the sentence",
       "interrupt": true
     },
     {
       "n": 20,
       "role": "agent",
-      "hint": "Cede de inmediato (barge_in registrado); agregar_action_item('Pedir el relevador de arranque de repuesto, el que quedaba ya se usó') y ('Recabar la firma del intendente del edificio en la hoja de servicio al día siguiente'); read-back corto; resume en una línea y pregunta si envía."
+      "hint": "Yield immediately (barge_in registered); agregar_action_item('Order a spare starter relay (the last one has been used)'); agregar_action_item('Get the building superintendent to sign the service sheet the next day'); short read-back; propose the summary: 'Building primary water pump stopped by a burnt-out starter relay; relay replaced and pressure restored on every floor.' and ask whether to send."
     },
     {
       "n": 21,
       "role": "user",
-      "text": "Ya con eso queda bien... mándala.",
+      "text": "That's it, good to go... send it.",
       "expect": "tool:enviar_reporte",
-      "note": "cierre"
+      "note": "close"
     },
     {
       "n": 22,
       "role": "agent",
-      "hint": "enviar_reporte(); confirma 'ficha de incidente enviada' (menciona la corrección de hora rescatada) y cierra la sesión."
+      "hint": "enviar_reporte(); confirm 'incident form sent' (mention the rescued hour correction) and close the session."
     }
   ]
 }

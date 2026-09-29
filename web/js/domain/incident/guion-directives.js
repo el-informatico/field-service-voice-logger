@@ -72,10 +72,10 @@ export function parseAgentDirectives(agentTurn) {
   if (m) d.getIncidente = m[1] ?? d.getIncidente;
   if (/set_que_paso/.test(hint)) d.setQuePaso = true;
 
-  // eventos: forma nombrada y forma corta "y ('10:20', '…')"
+  // eventos: forma nombrada y forma corta "y ('10:20', '…')" / "and ('10:20', '…')"
   const evRe = /agregar_evento_timeline\s*\(\s*(?:hora\s*)?'(\d{1,2}:\d{2})'\s*,\s*(?:evento\s*)?'([^']+)'\s*\)/g;
   while ((m = evRe.exec(hint)) !== null) d.eventos.push({ hora: m[1], evento: m[2] });
-  const evCorta = /\by\s*\(\s*'(\d{1,2}:\d{2})'\s*,\s*'([^']+)'\s*\)/g;
+  const evCorta = /\b(?:y|and)\s*\(\s*'(\d{1,2}:\d{2})'\s*,\s*'([^']+)'\s*\)/g;
   while ((m = evCorta.exec(hint)) !== null) d.eventos.push({ hora: m[1], evento: m[2] });
 
   m = /buscar_servicio\s*\(\s*'([^']+)'\s*\)/.exec(hint);
@@ -87,16 +87,16 @@ export function parseAgentDirectives(agentTurn) {
   m = /set_severidad\s*\(\s*(low|medium|high|critical)\s*\)/.exec(hint);
   if (m) d.setSeveridad = m[1];
 
-  // action items: forma nombrada + formas cortas "y ('…')"
+  // action items: forma nombrada + formas cortas "y ('…')" / "and ('…')"
   const aiRe = /agregar_action_item\s*\(\s*'([^']+)'\s*\)/g;
   while ((m = aiRe.exec(hint)) !== null) d.actionItems.push(m[1]);
-  const aiCorto = /\by\s*\(\s*'([^'\d][^']{5,})'\s*\)/g;
+  const aiCorto = /\b(?:y|and)\s*\(\s*'([^'\d][^']{5,})'\s*\)/g;
   while ((m = aiCorto.exec(hint)) !== null) d.actionItems.push(m[1]);
 
   if (/enviar_reporte\s*\(/.test(hint)) d.enviar = true;
 
   // resumen citado (se excluye la lectura hablada "Te resumo: …" cortada)
-  m = /(?:resumen|resumo)[^:'\n]{0,60}:\s*'([^']{15,})'/.exec(hint);
+  m = /(?:resumen|resumo|summary)[^:'\n]{0,60}:\s*'([^']{15,})'/.exec(hint);
   if (m) {
     const texto = m[1].replace(/^te resumo\s*:?\s*/i, '').trim();
     if (texto.length >= 10) d.resumen = texto;

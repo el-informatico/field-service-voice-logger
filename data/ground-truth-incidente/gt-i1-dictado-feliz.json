@@ -24,16 +24,16 @@
     "estado": "sent"
   },
   "user_utterances": [
-    { "n": 1, "text": "¿Me oyes bien?... va, ya voy de salida, en la camioneta, ya terminé lo de la red en Kimsa... échame la mano con el reporte del incidente, ¿sí?" },
-    { "n": 3, "text": "Pos el corte empezó temprano... como a las ocho cincuenta me llamaron de recepción que no había internet en toda la oficina, ni los teléfonos de ip... entré a checar y el switch de salida no respondía, nomás tenía el led de estatus en naranja." },
-    { "n": 5, "text": "Va... la llamada de recepción fue a las ocho cincuenta, apúntale esa primero." },
-    { "n": 7, "text": "Esa... luego como a las nueve y cuarto ya tenía yo que era el switch de salida, porque lo probé con el equipo de diagnóstico y no contestaba." },
-    { "n": 9, "text": "A las diez diez le puse el switch nuevo de repuesto que traía... y a las diez veinte ya tenía toda la red arriba, correos y teléfonos." },
-    { "n": 11, "text": "Pues se cayó el dns interno, ese fue el primero... y la vpn también, porque la gente de reparto no podía entrar al sistema desde la calle." },
-    { "n": 13, "text": "Sí, ese." },
-    { "n": 15, "text": "Ponle alta... estuvieron como hora y media sin facturar y sin despachar, eso les dolió." },
-    { "n": 17, "text": "Sí, así va bien... y deja dos pendientes: que me compren otro switch de repuesto para el almacén, y que le avisen al jefe de sistemas cuando hagan el mantenimiento del nodo." },
-    { "n": 19, "text": "Así está bien... mándalo ya, que traigo otro pendiente." }
+    { "n": 1, "text": "Can you hear me OK?... OK, I'm on my way out, in the van, just finished the network job at Kimsa... help me out with the incident report, alright?" },
+    { "n": 3, "text": "Well, the outage started early... around eight fifty reception called me that there was no internet in the whole office, no IP phones either... I went in to check and the core switch wasn't responding, the status LED just stayed orange." },
+    { "n": 5, "text": "OK... the reception call was at eight fifty, log that one first." },
+    { "n": 7, "text": "That's it... then around nine fifteen I had it pinned to the core switch, because I tested it with the diagnostic kit and it wouldn't answer." },
+    { "n": 9, "text": "At ten ten I put in the new spare switch I had with me... and by ten twenty I had the whole network back up, email and phones." },
+    { "n": 11, "text": "Well, the internal DNS went down, that was the first one... and the VPN too, because the delivery crew couldn't get into the system from the street." },
+    { "n": 13, "text": "Yes, that one." },
+    { "n": 15, "text": "Put it down as high... they went about an hour and a half without invoicing or shipping, that hurt." },
+    { "n": 17, "text": "Yes, that's right... and leave two follow-ups: get me another spare switch for the warehouse, and tell the systems lead when they do the node maintenance." },
+    { "n": 19, "text": "That's fine... send it now, I've got another job waiting." }
   ],
   "seeded_errors": [],
   "provoked_interruptions": []

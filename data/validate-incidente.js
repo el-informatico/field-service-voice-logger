@@ -240,7 +240,7 @@ for (const sid of escenarios) {
   if (sid === "i3-correccion-hora") {
     ok(Array.isArray(pi) && pi.length === 1, `gt-${sid}: se esperaba exactamente 1 provoked_interruption, hay ${pi?.length ?? 0}`);
     ok(interruptsGuion.length === 1, `guiones-incidente/${sid}.json: se esperaba exactamente 1 turno con interrupt:true, hay ${interruptsGuion.length}`);
-    ok(interruptsGuion.every((t) => /espera—/i.test(t.text)), `guiones-incidente/${sid}.json: la interrupción debe arrancar con 'espera—'`);
+    ok(interruptsGuion.every((t) => /(espera|wait)—/i.test(t.text)), `guiones-incidente/${sid}.json: la interrupción debe arrancar con 'espera—' o 'wait—'`);
   } else {
     ok(Array.isArray(pi) && pi.length === 0, `gt-${sid}: solo i3 lleva provoked_interruptions`);
     ok(interruptsGuion.length === 0, `guiones-incidente/${sid}.json: no debe haber turnos con interrupt:true`);

@@ -1,69 +1,69 @@
 {
   "scenario_id": "i2-servicio-confundido",
   "incidente_id": "IC-2001",
-  "description": "Servicio confundido: caída de la tienda en línea de Uniformes Delta dictada post-visita desde la oficina tranquila del cliente. El operador dice 'el servidor web de producción... el de staging ni se enteró', pero va rápido y se traga el calificativo: la transcripción pierde el 'de producción' y buscar_servicio se queda con la única pista que oyó ('staging'), resolviendo SRV-WEB-STG. El read-back de desambiguación del par confundible ('¿producción o staging?') rescata la ficha. Además el operador pide severidad media, el read-back la repite y se corrige a alta. La api de pagos se confirma limpia a la primera, de contraste.",
+  "description": "Confused service: Uniformes Delta online store outage dictated post-visit from the client's quiet office. The operator says 'the production web server... the staging one never even noticed', but he is going fast and swallows the qualifier: the transcription loses the 'production' and buscar_servicio keeps the only clue it heard ('staging'), resolving SRV-WEB-STG. The confusable-pair disambiguation read-back ('production or staging?') rescues the form. The operator also asks for medium severity, the read-back repeats it and it is corrected to high. The payments API confirms clean on the first try, as a contrast.",
   "ambiente": "tranquilo",
   "turns": [
     {
       "n": 1,
       "role": "user",
-      "text": "Va, ya voy saliendo del cliente... fue lo de la tienda en línea caída, échame el reporte del incidente antes de que se me olvide todo.",
+      "text": "Alright, I'm wrapped up at Uniformes Delta, heading out... it was the online store going down this morning... log the incident report for me before I forget it all.",
       "expect": "tool:get_incidente",
-      "note": "dictado post-visita en la oficina del cliente, ya vacía; ambiente tranquilo"
+      "note": "post-visit dictation at the client's office, now empty; quiet environment"
     },
     {
       "n": 2,
       "role": "agent",
-      "hint": "get_incidente(IC-2001); resume el reporte (tienda en línea caída desde la madrugada en Uniformes Delta) y pide que narre qué pasó."
+      "hint": "get_incidente(IC-2001); recap the report (online store down since the early morning at Uniformes Delta) and ask him to walk through what happened."
     },
     {
       "n": 3,
       "role": "user",
-      "text": "Pos el monitoreo les marcó como a las cinco cuarenta de la mañana que el sitio no respondía... cuando llegué, el servidor web estaba arriba pero atorado, con el disco casi al tope... le limpié las bitácoras viejas, le ajusté la memoria y volvió.",
+      "text": "Well, monitoring flagged at around five forty in the morning that the site wasn't responding... when I got there, the web server was up but stuck, with the disk nearly full... I cleaned out the old logs, tuned the memory, and it came back.",
       "expect": "tool:set_que_paso",
-      "note": "narrativa literal; el timeline se pide aparte"
+      "note": "literal narrative; the timeline is asked for separately"
     },
     {
       "n": 4,
       "role": "agent",
-      "hint": "set_que_paso con el texto literal del operador; pide las horas en orden para el timeline, empezando por la caída."
+      "hint": "set_que_paso with the operator's literal text; ask for the times in order for the timeline, starting with the outage."
     },
     {
       "n": 5,
       "role": "user",
-      "text": "La caída la marcó el monitoreo a las cinco cuarenta... esa es la primera.",
+      "text": "The outage was flagged by monitoring at five forty... that's the first one.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "hora dicha en palabras, clara"
+      "note": "hour said in words, clear"
     },
     {
       "n": 6,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '05:40', evento 'Caída del sitio detectada por el monitoreo'); read-back de la hora en voz alta: 'cinco cuarenta, ¿confirmo?'."
+      "hint": "agregar_evento_timeline(hora '05:40', evento 'Site outage detected by monitoring'); read the hour back out loud: 'five forty, confirm?'."
     },
     {
       "n": 7,
       "role": "user",
-      "text": "Esa... yo llegué a las siete y media al cuarto de servidores... y a las ocho cuarenta y cinco quedó el sitio respondiendo otra vez.",
+      "text": "That's it... I got to the server room at seven thirty... and at eight forty-five the site was responding again.",
       "expect": "tool:agregar_evento_timeline",
-      "note": "dos eventos en un turno; horas en palabras"
+      "note": "two events in one turn; hours in words"
     },
     {
       "n": 8,
       "role": "agent",
-      "hint": "agregar_evento_timeline('07:30', 'Llegada del técnico al cuarto de servidores') y ('08:45', 'Sitio respondiendo de nuevo tras limpieza y ajuste'); read-back de las dos horas; pregunta por los servicios afectados."
+      "hint": "agregar_evento_timeline(hora '07:30', evento 'Technician arrival at the server room'); agregar_evento_timeline(hora '08:45', evento 'Site responding again after cleanup and tuning'); read both hours back; ask about the affected services."
     },
     {
       "n": 9,
       "role": "user",
-      "text": "Pues el que se cayó fue el servidor web de producción... y el de staging ni se enteró, ese se quedó arriba toda la noche.",
+      "text": "Well, the one that went down was the production web server... and the staging one never even noticed, it stayed up all night.",
       "expect": "tool:buscar_servicio",
-      "note": "ERROR SEMBRADO: la transcripción de ESTE turno pierde el 'de producción' (habla rápido y se traga el calificativo; el audio suena ambiguo en ese punto) y buscar_servicio se queda con la única pista que oye, 'staging' de la segunda frase → resuelve SRV-WEB-STG y agregar_servicio_afectado lo registra. La verdad es SRV-WEB-PROD. Lo debe atrapar el read-back de desambiguación del turno 10. El audio real del operador dice 'de producción'.",
-      "as_heard": "Pues el que se cayó fue el servidor web... y el de staging ni se enteró, ese se quedó arriba toda la noche."
+      "note": "SEEDED ERROR: THIS turn's transcription loses the 'production' (he speaks fast and swallows the qualifier; the audio sounds ambiguous at that point) and buscar_servicio keeps the only clue it hears, 'staging' from the second sentence -> resolves SRV-WEB-STG and agregar_servicio_afectado registers it. The truth is SRV-WEB-PROD. The turn-10 disambiguation read-back must catch it. The operator's real audio says 'production'.",
+      "as_heard": "Well, the one that went down was the web server... and the staging one never even noticed, it stayed up all night."
     },
     {
       "n": 10,
       "role": "agent",
-      "hint": "buscar_servicio('servidor web') emite confusable_warning por el par SRV-WEB-PROD↔SRV-WEB-STG; la captura inicial resuelve SRV-WEB-STG; agregar_servicio_afectado(SRV-WEB-STG) y read-back DE DESAMBIGUACIÓN: '¿el servidor web de producción o el de staging?' (confirm_request field=servicio value=SRV-WEB-STG). No debe dar por bueno el servicio sin este paso.",
+      "hint": "buscar_servicio('web server') raises confusable_warning for the SRV-WEB-PROD<->SRV-WEB-STG pair; the initial capture resolves to SRV-WEB-STG; agregar_servicio_afectado(SRV-WEB-STG) and DISAMBIGUATION read-back: 'the production web server, or the staging one?' (confirm_request field=servicio value=SRV-WEB-STG). Must not accept the service without this step.",
       "add_servicios": [
         {
           "id": "SRV-WEB-STG"
@@ -74,14 +74,14 @@
     {
       "n": 11,
       "role": "user",
-      "text": "¡Producción!... el de producción es el que se cayó, el de staging se quedó arriba, por eso digo que ni se enteró.",
+      "text": "Production!... the production one is the one that went down, staging stayed up, that's why I say it never even noticed.",
       "expect": "readback",
-      "note": "corrección explícita del error sembrado, apoyada en lo que ya dijo"
+      "note": "explicit correction of the seeded error, backed by what he already said"
     },
     {
       "n": 12,
       "role": "agent",
-      "hint": "Corrige la ficha: quita SRV-WEB-STG, agrega SRV-WEB-PROD; re-read-back: 'servidor web de producción, ¿ahora sí confirmo?'.",
+      "hint": "Fix the form: remove SRV-WEB-STG, add SRV-WEB-PROD; re-read-back: 'production web server, confirm now?'.",
       "correct_to": [
         {
           "id": "SRV-WEB-PROD"
@@ -91,63 +91,63 @@
     {
       "n": 13,
       "role": "user",
-      "text": "Eso, producción... y también se encoló la api de pagos, porque los pagos no pasaban aunque el sitio subiera... ya la probé con una compra de prueba y quedó bien.",
+      "text": "That's it, production... and the payments API also queued up, because payments weren't going through even when the site came back up... I already tested it with a trial purchase and it's fine.",
       "expect": "tool:buscar_servicio",
-      "note": "segundo servicio, sin confundibles; audio claro"
+      "note": "second service, no confusables; clear audio"
     },
     {
       "n": 14,
       "role": "agent",
-      "hint": "buscar_servicio('api de pagos') resuelve SRV-API-PAGOS sin confusable_warning; agregar_servicio_afectado(SRV-API-PAGOS); read-back: 'api de pasarela de pagos, ¿correcto?'."
+      "hint": "buscar_servicio('payments api') resolves SRV-API-PAGOS without confusable_warning; agregar_servicio_afectado(SRV-API-PAGOS); read-back: 'payments gateway api, correct?'."
     },
     {
       "n": 15,
       "role": "user",
-      "text": "Sí, esa... la de pagos.",
+      "text": "Yes, that one... the payments one.",
       "expect": "readback",
-      "note": "confirmación limpia a la primera (contraste con el turno 11)"
+      "note": "clean first-try confirmation (contrast with turn 11)"
     },
     {
       "n": 16,
       "role": "agent",
-      "hint": "Registra la confirmación; pregunta la severidad del incidente."
+      "hint": "Register the confirmation; ask for the incident severity."
     },
     {
       "n": 17,
       "role": "user",
-      "text": "Ponle... media, digo, porque al final ya quedó.",
+      "text": "Put down... medium, I guess, since it's working again in the end.",
       "expect": "tool:set_severidad",
-      "note": "ERROR SEMBRADO: el operador pide media por inercia de cierre; la justificación real del incidente es alta. La rescata el read-back del turno 18."
+      "note": "SEEDED ERROR: the operator asks for medium out of closing inertia; the incident's real weight is high. The turn-18 read-back rescues it."
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "set_severidad(media); read-back SIEMPRE: 'severidad media, ¿correcto?'.",
+      "hint": "set_severidad(medium); ALWAYS read back: 'noting medium severity, correct?'.",
       "note_seeded_error": true
     },
     {
       "n": 19,
       "role": "user",
-      "text": "No, es alta, no media... tres horas caídos en horario de ventas, esa es alta... y apúntame dos pendientes: que le pidamos al proveedor más disco para el servidor, y que el monitoreo avise por sms y no nomás por correo.",
+      "text": "No, it's high, not medium... three hours down during sales hours, that's high... and note down two follow-ups: ask the provider for more disk on the web server, and have monitoring alert by SMS, not just email.",
       "expect": "readback",
-      "note": "corrección de severidad en el read-back + dictado de action items"
+      "note": "severity correction at the read-back + action item dictation"
     },
     {
       "n": 20,
       "role": "agent",
-      "hint": "Corrige la ficha: set_severidad(alta) y re-read-back 'severidad alta, ¿confirmo?'; agregar_action_item('Pedir al proveedor más disco para el servidor web') y ('Configurar el monitoreo para avisar por sms y no solo por correo'); read-back breve de ambos; propone el resumen y pregunta si envía."
+      "hint": "Fix the form: set_severidad(high) and re-read-back 'noting high severity, confirm?'; agregar_action_item('Ask the provider for more disk on the web server'); agregar_action_item('Set up monitoring alerts by SMS, not just email'); brief read-back of both; propose the summary: 'Online store down from a nearly full disk on the production web server; site restored after clearing logs and tuning memory, with about three hours of impact during sales hours.' and ask whether to send."
     },
     {
       "n": 21,
       "role": "user",
-      "text": "Sí, alta... así está bien, mándalo.",
+      "text": "Yes, high... that's how it should be, send it.",
       "expect": "tool:enviar_reporte",
-      "note": "cierre; confirma la severidad corregida y ordena envío"
+      "note": "close; confirms the corrected severity and orders the send"
     },
     {
       "n": 22,
       "role": "agent",
-      "hint": "enviar_reporte(); confirma 'ficha de incidente enviada' (menciona las dos correcciones rescatadas) y cierra la sesión."
+      "hint": "enviar_reporte(); confirm 'incident form sent' (mention the two rescued corrections) and close the session."
     }
   ]
 }
