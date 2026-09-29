@@ -102,7 +102,7 @@
   read-back loop and published accuracy — the technician just talks; the agent interviews,
   fills the report live via tools, and reads critical values back out loud until the record
   is provably correct.</p>
-  <p class="meta">Team el-informatico · 10 real measured sessions against the live API · failures published · audio never stored<br>
+  <p class="meta">Team el-informatico · 2×10 real measured sessions against the live API (English build + Spanish development set) · failures published · audio never stored<br>
   github.com/el-informatico/field-service-voice-logger · field-service-voice-logger.vercel.app</p>
   <div class="footer"><span>Voice Incident Reporter</span><span>1</span></div>
 </section>
@@ -234,11 +234,11 @@
   <div class="row" style="margin-bottom:22px;">
     <div class="col card">
       <h3>Catch 1 — catalog enum in the schema</h3>
-      <p>A service the catalog does not define is <b>rejected before the read-back even asks</b>. The agent cannot invent entries; services set precision across the 10 real sessions: <b>100% (12 TP / 0 FP)</b>.</p>
+      <p>A service the catalog does not define is <b>rejected before the read-back even asks</b>. The agent cannot invent entries. Services set precision across the Spanish development set's 10 sessions: <b>100% (12 TP / 0 FP)</b> — the English build measures <b>100% (18 TP / 0 FP)</b>.</p>
     </div>
     <div class="col card">
       <h3>Catch 2 — the spoken read-back</h3>
-      <p>Real-but-wrong values survive the schema — that is what the loop is for. Read-back precision (read-backs that caught a real error): <b>62.1% over 29 read-backs</b> in real dialogue.</p>
+      <p>Real-but-wrong values survive the schema — that is what the loop is for. Read-back precision (read-backs that caught a real error): <b>62.1% over 29 read-backs</b> on the Spanish development set; the English build measures <b>71.0% over 31</b>.</p>
     </div>
   </div>
   <div class="card" style="margin-bottom:22px;">
@@ -254,21 +254,21 @@
 <!-- 8 · Metrics table -->
 <section class="slide">
   <div class="kicker">Measured results</div>
-  <h2>N=10 real sessions — the whole table</h2>
-  <p class="sub">Real voice sessions against the live AssemblyAI Voice Agent API: scripted operator at natural pace, seeded ground truth, quiet post-visit dictation. 5 sessions on prompt v3 + 5 on v4.</p>
+  <h2>N=10 real sessions on the English build — the whole table</h2>
+  <p class="sub">Real voice sessions against the live AssemblyAI Voice Agent API, measured in the final 24 hours — all 10 on interview prompt v4-en, frozen with zero prompt iterations. Scripted operator at natural pace, seeded ground truth, quiet post-visit dictation; the rig is identical to the Spanish-language development set's.</p>
   <table>
     <tr><th style="width:42%;">Metric</th><th>Value</th><th>N</th><th>Condition</th></tr>
-    <tr><td>Turn completion (scripted turns transcribed)</td><td class="n">7–10 of 9–11 per session</td><td class="n">10 sessions</td><td>quiet dictation</td></tr>
-    <tr><td>WER, matched pairs</td><td class="n"><b>0.231</b> (0.164–0.382/session)</td><td class="n">2,134 ref words</td><td>quiet dictation</td></tr>
-    <tr><td>End-of-speech → tool call, p50 / p95</td><td class="n">1,554 ms / 4,810 ms</td><td class="n">53 tool turns</td><td>real API</td></tr>
-    <tr><td>Severidad exacta</td><td class="n">6/10 sessions</td><td class="n">10</td><td>read-back loop</td></tr>
-    <tr><td>Servicios afectados set precision</td><td class="n">100% (12 TP / 0 FP)</td><td class="n">10</td><td>catalog enum</td></tr>
-    <tr><td>Servicios afectados set recall</td><td class="n">70.6% (5 FN)</td><td class="n">10</td><td>see notes</td></tr>
-    <tr><td>Timeline horas exactas</td><td class="n">19/35 GT events (54.3%)</td><td class="n">10</td><td>hora exacta; see notes</td></tr>
-    <tr><td>Confirmation-loop precision (read-backs → correction)</td><td class="n">62.1%</td><td class="n">29 read-backs</td><td>real dialogue</td></tr>
-    <tr><td>Barge-in respected (interrupt → reply cut ≤500 ms)</td><td class="n"><span class="hl">0/3</span> (1,338 / 9,034 / 20,501 ms)</td><td class="n">3 designed interrupts</td><td>hour-correction script</td></tr>
+    <tr><td>Turn completion (scripted turns transcribed)</td><td class="n">9–11 of 9–11 per session (100%)</td><td class="n">10 sessions</td><td>quiet dictation</td></tr>
+    <tr><td>WER, matched pairs (pooled)</td><td class="n"><b>0.685</b> (0.440–0.845/session)</td><td class="n">2,443 ref words</td><td>quiet dictation</td></tr>
+    <tr><td>End-of-speech → tool call, p50 / p95</td><td class="n">3,031 ms / 3,479 ms</td><td class="n">73 tool turns</td><td>real API</td></tr>
+    <tr><td>Severidad exacta</td><td class="n">9/10 sessions</td><td class="n">10</td><td>read-back loop</td></tr>
+    <tr><td>Servicios afectados set precision</td><td class="n">100% (18 TP / 0 FP)</td><td class="n">10</td><td>catalog enum</td></tr>
+    <tr><td>Servicios afectados set recall</td><td class="n">100% (0 FN)</td><td class="n">10</td><td>see notes</td></tr>
+    <tr><td>Timeline horas exactas</td><td class="n">28/35 GT events (80.0%)</td><td class="n">10</td><td>hora exacta; see notes</td></tr>
+    <tr><td>Confirmation-loop precision (read-backs → correction)</td><td class="n">71.0%</td><td class="n">31 read-backs</td><td>real dialogue</td></tr>
+    <tr><td>Action items recall</td><td class="n">60.0% (12/20)</td><td class="n">10 sessions</td><td>quiet dictation</td></tr>
   </table>
-  <p style="margin-top:14px;font-size:15px;color:#8a8f9c;">Definitions exact and reproducible from metrics/ in the repo · four session artifacts committed as evidence (docs/evidence/gate/) · honest notes on slide 10.</p>
+  <p style="margin-top:14px;font-size:15px;color:#8a8f9c;">Definitions exact and reproducible from metrics/ in the repo · severidad / servicios afectados / horas exactas are the final form's literal field names (severity / affected services / hour-exact entries) · barge-in respected: not measured on the English set — row omitted rather than inherited (Spanish development set: 0/3) · the original Spanish-language build's table is published as development evidence in README §Metrics · all ten session artifacts committed as evidence (docs/evidence/gate/) · honest notes on slide 10.</p>
   <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>8</span></div>
 </section>
 
@@ -276,7 +276,7 @@
 <section class="slide">
   <div class="kicker">Under the hood</div>
   <h2>A measured prompt fix, not a vibe</h2>
-  <p class="sub">Same scripts, same conditions — only the interview prompt changed, and the numbers moved.</p>
+  <p class="sub">Same scripts, same conditions — only the interview prompt changed, and the numbers moved. Measured on the Spanish development set: the comparison that selected the prompt the English build froze.</p>
   <div class="row" style="margin-bottom:20px;">
     <div class="col card">
       <h3>The collapse (v3)</h3>
@@ -294,7 +294,7 @@
   <div class="card" style="margin-bottom:18px;">
     <p><b>WER is 0.231 in both halves</b> — the fix changed tool-call discipline, not hearing. That is the point: the loop, not the transcriber, carries correctness.</p>
   </div>
-  <div class="strip light"><b>And the discipline about the discipline:</b> a v5 attempt (three targeted edits) regressed in its only measured run — read-backs spoken without tool calls — and was <b>fully reverted</b>. The two-iteration budget was pre-registered and exhausted; the variance is documented, not iterated away.</div>
+  <div class="strip light"><b>And the discipline about the discipline:</b> a v5 attempt (three targeted edits) regressed in its only measured run — read-backs spoken without tool calls — and was <b>fully reverted</b>; the two-iteration budget was pre-registered and exhausted.</div>
   <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>9</span></div>
 </section>
 
@@ -302,14 +302,13 @@
 <section class="slide">
   <div class="kicker">Honest rig &amp; framing</div>
   <h2>The limits, published with the numbers</h2>
-  <p class="sub">Everything below is in the README and the submission text — the failures are part of the deliverable.</p>
+  <p class="sub">Everything below is in the README and the submission text — the failures are part of the deliverable. The rig itself is rules-only: scripted operator at natural pace, seeded ground truth, no free-form human turns.</p>
   <ul class="plain" style="max-width:1120px;">
-    <li><b>WER 0.231 on matched pairs</b> — roughly one word in four. Not hidden; it is the reason the product is a confirmation loop and not a transcriber.</li>
-    <li><b>The rig is rules-only:</b> scripted operator utterances at natural pace, seeded ground truth, no free-form human turns. Reproducible numbers — and no claim of spontaneous-conversation performance.</li>
-    <li><b>2 of 10 sessions hit the 300 s driver watchdog</b> and lost their final turns — one severity miss is the correction turn that never played.</li>
-    <li><b>0 of 10 reached <span style="font-family:DejaVu Sans Mono,monospace;font-size:19px;">enviar_reporte</span></b> — post-audit, that was a driver close-out race, not an agent refusal: fixed in the rig, and one post-fix session completed the send (<b>estado: enviada</b>, artifact committed; not in the N=10 table).</li>
-    <li><b>Designed barge-ins never made the 500 ms window: 0/3</b> (1,338 / 9,034 / 20,501 ms) with interruption configured throughout — the same weakness that failed the 10 dB noise gate and drove the post-visit pivot.</li>
-    <li><b>Run-to-run variance persists</b> — one v4 session spoke read-backs without registering the timeline. v4 mitigates; it does not eliminate.</li>
+    <li><b>WER 0.685, matched pairs (pooled)</b> — dominated by a VAD segmentation artifact, not hearing: word coverage 0.85–0.96× of ground truth with clean transcripts. Raising the VAD threshold (0.4, identical to the Spanish baseline) would improve the number and break protocol identity — declined as metric-gaming.</li>
+    <li><b>N08's severity was never set</b> (ground truth: medium) despite a complete session — agent variance under 8 barge-ins; published as measured, no re-rolls: every completed run stands.</li>
+    <li><b>Strict timeline (hour + event text sim ≥ 0.6) is 0 TP in every session</b> — verbatim agent phrasing vs clean ground-truth phrases; hour-exact, 28/35 (80.0%), is the reported signal (EOS→tool p50 3,031 ms: the English prompt's few-shots lengthen agent turns — documented).</li>
+    <li><b>Spanish development set (N=10):</b> 2 of 10 sessions hit the 300 s driver watchdog; 0 of 10 reached <span style="font-family:DejaVu Sans Mono,monospace;font-size:19px;">enviar_reporte</span> — a driver close-out race, not an agent refusal: fixed in the rig, and one post-audit session completed the send (<b>estado: enviada</b>, artifact committed). The English set: 0/10 watchdog, all ten executed the send.</li>
+    <li><b>Barge-in respected is not measured on the English set</b> — the row is omitted rather than inherited. The Spanish development set's designed barge-ins never made the 500 ms window: <b>0/3</b> (1,338 / 9,034 / 20,501 ms) — the same weakness that failed the 10 dB noise gate and drove the post-visit pivot.</li>
   </ul>
   <div class="footer"><span>Voice Incident Reporter · AssemblyAI Voice Agent Hackathon 2026</span><span>10</span></div>
 </section>
@@ -321,7 +320,7 @@
   <div class="row" style="margin-bottom:20px;">
     <div class="col card">
       <h3>Reproducible</h3>
-      <p><b>npm run smoke:mock</b> — deterministic, no API key, no cost: services/timeline/action-items/severity precision &amp; recall <b>100%</b> vs seeded ground truth, <b>4/4 seeded capture errors rescued</b> by the spoken loop, WER 0.006. Four real-session artifacts committed as evidence.</p>
+      <p><b>npm run smoke:mock</b> — deterministic, no API key, no cost: services/timeline/action-items/severity precision &amp; recall <b>100%</b> vs seeded ground truth, <b>4/4 seeded capture errors rescued</b> by the spoken loop, WER 0.006. All ten English-build session artifacts committed as evidence, plus the two WP7 gate takes and the four Spanish-development artifacts.</p>
     </div>
     <div class="col card">
       <h3>Private by code, not policy</h3>
