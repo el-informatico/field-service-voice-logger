@@ -7,9 +7,9 @@
  * Produce, con los MISMOS builders que usa el botón "CSV" del navegador
  * (web/js/export.js), dos archivos:
  *
- *   orden-<id>-<yyyymmdd-hhmm>.csv   ficha en dos bloques + detalle de piezas
+ *   order-<id>-<yyyymmdd-hhmm>.csv   ficha en dos bloques + detalle de piezas
  *                                    (BOM UTF-8 + CRLF; formato en web/README.md)
- *   orden-<id>-<yyyymmdd-hhmm>.md    versión humana de la orden con la nota de
+ *   order-<id>-<yyyymmdd-hhmm>.md    versión humana de la orden con la nota de
  *                                    auditoría de voz
  *
  * El sello del nombre de archivo sale del cierre de la sesión (ended_at, con
@@ -25,22 +25,22 @@ import {
   ordenFilename,
 } from '../web/js/export.js';
 
-const HELP = `Uso: node scripts/export.mjs <artefacto.json> [--out <dir>]
+const HELP = `Usage: node scripts/export.mjs <artifact.json> [--out <dir>]
 
-Exporta el cierre de una sesión de voz: artefacto §6 (docs/architecture.md)
-→ CSV de dos bloques (ficha + piezas) y un markdown legible de la orden.
+Exports the close of a voice session: §6 artifact (docs/architecture.md)
+→ two-block CSV (form + parts) and a human-readable markdown of the order.
 
-  <artefacto.json>  ruta al artefacto de sesión (p. ej. .data/smoke/artifact-s1-happy-path.json)
-  --out <dir>       directorio de salida (default: junto al artefacto de entrada)
-  -h, --help        esta ayuda
+  <artifact.json>   path to the session artifact (e.g. .data/smoke/artifact-s1-happy-path.json)
+  --out <dir>       output directory (default: next to the input artifact)
+  -h, --help        this help
 
-El CSV es idéntico al que descarga el navegador (builders compartidos con
-web/js/export.js): BOM UTF-8 para Excel, finales CRLF, todo entrecomillado
-(RFC 4180). Salida: 0 si escribió ambos archivos, 1 en caso contrario.`;
+The CSV is identical to what the browser downloads (builders shared with
+web/js/export.js): UTF-8 BOM for Excel, CRLF endings, everything quoted
+(RFC 4180). Exit code: 0 if both files were written, 1 otherwise.`;
 
 function fail(msg) {
   console.error(`export.mjs: ${msg}`);
-  console.error('Corre con --help para el uso.');
+  console.error('Run with --help for usage.');
   process.exit(1);
 }
 
@@ -56,14 +56,14 @@ function parseArgs(argv) {
     const a = args[i];
     if (a === '--out') {
       outDir = args[++i];
-      if (!outDir) fail('la opción --out necesita un directorio.');
+      if (!outDir) fail('--out needs a directory.');
     } else if (a.startsWith('--')) {
-      fail(`opción desconocida: ${a}`);
+      fail(`unknown option: ${a}`);
     } else {
       positional.push(a);
     }
   }
-  if (positional.length !== 1) fail('se espera exactamente un archivo de artefacto.');
+  if (positional.length !== 1) fail('exactly one artifact file is expected.');
   return { artifactPath: positional[0], outDir };
 }
 
@@ -74,17 +74,17 @@ async function main() {
   try {
     raw = await readFile(artifactPath, 'utf8');
   } catch (err) {
-    fail(`no pude leer ${artifactPath} (${err.code || err.message}).`);
+    fail(`could not read ${artifactPath} (${err.code || err.message}).`);
   }
   let artifact;
   try {
     artifact = JSON.parse(raw);
   } catch (err) {
-    fail(`${artifactPath} no es JSON válido (${err.message}).`);
+    fail(`${artifactPath} is not valid JSON (${err.message}).`);
   }
   const ff = artifact && artifact.final_form;
   if (!ff || typeof ff !== 'object' || Array.isArray(ff)) {
-    fail('el artefacto no trae final_form (¿es un artefacto §6 cerrado?).');
+    fail('the artifact has no final_form (is it a closed §6 artifact?).');
   }
 
   // Sello determinista: el cierre de la sesión, no el reloj del que corre el CLI.
@@ -104,11 +104,11 @@ async function main() {
     await writeFile(csvPath, csv, 'utf8');
     await writeFile(mdPath, `${md}\n`, 'utf8');
   } catch (err) {
-    fail(`no pude escribir la exportación en ${dir} (${err.code || err.message}).`);
+    fail(`could not write the export to ${dir} (${err.code || err.message}).`);
   }
 
   const piezas = Array.isArray(ff.piezas) ? ff.piezas.length : 0;
-  console.log(`export.mjs: orden ${ff.order_id || '(sin id)'} (${piezas} pieza${piezas === 1 ? '' : 's'})`);
+  console.log(`export.mjs: order ${ff.order_id || '(no id)'} (${piezas} part${piezas === 1 ? '' : 's'})`);
   console.log(`  CSV : ${csvPath}`);
   console.log(`  MD  : ${mdPath}`);
 }

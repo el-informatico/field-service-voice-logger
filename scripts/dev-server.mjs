@@ -82,10 +82,10 @@ function readBody(req, capBytes) {
 }
 
 const FSVL_404_PAGE = `<!doctype html>
-<html lang="es"><head><meta charset="utf-8"><title>404 — Field Service Voice Logger</title>
+<html lang="en"><head><meta charset="utf-8"><title>404 — Field Service Voice Logger</title>
 <style>body{font-family:system-ui,sans-serif;margin:3rem auto;max-width:34rem;color:#333}code{background:#f3f3f3;padding:.1rem .3rem;border-radius:4px}</style>
-</head><body><h1>404 — no existe</h1>
-<p>El dev server no encontró esa ruta. Rutas servidas:</p>
+</head><body><h1>404 — not found</h1>
+<p>The dev server could not find that route. Routes served:</p>
 <ul>
 <li><code>/</code> — estáticos de <code>web/</code></li>
 <li><code>/data/*</code> — JSONs de <code>data/</code></li>
