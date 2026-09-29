@@ -54,43 +54,54 @@ const TOOL_FIELD = {
   set_severidad: 'severidad',
 };
 const FIELD_LABEL = {
-  problema: 'Problema', diagnostico: 'Diagnóstico', solucion: 'Solución',
-  piezas: 'Piezas', tiempo_minutos: 'Tiempo', notas: 'Notas',
-  resumen: 'Resumen', que_paso: 'Qué pasó', timeline: 'Timeline',
-  servicios_afectados: 'Servicios', action_items: 'Pendientes',
-  severidad: 'Severidad',
+  problema: 'Problem', diagnostico: 'Diagnosis', solucion: 'Solution',
+  piezas: 'Parts', tiempo_minutos: 'Time', notas: 'Notes',
+  resumen: 'Summary', que_paso: 'What happened', timeline: 'Timeline',
+  servicios_afectados: 'Services', action_items: 'Follow-ups',
+  severidad: 'Severity',
 };
 const AUDIT_LABEL = {
-  form_update: 'ficha actualizada',
-  edicion_manual: 'edición manual',
-  pieza_agregada: 'pieza agregada',
-  pieza_confirmada: 'pieza confirmada',
-  pieza_rechazada: 'pieza rechazada',
-  orden_cargada: 'orden cargada',
-  busqueda_pieza: 'búsqueda de pieza',
-  set_problema: 'problema (tool)',
-  set_diagnostico: 'diagnóstico (tool)',
-  set_solucion: 'solución (tool)',
-  set_notas: 'notas (tool)',
-  inicio_trabajo: 'inicio de trabajo',
-  tiempo_consultado: 'tiempo consultado',
-  reporte_enviado: 'reporte enviado',
-  tool_desconocida: 'tool desconocida',
-  incidente_cargado: 'incidente cargado',
-  busqueda_servicio: 'búsqueda de servicio',
-  servicio_agregado: 'servicio agregado',
-  servicio_confirmado: 'servicio confirmado',
-  servicio_rechazado: 'servicio rechazado',
-  evento_agregado: 'evento agregado',
-  hora_corregida: 'hora corregida',
-  action_item_agregado: 'pendiente agregado',
-  set_resumen: 'resumen (tool)',
-  set_que_paso: 'qué pasó (tool)',
-  severidad_fijada: 'severidad (tool)',
+  form_update: 'form updated',
+  edicion_manual: 'manual edit',
+  pieza_agregada: 'part added',
+  pieza_confirmada: 'part confirmed',
+  pieza_rechazada: 'part rejected',
+  orden_cargada: 'order loaded',
+  busqueda_pieza: 'part search',
+  set_problema: 'problem (tool)',
+  set_diagnostico: 'diagnosis (tool)',
+  set_solucion: 'solution (tool)',
+  set_notas: 'notes (tool)',
+  inicio_trabajo: 'work started',
+  tiempo_consultado: 'time queried',
+  reporte_enviado: 'report sent',
+  tool_desconocida: 'unknown tool',
+  incidente_cargado: 'incident loaded',
+  busqueda_servicio: 'service search',
+  servicio_agregado: 'service added',
+  servicio_confirmado: 'service confirmed',
+  servicio_rechazado: 'service rejected',
+  evento_agregado: 'event added',
+  hora_corregida: 'time corrected',
+  action_item_agregado: 'follow-up added',
+  set_resumen: 'summary (tool)',
+  set_que_paso: 'what happened (tool)',
+  severidad_fijada: 'severity (tool)',
 };
 const PRIORIDAD_CLASE = { alta: 'chip-alta', media: 'chip-media', baja: 'chip-baja' };
-const ESTADO_CLASE = { abierta: 'chip-open', en_proceso: 'chip-wip', enviada: 'chip-done' };
-const SEVERIDAD_CLASE = { baja: 'chip-open', media: 'chip-media', alta: 'chip-alta', critica: 'chip-alta' };
+/* Keys duales ES+EN: el dominio orden (congelado) escribe 'abierta'/'en_proceso'/
+ * 'enviada'; el dominio incidente migrado a EN escribe 'open'/'in_progress'/'sent'. */
+const ESTADO_CLASE = {
+  abierta: 'chip-open', open: 'chip-open',
+  en_proceso: 'chip-wip', in_progress: 'chip-wip',
+  enviada: 'chip-done', sent: 'chip-done',
+};
+const SEVERIDAD_CLASE = {
+  baja: 'chip-open', low: 'chip-open',
+  media: 'chip-media', medium: 'chip-media',
+  alta: 'chip-alta', high: 'chip-alta',
+  critica: 'chip-alta', critical: 'chip-alta',
+};
 
 const orderButtons = new Map();    // id orden → botón del picker
 const scenarioButtons = new Map(); // scenario_id → botón del picker
@@ -156,7 +167,7 @@ async function loadToken() {
     state.mode = 'mock'; // sin backend (file:// o caída): mock local
     state.token = null;
   }
-  badge.textContent = state.mode === 'real' ? 'modo REAL (voz)' : 'modo mock (texto)';
+  badge.textContent = state.mode === 'real' ? 'REAL mode (voice)' : 'mock mode (text)';
   badge.classList.toggle('badge-real', state.mode === 'real');
   badge.classList.toggle('badge-mock', state.mode !== 'real');
   badge.hidden = false;
@@ -210,7 +221,7 @@ function renderDashOrders() {
   const ul = $('dash-orders');
   ul.textContent = '';
   if (!state.ordenes.length) {
-    ul.append(mutedLi('Sin /data/ordenes.json — sirve el repo con el server de desarrollo.'));
+    ul.append(mutedLi('No /data/ordenes.json — serve the repo with the dev server.'));
     return;
   }
   for (const o of state.ordenes) {
@@ -241,7 +252,7 @@ function pickOrder(o) {
 async function loadSessions() {
   const ul = $('dash-sessions');
   ul.textContent = '';
-  ul.append(mutedLi('Cargando sesiones…'));
+  ul.append(mutedLi('Loading sessions…'));
   let sessions = null;
   try {
     const r = await fetchJson('/api/sessions');
@@ -249,18 +260,18 @@ async function loadSessions() {
   } catch { sessions = null; }
   ul.textContent = '';
   if (sessions === null) {
-    ul.append(mutedLi('Sesiones no disponibles (GET /api/sessions sin respuesta).'));
+    ul.append(mutedLi('Sessions unavailable (no response from GET /api/sessions).'));
     return;
   }
   if (!sessions.length) {
-    ul.append(mutedLi('Aún no hay sesiones completadas — corre una demo y aparecerá aquí.'));
+    ul.append(mutedLi('No completed sessions yet — run a demo and it will show up here.'));
     return;
   }
   for (const s of sessions) {
     const li = document.createElement('li');
     li.className = 'dash-session';
     li.innerHTML =
-      `<span class="dash-top"><strong class="mono">${esc(s.scenario_id ?? 'sin guion')}</strong>` +
+      `<span class="dash-top"><strong class="mono">${esc(s.scenario_id ?? 'no script')}</strong>` +
       `<span class="chip ${s.mode === 'real' ? 'chip-done' : 'chip-wip'}">${esc(s.mode ?? '—')}</span></span>` +
       `<small>${esc(s.order_id ?? '—')} · ${esc(fmtStarted(s.started_at))} · ${esc(fmtDuracion(s))}</small>`;
     ul.append(li);
@@ -268,16 +279,16 @@ async function loadSessions() {
 }
 
 function fmtStarted(iso) {
-  if (!iso) return 'fecha n/d';
+  if (!iso) return 'date n/a';
   const d = new Date(iso);
   return Number.isNaN(d.getTime()) ? String(iso)
-    : d.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' });
+    : d.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
 }
 function fmtDuracion(s) {
   const a = s?.started_at ? new Date(s.started_at) : null;
   const b = s?.ended_at ? new Date(s.ended_at) : null;
-  if (!a || !b || Number.isNaN(a) || Number.isNaN(b) || b < a) return 'duración n/d';
-  return `duró ${fmtMs(b - a)}`;
+  if (!a || !b || Number.isNaN(a) || Number.isNaN(b) || b < a) return 'duration n/a';
+  return `lasted ${fmtMs(b - a)}`;
 }
 function fmtMs(ms) {
   const sec = Math.max(0, Math.round(ms / 1000));
@@ -312,7 +323,7 @@ function applyDomain() {
   const incidente = state.domain === 'incidente';
   $('btn-mode-incidente').setAttribute('aria-pressed', String(incidente));
   $('btn-mode-orden').setAttribute('aria-pressed', String(!incidente));
-  $('picker-case-title').textContent = incidente ? 'Incidente' : 'Orden de trabajo';
+  $('picker-case-title').textContent = incidente ? 'Incident' : 'Work order';
   state.orderId = null;
   state.guion = null;
   renderOrders();
@@ -332,8 +343,8 @@ function renderOrders() {
   const casos = activeCases();
   if (!casos.length) {
     ul.append(mutedLi(state.domain === 'orden'
-      ? 'Sin /data/ordenes.json — sirve el repo con un server estático.'
-      : 'Sin /data/incidentes.json — sirve el repo con el server de desarrollo.'));
+      ? 'No /data/ordenes.json — serve the repo with a static server.'
+      : 'No /data/incidentes.json — serve the repo with the dev server.'));
     return;
   }
   for (const o of casos) {
@@ -362,8 +373,8 @@ function renderScenarios() {
   const guiones = activeGuiones();
   if (!guiones.length) {
     ul.append(mutedLi(state.domain === 'orden'
-      ? 'Sin guiones en /data/guiones/.'
-      : 'Sin guiones en /data/guiones-incidente/.'));
+      ? 'No scripts in /data/guiones/.'
+      : 'No scripts in /data/guiones-incidente/.'));
     return;
   }
   for (const g of guiones) {
@@ -393,8 +404,8 @@ function refreshStartBtn() {
   const guionMatchesOrder = !state.guion || !state.orderId || casoId === state.orderId;
   const err = $('setup-error');
   if (state.orderId && state.guion && !guionMatchesOrder) {
-    const sustantivo = state.domain === 'orden' ? 'la orden' : 'el incidente';
-    err.textContent = `El guion ${state.guion.scenario_id} va con ${sustantivo} ${casoId}; elige ese.`;
+    const sustantivo = state.domain === 'orden' ? 'order' : 'incident';
+    err.textContent = `Script ${state.guion.scenario_id} belongs to ${sustantivo} ${casoId}; pick that one.`;
     err.hidden = false;
   } else err.hidden = true;
   $('btn-start-session').disabled = !(state.orderId && state.guion && guionMatchesOrder);
@@ -500,7 +511,7 @@ async function startSession() {
   try {
     await channel.start();
   } catch (err) {
-    setStatus(`Error al iniciar el canal: ${err?.message ?? err}`, true);
+    setStatus(`Error starting channel: ${err?.message ?? err}`, true);
   }
 }
 
@@ -510,7 +521,9 @@ function wireSessionUi(channel) {
     div.className = `bubble ${role} ${cls}`;
     const who = document.createElement('span');
     who.className = 'who';
-    who.textContent = role === 'user' ? 'Técnico' : 'Agente';
+    who.textContent = role === 'user'
+      ? (state.domain === 'incidente' ? 'Operator' : 'Technician')
+      : 'Agent';
     const txt = document.createElement('span');
     txt.className = 'txt';
     txt.textContent = text;
@@ -561,19 +574,19 @@ function wireSessionUi(channel) {
     state.agentBubbleEl = null;
   });
   channel.on('barge_in', (d) => {
-    appendBubble('agent', `✋ ${d.agent_text_cut} (interrumpido, ${d.latency_ms} ms)`, 'interrupted');
+    appendBubble('agent', `✋ ${d.agent_text_cut} (interrupted, ${d.latency_ms} ms)`, 'interrupted');
     state.agentBubbleEl = null;
   });
   channel.on('confirm_request', (d) => showReadbackBanner(d));
   channel.on('confirm_result', (d) => {
     if (d.confirmed) hideReadbackBanner();
-    else showReadbackBanner(d, 'Rechazada por el técnico — corrigiendo…');
+    else showReadbackBanner(d, 'Rejected by the operator — correcting…');
   });
   channel.on('report_sent', () => {
     hideReadbackBanner();
-    setStatus('Reporte enviado. Puedes terminar la sesión para ver la ficha final.');
+    setStatus('Report sent. You can end the session to see the final report.');
   });
-  channel.on('error', (d) => setStatus(`Error de sesión: ${d.code} — ${d.message}`, true));
+  channel.on('error', (d) => setStatus(`Session error: ${d.code} — ${d.message}`, true));
   channel.on('ended', () => { if (!state.ended) finishSession(); });
 }
 
@@ -588,12 +601,12 @@ function showReadbackBanner(data, label) {
   if (pregunta == null) {
     if (data?.field === 'hora') {
       const horas = Array.isArray(v) ? v : (v ? [v] : []);
-      pregunta = `¿Confirmo ${horas.length > 1 ? 'esas horas' : `el evento a las ${horas[0] ?? '?'}`}?`;
+      pregunta = `Confirm ${horas.length > 1 ? 'those times' : `the event at ${horas[0] ?? '?'}`}?`;
     } else if (data?.field === 'severidad') {
       const sev = typeof v === 'string' ? v : v?.severidad;
-      pregunta = `¿Confirmo severidad ${String(sev ?? '?').toUpperCase()}?`;
+      pregunta = `Confirm severity ${String(sev ?? '?').toUpperCase()}?`;
     } else {
-      pregunta = `¿Decías ${v.nombre ?? 'el servicio'}?`;
+      pregunta = `Did you mean ${v.nombre ?? 'this service'}?`;
     }
   }
   t.textContent = pregunta;
@@ -631,11 +644,11 @@ function fieldTrailOf(field) {
     }
     if (e.type === 'confirm_result' && field === CONFIRM_FIELD[e.field]) {
       return e.confirmed
-        ? { kind: 'confirm', label: 'confirmación por voz', t_ms: e.t_ms }
-        : { kind: 'correct', label: 'corrección por voz', t_ms: e.t_ms };
+        ? { kind: 'confirm', label: 'voice confirmation', t_ms: e.t_ms }
+        : { kind: 'correct', label: 'voice correction', t_ms: e.t_ms };
     }
     if (e.type === 'form_update' && e.why === 'manual' && (e.changed ?? []).includes(field)) {
-      return { kind: 'manual', label: 'edición manual', t_ms: e.t_ms };
+      return { kind: 'manual', label: 'manual edit', t_ms: e.t_ms };
     }
   }
   return null;
@@ -644,7 +657,8 @@ function fieldTrailOf(field) {
 function renderForm() {
   const f = state.store?.final_form;
   if (!f) return;
-  const editable = !state.ended && f.estado !== 'enviada';
+  // dual: orden congelado usa 'enviada'; incidente EN usa 'sent'
+  const editable = !state.ended && !['enviada', 'sent'].includes(f.estado);
   const incidente = state.domain === 'incidente';
 
   $('session-ot').textContent = f.order_id ?? f.incidente_id ?? '—';
@@ -688,7 +702,7 @@ function renderFieldAudits() {
     const tr = fieldTrailOf(field);
     if (!tr) {
       el.className = 'field-audit muted';
-      el.textContent = 'esperando…';
+      el.textContent = 'waiting…';
       continue;
     }
     const when = tr.t_ms != null ? `${(tr.t_ms / 1000).toFixed(1)} s` : '';
@@ -708,7 +722,7 @@ function renderPiezas(piezas, editable) {
   if (!piezas.length) {
     const li = document.createElement('li');
     li.className = 'muted';
-    li.textContent = '— sin piezas todavía —';
+    li.textContent = '— no parts yet —';
     ul.append(li);
     return;
   }
@@ -718,7 +732,7 @@ function renderPiezas(piezas, editable) {
     li.className = 'pieza-row';
     li.innerHTML =
       `<span class="pieza-badge ${p.confirmada ? 'ok' : 'pend'}" ` +
-      `title="${p.confirmada ? 'confirmada por voz' : 'confirmación pendiente'}">${p.confirmada ? '✓' : '⏳'}</span>` +
+      `title="${p.confirmada ? 'voice-confirmed' : 'confirmation pending'}">${p.confirmada ? '✓' : '⏳'}</span>` +
       `<span class="pieza-info"><strong>${esc(p.nombre)}</strong><code>${esc(p.sku)}</code>` +
       (trail ? `<span class="pieza-trail">${esc(trail)}</span>` : '') + '</span>';
     const lab = document.createElement('label');
@@ -730,14 +744,14 @@ function renderPiezas(piezas, editable) {
     qty.step = '1';
     qty.value = String(p.qty);
     qty.disabled = !editable;
-    qty.title = 'Cambiar cantidad (edición manual)';
+    qty.title = 'Change quantity (manual edit)';
     qty.addEventListener('change', () => commitPiezasQty(p.sku, qty.value));
     lab.append(qty);
     const rm = document.createElement('button');
     rm.type = 'button';
     rm.className = 'pieza-quitar';
     rm.textContent = '✕';
-    rm.title = 'Quitar pieza (edición manual)';
+    rm.title = 'Remove part (manual edit)';
     rm.disabled = !editable;
     rm.addEventListener('click', () => commitPiezasRemove(p.sku));
     li.append(lab, rm);
@@ -751,9 +765,9 @@ function piezaTrail(sku) {
   const parts = [];
   for (const e of evs) {
     if (e.type === 'tool_result' && e.tool === 'agregar_pieza_a_reporte' && e.result?.sku === sku) {
-      parts.push(`agregada ${(e.t_ms / 1000).toFixed(1)} s`);
+      parts.push(`added ${(e.t_ms / 1000).toFixed(1)} s`);
     } else if (e.type === 'confirm_result' && e.value?.sku === sku) {
-      parts.push(`${e.confirmed ? 'confirmada' : 'corregida'} ${(e.t_ms / 1000).toFixed(1)} s`);
+      parts.push(`${e.confirmed ? 'confirmed' : 'corrected'} ${(e.t_ms / 1000).toFixed(1)} s`);
     }
   }
   return parts.slice(-2).join(' · ');
@@ -771,7 +785,7 @@ function renderTimeline(timeline, editable) {
   if (!timeline.length) {
     const li = document.createElement('li');
     li.className = 'muted';
-    li.textContent = '— sin eventos todavía —';
+    li.textContent = '— no events yet —';
     ul.append(li);
     return;
   }
@@ -781,7 +795,7 @@ function renderTimeline(timeline, editable) {
     li.innerHTML =
       `<span class="mono" style="font-weight:700">${esc(ev.hora)}</span>` +
       `<span class="pieza-info"><span style="font-size:0.88rem">${esc(ev.evento)}</span></span>`;
-    li.append(botonQuitar('Quitar evento (edición manual)', editable, () => {
+    li.append(botonQuitar('Remove event (manual edit)', editable, () => {
       commitManualArray('timeline', (rows) => rows.filter((r) => r.hora !== ev.hora));
     }));
     ul.append(li);
@@ -798,7 +812,7 @@ function renderServicios(servicios, editable) {
   if (!servicios.length) {
     const li = document.createElement('li');
     li.className = 'muted';
-    li.textContent = '— sin servicios todavía —';
+    li.textContent = '— no services yet —';
     ul.append(li);
     return;
   }
@@ -808,11 +822,11 @@ function renderServicios(servicios, editable) {
     li.className = 'pieza-row';
     li.innerHTML =
       `<span class="pieza-badge ${s.confirmado ? 'ok' : 'pend'}" ` +
-      `title="${s.confirmado ? 'confirmado por voz' : 'confirmación pendiente'}">${s.confirmado ? '✓' : '⏳'}</span>` +
+      `title="${s.confirmado ? 'voice-confirmed' : 'confirmation pending'}">${s.confirmado ? '✓' : '⏳'}</span>` +
       `<span class="pieza-info"><strong>${esc(s.nombre ?? s.id)}</strong><code>${esc(s.id)}</code>` +
-      (s.afectados != null ? `<span class="pieza-trail">${esc(s.afectados)} afectados</span>` : '') +
+      (s.afectados != null ? `<span class="pieza-trail">${s.afectados} affected</span>` : '') +
       (trail ? `<span class="pieza-trail">${esc(trail)}</span>` : '') + '</span>';
-    li.append(botonQuitar('Quitar servicio (edición manual)', editable, () => {
+    li.append(botonQuitar('Remove service (manual edit)', editable, () => {
       commitManualArray('servicios_afectados', (rows) => rows.filter((r) => r.id !== s.id));
     }));
     ul.append(li);
@@ -829,7 +843,7 @@ function renderActionItems(items, editable) {
   if (!items.length) {
     const li = document.createElement('li');
     li.className = 'muted';
-    li.textContent = '— sin pendientes —';
+    li.textContent = '— no follow-ups —';
     ul.append(li);
     return;
   }
@@ -837,7 +851,7 @@ function renderActionItems(items, editable) {
     const li = document.createElement('li');
     li.className = 'pieza-row';
     li.innerHTML = `<span class="pieza-info"><span style="font-size:0.88rem">${esc(item)}</span></span>`;
-    li.append(botonQuitar('Quitar pendiente (edición manual)', editable, () => {
+    li.append(botonQuitar('Remove follow-up (manual edit)', editable, () => {
       commitManualArray('action_items', (rows) => rows.filter((_, i) => i !== idx));
     }));
     ul.append(li);
@@ -861,9 +875,9 @@ function servicioTrail(id) {
   const parts = [];
   for (const e of evs) {
     if (e.type === 'tool_result' && e.tool === 'agregar_servicio_afectado' && e.result?.id === id) {
-      parts.push(`agregado ${(e.t_ms / 1000).toFixed(1)} s`);
+      parts.push(`added ${(e.t_ms / 1000).toFixed(1)} s`);
     } else if (e.type === 'confirm_result' && e.value?.id === id) {
-      parts.push(`${e.confirmed ? 'confirmado' : 'corregido'} ${(e.t_ms / 1000).toFixed(1)} s`);
+      parts.push(`${e.confirmed ? 'confirmed' : 'corrected'} ${(e.t_ms / 1000).toFixed(1)} s`);
     }
   }
   return parts.slice(-2).join(' · ');
@@ -872,13 +886,13 @@ function servicioTrail(id) {
 /** Edición manual de un campo-arreglo del incidente (timeline/servicios/items). */
 function commitManualArray(field, mutator) {
   const f = state.store?.final_form;
-  if (!f || state.ended || f.estado === 'enviada') return;
+  if (!f || state.ended || ['enviada', 'sent'].includes(f.estado)) return;
   const next = JSON.parse(JSON.stringify(f[field] ?? []));
   mutator(next);
   const { changed } = state.store.applyManualEdit(field, next);
   if (changed.length) {
     recordManualFormUpdate(changed);
-    setStatus(`Edición manual guardada: ${FIELD_LABEL[field] ?? field}.`);
+    setStatus(`Manual edit saved: ${FIELD_LABEL[field] ?? field}.`);
   }
   renderForm();
 }
@@ -950,13 +964,13 @@ function currentFieldValue(field) {
 
 function commitFieldEdit(field, el) {
   if (!state.store) { renderForm(); return; }
-  if (state.ended || state.store.final_form.estado === 'enviada') { renderForm(); return; }
+  if (state.ended || ['enviada', 'sent'].includes(state.store.final_form.estado)) { renderForm(); return; }
   const raw = el.textContent.replace(/\s+/g, ' ').trim();
   let value = raw;
   if (field === 'tiempo_minutos') {
     const n = Number.parseInt(raw.replace(/[^\d]/g, ''), 10);
     if (!Number.isFinite(n) || n < 0) {
-      setStatus('Tiempo inválido — escribe minutos, p. ej. "45 min".', true);
+      setStatus('Invalid time — type minutes, e.g. "45 min".', true);
       renderForm();
       return;
     }
@@ -964,8 +978,9 @@ function commitFieldEdit(field, el) {
   }
   if (field === 'severidad') {
     const sev = raw.toLowerCase();
-    if (!['baja', 'media', 'alta', 'critica'].includes(sev)) {
-      setStatus('Severidad inválida — escribe baja, media, alta o critica.', true);
+    // dual: orden congelado usa baja/media/alta/critica; incidente EN usa low/…
+    if (!['baja', 'media', 'alta', 'critica', 'low', 'medium', 'high', 'critical'].includes(sev)) {
+      setStatus('Invalid severity — type low, medium, high or critical.', true);
       renderForm();
       return;
     }
@@ -974,7 +989,7 @@ function commitFieldEdit(field, el) {
   const { changed } = state.store.applyManualEdit(field, value);
   if (changed.length) {
     recordManualFormUpdate(changed);
-    setStatus(`Edición manual guardada: ${FIELD_LABEL[field] ?? field}.`);
+    setStatus(`Manual edit saved: ${FIELD_LABEL[field] ?? field}.`);
   }
   renderForm();
 }
@@ -995,7 +1010,7 @@ function applyManualPiezas(next) {
   const { changed } = state.store.applyManualEdit('piezas', next);
   if (changed.length) {
     recordManualFormUpdate(changed);
-    setStatus('Edición manual de piezas guardada — queda en auditoría y en el artefacto.');
+    setStatus('Manual parts edit saved — kept in the audit trail and in the artifact.');
   }
   renderForm();
 }
@@ -1065,9 +1080,10 @@ function wireSessionControls() {
     const pc = state.pendingConfirm;
     if (!pc || state.ended) return;
     if (state.channel?.isMock) {
-      // inyecta el "sí" como turno del usuario: el canal lo procesa igual
-      // que el guion y emite el confirm_result por la vía normal.
-      state.channel.send('user_text', { text: 'sí' });
+      // inyecta el "sí"/"yes" como turno del usuario: el canal lo procesa igual
+      // que el guion y emite el confirm_result por la vía normal. El mock de
+      // orden (congelado ES) entiende "sí"; el parser EN del incidente, "yes".
+      state.channel.send('user_text', { text: state.domain === 'incidente' ? 'yes' : 'sí' });
       hideReadbackBanner();
     } else if (state.engine) {
       state.engine.handleEvent('confirm_result', {
@@ -1085,8 +1101,8 @@ function wireSessionControls() {
     card.classList.add('flash');
     setTimeout(() => card.classList.remove('flash'), 1300);
     setStatus(state.domain === 'incidente'
-      ? 'Corrige el servicio aquí (quitar) — el agente sigue esperando tu respuesta de voz.'
-      : 'Corrige la pieza aquí (cantidad o quitar) — el agente sigue esperando tu respuesta de voz.');
+      ? 'Correct the service here (remove) — the agent is still waiting for your spoken answer.'
+      : 'Correct the part here (quantity or remove) — the agent is still waiting for your spoken answer.');
   });
 }
 
@@ -1123,8 +1139,8 @@ async function finishSession() {
   renderEndScreen(artifact);
   const statusEl = $('export-status');
   statusEl.textContent = posted
-    ? 'Sesión cerrada y artefacto guardado en /api/sessions (solo texto, sin audio).'
-    : 'Sesión cerrada. POST a /api/sessions no disponible — el artefacto se queda local.';
+    ? 'Session closed and artifact saved to /api/sessions (text only, no audio).'
+    : 'Session closed. POST to /api/sessions unavailable — the artifact stays local.';
   await wireExportPanel(statusEl);
 }
 
@@ -1157,7 +1173,7 @@ function renderEndScreen(artifact) {
       ? f.servicios_afectados.map((s) =>
         `<li class="pieza-row mini"><span class="pieza-badge ${s.confirmado ? 'ok' : 'pend'}">${s.confirmado ? '✓' : '⏳'}</span>` +
         `<span class="pieza-info"><strong>${esc(s.nombre ?? s.id)}</strong><code>${esc(s.id)}</code></span>` +
-        (s.afectados != null ? `<span class="pieza-qty">${s.afectados} afectados</span>` : '') + '</li>').join('')
+        (s.afectados != null ? `<span class="pieza-qty">${s.afectados} affected</span>` : '') + '</li>').join('')
       : '<li class="muted">—</li>');
     set('items', f.action_items.length
       ? f.action_items.map((it) => `<li class="pieza-row mini"><span class="pieza-info"><span style="font-size:0.88rem">${esc(it)}</span></span></li>`).join('')
@@ -1192,9 +1208,9 @@ function renderEndScreen(artifact) {
   const nUser = artifact.transcript.filter((t) => t.role === 'user').length;
   const lastT = evs.length ? evs[evs.length - 1].t_ms : 0;
   $('end-stats').textContent =
-    `${nUser} turnos del ${incidente ? 'operador' : 'técnico'} · ${evs.filter((e) => e.type === 'tool_call').length} tools · ` +
+    `${nUser} ${incidente ? 'operator' : 'technician'} turns · ${evs.filter((e) => e.type === 'tool_call').length} tools · ` +
     `${evs.filter((e) => e.type === 'confirm_request').length} read-backs · ` +
-    `${evs.filter((e) => e.type === 'barge_in').length} barge-ins · duración ${fmtMs(lastT)}`;
+    `${evs.filter((e) => e.type === 'barge_in').length} barge-ins · duration ${fmtMs(lastT)}`;
 
   show('screen-end');
 }
@@ -1220,7 +1236,7 @@ async function wireExportPanel(statusEl) {
   }
   if (!wired) {
     wireExportFallback();
-    statusEl.textContent = 'export no disponible — el artefacto JSON sí puede descargarse directo.';
+    statusEl.textContent = 'export unavailable — the JSON artifact can still be downloaded directly.';
   }
 }
 
@@ -1234,7 +1250,7 @@ function wireExportFallback() {
   for (const id of ['btn-export-csv', 'btn-export-pdf', 'btn-send-fsm']) {
     $(id).addEventListener('click', () => {
       if (state.exportPanelNative) return;
-      $('export-status').textContent = 'export no disponible (falta el módulo export.js).';
+      $('export-status').textContent = 'export unavailable (missing export.js module).';
     });
   }
 }
@@ -1247,6 +1263,6 @@ function downloadArtifactJson(artifact) {
     a.download = `${artifact.session_id}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-    $('export-status').textContent = `Artefacto ${artifact.session_id}.json descargado.`;
+    $('export-status').textContent = `Artifact ${artifact.session_id}.json downloaded.`;
   } catch { /* descargas bloqueadas */ }
 }
