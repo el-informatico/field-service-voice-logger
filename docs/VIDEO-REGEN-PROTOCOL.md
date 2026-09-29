@@ -113,9 +113,12 @@ pero toca escena + narración + lista de QA.
 ```bash
 cd "$VIDEO_WORKSPACE"
 # 1) scenes/m-metrics.html: reemplazar los valores de la tabla por los del
-#    README §Metrics actual (N=10), el kicker ("N=5" -> "N=10") y la nota
+#    README §Metrics -> subsección "Development evidence" (tabla ES N=10 —
+#    el video habla el set ES por diseño; NO usar la tabla EN primaria,
+#    rompería la narración grabada), el kicker ("N=5" -> "N=10") y la nota
 #    honesta (la historia v3/"2 of 5 collapsed" -> la nota actual: 2/10
-#    truncadas por watchdog, fix narrativo v4). Fuente de verdad: README.
+#    truncadas por watchdog, fix narrativo v4). Fuente de verdad: la
+#    subsección ES del README.
 #    Restricción de layout: la tabla debe terminar por encima de y~930 (banda
 #    de captions). Verificar con:
 node tools/measure-scenes.mjs      # bounding boxes reales; busca "⚠️-CAPTION"
