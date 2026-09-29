@@ -179,6 +179,7 @@ export function createIncidentMockAgentChannel({
   const addedHoras = new Set();
   const addedServicios = new Set();
   const confirmedServicios = new Set();
+  const appliedDirectiveItems = new Set();
   let speechCtx = null;      // {cancelled} del speakChunks en curso (botón ¡Espera!)
   let overrideNext = null;   // texto libre del input de la UI
   let autoReplay = true;
@@ -237,8 +238,8 @@ export function createIncidentMockAgentChannel({
   }
 
   async function start() {
-    const saludo = '¡Buen día! Soy tu asistente de incidentes. Ya tengo el contexto de tu visita: ' +
-      'cuéntame con calma qué pasó y voy armando la ficha del incidente.';
+    const saludo = "Good day! I'm your incident assistant. I already have the context of your visit: " +
+      "tell me calmly what happened and I'll build the incident form as you go.";
     await schedule(500 + rng() * 400, async () => {
       emit('agent_turn_start', {});
       await speakChunks(saludo);
@@ -315,7 +316,7 @@ export function createIncidentMockAgentChannel({
   }
 
   function manualInterrupt(text) {
-    const userText = text || '¡Espera!';
+    const userText = text || 'Wait!';
     if (speechCtx && !speechCtx.cancelled) {
       const cut = cutText(speechCtx.spoken || '…');
       speechCtx.cancelled = true;
@@ -409,6 +410,11 @@ export function createIncidentMockAgentChannel({
       if (r.ok !== false) st.resumenSet = true;
     }
     for (const item of d.actionItems) {
+      // afterConfirm puede re-despachar el MISMO turno user (decide de nuevo
+      // con las mismas directivas): los pendientes de directiva se aplican
+      // UNA vez por texto.
+      if (appliedDirectiveItems.has(item)) continue;
+      appliedDirectiveItems.add(item);
       await callTool('agregar_action_item', { descripcion: item });
     }
     return d.actionItems.length;
@@ -422,7 +428,7 @@ export function createIncidentMockAgentChannel({
     if (d.eventos.length || horasNuevas(text).length) {
       return eventoFlow(text, d, nextTurn);                                 // 4. timeline
     }
-    if (d.enviar || detectSend(text)) return cierreFlow(text, nextTurn);     // 5. envío
+    if (d.enviar || detectSendEn(text)) return cierreFlow(text, nextTurn);   // 5. envío
     if (d.setSeveridad || parseSeveridad(text)) {
       return severidadFlow(text, d, nextTurn);                              // 6. severidad
     }
@@ -433,8 +439,8 @@ export function createIncidentMockAgentChannel({
       if (items.length) return actionItemFlow(items, nextTurn);             // 8. pendientes (reglas)
     }
     const cola = nItems
-      ? `Va, anotado${nItems === 1 ? ' el pendiente' : `s los ${speakCount(nItems)} pendientes`}. ¿Algo más, o lo envío?`
-      : 'Va, te escucho. ¿Qué más me cuentas para la ficha?';
+      ? `Noted — ${nItems === 1 ? 'the follow-up is logged' : nItems === 2 ? 'both follow-ups are logged' : `all ${speakCount(nItems)} follow-ups are logged`}. Anything else, or shall I send it?`
+      : "Got it, I'm listening. What else should I add to the form?";
     await speakChunks(cola, { interruptedBy: interruptOf(nextTurn) });      // 9. fallback
     return { interrupted: false };
   }
@@ -449,7 +455,7 @@ export function createIncidentMockAgentChannel({
   /** ¿El texto/directivas traen algo más procesable tras confirmar? */
   function quedanPendientes(text, d) {
     if (horasNuevas(text).length) return true;
-    if (detectSend(text)) return true;
+    if (detectSendEn(text)) return true;
     if (parseSeveridad(text)) return true;
     if (d.eventos.length || d.addServicios.length || d.correctServicio) return true;
     if (servicioNuevoEn(text)) return true;
@@ -466,12 +472,12 @@ export function createIncidentMockAgentChannel({
       incidente = r.incidente;
       st.incidenteCargado = true;
       await speakChunks(
-        `Va, ya tengo el incidente ${incidente.id} de ${incidente.cliente}: ${incidente.reporte_inicial}. ` +
-        'Cuéntame con calma qué pasó, tal cual lo viviste.',
+        `Alright, I have incident ${incidente.id} for ${incidente.cliente}: ${incidente.reporte_inicial}. ` +
+        "Tell me calmly what happened, exactly as you lived it.",
         { interruptedBy: interruptOf(nextTurn) },
       );
     } else {
-      await speakChunks('No encontré ese incidente. ¿Me repites el número? Es IC y cuatro dígitos.',
+      await speakChunks("I couldn't find that incident. Can you repeat the number? It's IC plus four digits.",
         { interruptedBy: interruptOf(nextTurn) });
     }
     return { interrupted: false };
@@ -484,7 +490,7 @@ export function createIncidentMockAgentChannel({
      * mismo y leerlas agrupadas — el operador no las repite. Espejo del
      * MODO NARRATIVO del prompt real (REGLA #1). */
     if (d.eventos.length) return eventoFlow(text, d, nextTurn);
-    await speakChunks('Anotado tal cual lo dijiste. ¿A qué hora empezó todo? Dime la hora y qué pasó.',
+    await speakChunks('Noted exactly as you said it. What time did it all start? Give me the time and what happened.',
       { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: false };
   }
@@ -519,7 +525,7 @@ export function createIncidentMockAgentChannel({
       }
     } else {
       for (const hora of horasNuevas(text)) {
-        const evento = eventoDeClausula(hora, clausulas) || `Evento de las ${hora}`;
+        const evento = eventoDeClausula(hora, clausulas) || `Event at ${hora}`;
         const r = await callTool('agregar_evento_timeline', { hora, evento });
         if (r.ok === false || r.error) continue;
         addedHoras.add(hora);
@@ -527,12 +533,12 @@ export function createIncidentMockAgentChannel({
       }
     }
     if (!nuevas.length) {
-      await speakChunks('¿Alguna otra hora que te acuerdes? Dímela y la agrego al timeline.',
+      await speakChunks("Any other time you remember? Tell me and I'll add it to the timeline.",
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
-    const lista = nuevas.map((h) => `a las ${speakHora(h)}`).join(' y ');
-    await speakChunks(`Va. Te confirmo las horas: ${lista}, ¿correcto?`,
+    const lista = nuevas.map((h) => `at ${speakHora(h)}`).join(' and ');
+    await speakChunks(`OK. Let me confirm the times: ${lista}, correct?`,
       { interruptedBy: interruptOf(nextTurn) });
     pendingConfirm = { kind: 'hora', horas: nuevas };
     return { interrupted: false };
@@ -546,8 +552,9 @@ export function createIncidentMockAgentChannel({
       if (parseHoras(cl).some((h) => h.hora === hora)) {
         return cl
           .replace(/\b(?:a|de|desde|hasta|sobre|como|casi|pasaban|pasaron|eran|era|serian)\s+(?:la|las)\s+(?:\d{1,2}:\d{2}|\d{1,2})(?:\s+(?:y|con)\s+\d{1,2})?\b/i, '')
+          .replace(/\b(?:at|around|by|about|past|near|almost|nearly|from|until|till|before|after)\s+(?:the\s+)?(?:\d{1,2}:\d{2}|\d{1,2})(?:\s+(?:oh\s+)?\d{1,2})?\b/ig, '')
           .replace(/\b\d{1,2}:\d{2}\b/, '')
-          .replace(/^\s*(?:y|entonces|ya|pues|pos|mira|bueno|o sea)\s+/i, '')
+          .replace(/^\s*(?:y|entonces|ya|pues|pos|mira|bueno|o sea|and|then|so|well|ok|but)\s+/i, '')
           .replace(/\s+/g, ' ')
           .trim();
       }
@@ -574,13 +581,13 @@ export function createIncidentMockAgentChannel({
       target = byId.get(r.best.id) ?? null;
     }
     if (!target) {
-      await speakChunks('Ese servicio no lo encuentro en el catálogo. ¿Cómo le llaman en el ticket, exactamente?',
+      await speakChunks("I can't find that service in the catalog. What exactly do they call it on the ticket?",
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
     const added = await callTool('agregar_servicio_afectado', { id: target.id, afectados: parseAfectados(text) });
     if (!added || added.ok === false) {
-      await speakChunks('No pude agregar ese servicio. Déjame reintentar con el id del catálogo.',
+      await speakChunks("I couldn't add that service. Let me retry with the catalog id.",
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
@@ -593,11 +600,11 @@ export function createIncidentMockAgentChannel({
     let speech;
     if (sibling && sibling.id !== target.id) {
       pendingConfirm = { kind: 'servicio-disambiguation', captured, sibling };
-      speech = `Ojo, aquí se confunden fácil. ¿Decías ${speakServicioNombre(captured.nombre)}, ` +
-        `o ${speakServicioNombre(sibling.nombre)}?`;
+      speech = `Careful, these two get mixed up easily. Did you mean ${speakServicioNombre(captured.nombre)}, ` +
+        `or ${speakServicioNombre(sibling.nombre)}?`;
     } else {
       pendingConfirm = { kind: 'servicio-plain', captured, sibling: null };
-      speech = `Anoto ${speakServicioNombre(captured.nombre)}${afectadosTxt(captured.afectados)}. ¿Correcto?`;
+      speech = `Noting ${speakServicioNombre(captured.nombre)}${afectadosTxt(captured.afectados)}. Correct?`;
     }
     const res = await speakChunks(speech, { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: res.interrupted };
@@ -606,13 +613,13 @@ export function createIncidentMockAgentChannel({
   async function severidadFlow(text, d, nextTurn) {
     const sev = d.setSeveridad ?? parseSeveridad(text);
     if (!sev) {
-      await speakChunks('¿Qué severidad le ponemos: baja, media, alta o critica?',
+      await speakChunks('What severity should we set: low, medium, high or critical?',
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
     await callTool('set_severidad', { severidad: sev });
     st.severidadSet = true;
-    await speakChunks(`Anoto severidad ${sev.toUpperCase()}. ¿Correcto?`, // SIEMPRE read-back
+    await speakChunks(`Noting severity ${sev.toUpperCase()}. Correct?`, // SIEMPRE read-back
       { interruptedBy: interruptOf(nextTurn) });
     pendingConfirm = { kind: 'severidad', severidad: sev };
     return { interrupted: false };
@@ -621,7 +628,7 @@ export function createIncidentMockAgentChannel({
   async function actionItemFlow(items, nextTurn) {
     for (const item of items) await callTool('agregar_action_item', { descripcion: item });
     await speakChunks(
-      `Anotado${items.length === 1 ? ' el pendiente' : `s los ${speakCount(items.length)} pendientes`}. ¿Algo más?`,
+      `Noted — ${items.length === 1 ? 'the follow-up is logged' : items.length === 2 ? 'both follow-ups are logged' : `all ${speakCount(items.length)} follow-ups are logged`}. Anything else?`,
       { interruptedBy: interruptOf(nextTurn) },
     );
     return { interrupted: false };
@@ -674,12 +681,12 @@ export function createIncidentMockAgentChannel({
         await callTool('corregir_hora', { de: pc.horas[0], a: nuevaHora });
         addedHoras.delete(pc.horas[0]);
         addedHoras.add(nuevaHora);
-        await speakChunks(`Corrijo: a las ${speakHora(nuevaHora)}, ¿ahora sí queda?`,
+        await speakChunks(`Fixed: at ${speakHora(nuevaHora)}, does it look right now?`,
           { interruptedBy: interruptOf(nextTurn) });
         pendingConfirm = { kind: 'hora', horas: [nuevaHora] };
         return { interrupted: false };
       }
-      await speakChunks('¿Entonces a qué hora fue? Dime la hora completa, por ejemplo diez cuarenta.',
+      await speakChunks('Then what time was it? Give me the full time, for example nine forty.',
         { interruptedBy: interruptOf(nextTurn) });
       pendingConfirm = { ...pc };
       return { interrupted: false };
@@ -688,7 +695,7 @@ export function createIncidentMockAgentChannel({
       emit('confirm_result', { field: 'hora', value: horaValue(pc.horas), confirmed: true });
       pendingConfirm = null;
       if (quedanPendientes(text, d)) return afterConfirm(text, d, nextTurn);
-      await speakChunks('Va, queda anotada. ¿Qué servicios o equipos se vieron afectados?',
+      await speakChunks("OK, it's logged. Which services or equipment were affected?",
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
@@ -698,7 +705,7 @@ export function createIncidentMockAgentChannel({
       pendingConfirm = null;
       return afterConfirm(text, d, nextTurn);
     }
-    await speakChunks(`¿Confirmo el evento a las ${speakHora(pc.horas[0])}?`,
+    await speakChunks(`Shall I confirm the event at ${speakHora(pc.horas[0])}?`,
       { interruptedBy: interruptOf(nextTurn) });
     pendingConfirm = { ...pc };
     return { interrupted: false };
@@ -712,14 +719,14 @@ export function createIncidentMockAgentChannel({
         emit('confirm_result', { field: 'severidad', value: pc.severidad, confirmed: false });
         await callTool('set_severidad', { severidad: nueva });
         const cola = d.actionItems.length
-          ? ` Y anoté ${speakCount(d.actionItems.length)} pendiente${d.actionItems.length === 1 ? '' : 's'}.`
+          ? ` And I logged ${speakCount(d.actionItems.length)} follow-up${d.actionItems.length === 1 ? '' : 's'}.`
           : '';
-        await speakChunks(`Corrijo: severidad ${nueva.toUpperCase()}, ¿ahora sí?${cola}`,
+        await speakChunks(`Fixed: severity ${nueva.toUpperCase()}, does it look right now?${cola}`,
           { interruptedBy: interruptOf(nextTurn) });
         pendingConfirm = { kind: 'severidad', severidad: nueva };
         return { interrupted: false };
       }
-      await speakChunks('¿Entonces qué severidad le ponemos: baja, media, alta o critica?',
+      await speakChunks('Then what severity should we set: low, medium, high or critical?',
         { interruptedBy: interruptOf(nextTurn) });
       pendingConfirm = { ...pc };
       return { interrupted: false };
@@ -728,11 +735,11 @@ export function createIncidentMockAgentChannel({
       emit('confirm_result', { field: 'severidad', value: pc.severidad, confirmed: true });
       pendingConfirm = null;
       if (quedanPendientes(text, d)) return afterConfirm(text, d, nextTurn);
-      await speakChunks(`Va, severidad ${pc.severidad}. ¿Queda algún pendiente o seguimiento?`,
+      await speakChunks(`OK, severity ${pc.severidad}. Any follow-ups or pending items left?`,
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
-    await speakChunks(`¿Confirmo severidad ${pc.severidad.toUpperCase()}?`, { interruptedBy: interruptOf(nextTurn) });
+    await speakChunks(`Shall I confirm severity ${pc.severidad.toUpperCase()}?`, { interruptedBy: interruptOf(nextTurn) });
     pendingConfirm = { ...pc };
     return { interrupted: false };
   }
@@ -748,7 +755,7 @@ export function createIncidentMockAgentChannel({
     pendingConfirm = null;
     if (d && quedanPendientes(text, d)) return afterConfirm(text, d, nextTurn);
     await speakChunks(
-      `Queda confirmado: ${speakServicioNombre(pc.captured.nombre)}. ¿Qué otro servicio se vio afectado, o cómo seguimos?`,
+      `Confirmed: ${speakServicioNombre(pc.captured.nombre)}. What other service was affected, or how do we continue?`,
       { interruptedBy: interruptOf(nextTurn) },
     );
     return { interrupted: false };
@@ -771,7 +778,7 @@ export function createIncidentMockAgentChannel({
       sibling: null,
     };
     await speakChunks(
-      `Corrijo: ${speakServicioNombre(nueva.nombre)}${afectadosTxt(afectados)}. ¿Ahora sí confirmo?`,
+      `Fixed: ${speakServicioNombre(nueva.nombre)}${afectadosTxt(afectados)}. Shall I confirm now?`,
       { interruptedBy: interruptOf(nextTurn) },
     );
     return { interrupted: false };
@@ -779,12 +786,12 @@ export function createIncidentMockAgentChannel({
 
   async function reaskFlow(pc, nextTurn) {
     const speech = pc.kind === 'servicio-disambiguation' && pc.sibling
-      ? `No te entendí. ¿Es ${speakServicioNombre(pc.captured.nombre)} o ${speakServicioNombre(pc.sibling.nombre)}?`
+      ? `I didn't get that. Is it ${speakServicioNombre(pc.captured.nombre)}, or ${speakServicioNombre(pc.sibling.nombre)}?`
       : pc.kind === 'hora'
-        ? `¿Confirmo el evento a las ${speakHora(pc.horas[0])}?`
+        ? `Shall I confirm the event at ${speakHora(pc.horas[0])}?`
         : pc.kind === 'severidad'
-          ? `¿Confirmo severidad ${pc.severidad.toUpperCase()}?`
-          : `¿Confirmo ${speakServicioNombre(pc.captured.nombre)}${afectadosTxt(pc.captured.afectados)}?`;
+          ? `Shall I confirm severity ${pc.severidad.toUpperCase()}?`
+          : `Shall I confirm ${speakServicioNombre(pc.captured.nombre)}${afectadosTxt(pc.captured.afectados)}?`;
     await speakChunks(speech, { interruptedBy: interruptOf(nextTurn) });
     pendingConfirm = { ...pc };
     return { interrupted: false };
@@ -803,12 +810,12 @@ export function createIncidentMockAgentChannel({
     const rs = r?.resumen;
     await speakChunks(
       rs
-        ? `Ficha de incidente enviada: ${rs.eventos} evento${rs.eventos === 1 ? '' : 's'}, ` +
-          `${rs.servicios_confirmados} servicio${rs.servicios_confirmados === 1 ? '' : 's'} confirmado` +
-          `${rs.servicios_confirmados === 1 ? '' : 's'}${rs.severidad ? `, severidad ${rs.severidad}` : ''}` +
-          `${rs.action_items ? `, ${rs.action_items} pendiente${rs.action_items === 1 ? '' : 's'}` : ''}. ` +
-          'Buen trabajo, descansa.'
-        : 'Ficha de incidente enviada. Buen trabajo.',
+        ? `Incident form sent: ${rs.eventos} event${rs.eventos === 1 ? '' : 's'}, ` +
+          `${rs.servicios_confirmados} service${rs.servicios_confirmados === 1 ? '' : 's'} confirmed` +
+          `${rs.severidad ? `, severity ${rs.severidad}` : ''}` +
+          `${rs.action_items ? `, ${rs.action_items} follow-up${rs.action_items === 1 ? '' : 's'}` : ''}. ` +
+          'Great work, get some rest.'
+        : 'Incident form sent. Great work.',
       { interruptedBy: interruptOf(nextTurn) },
     );
     schedule(400, async () => doStop());
@@ -819,7 +826,7 @@ export function createIncidentMockAgentChannel({
   function synthResumen() {
     const partes = [];
     const nombres = [...confirmedServicios].map((id) => byId.get(id)?.nombre).filter(Boolean);
-    if (nombres.length) partes.push(nombres.join(' y '));
+    if (nombres.length) partes.push(nombres.join(' and '));
     if (incidente?.reporte_inicial) partes.push(String(incidente.reporte_inicial).replace(/[.;]\s*$/, ''));
     if (!partes.length) return null;
     return partes.join(': ') + '.';
@@ -862,25 +869,39 @@ export function createIncidentMockAgentChannel({
     if (base) return base;
     const f = stripAccents(first).toLowerCase();
     if (/\b(esa|ese|eso|asi va|asi esta|asi queda|con eso|va)\b/.test(f)) return 'yes';
+    // EN: yes-words sueltos, "that's it/right/fine" y "that one" (elección en
+    // la desambiguación). "the one" NO: abre cláusula narrativa ("the one that
+    // was struggling...").
+    if (/\b(yes|yeah|yep|correct|right|exactly|sure|fine|perfect|affirmative)\b/.test(f)
+      || /\bthat'?s (?:it|right|fine|good|correct)\b/.test(f)
+      || /\bthat one\b/.test(f)) return 'yes';
     for (const c of clauses) {
-      if (/^\s*(no|negativo|espera|alto|cambio|incorrecto|equivocad\w*)\b/i.test(c)) return 'no';
+      if (/^\s*(no|nope|negativo|negative|espera|alto|cambio|wrong|wait|hold on|hang on|change|incorrect|actually|never mind|not that one|equivocad\w*)\b/i.test(c)) return 'no';
     }
     return null;
   }
 
-  /** "afectó a como 40 usuarios" → 40. null si no se dijo. */
+  /** Envío EN: "send it", "submit", "good to go", "done". detectSend (ES,
+   *  compartido) queda neutro sobre texto EN — el wrapper completa. */
+  function detectSendEn(text) {
+    if (detectSend(text)) return true;
+    const t = normalizeText(String(text ?? ''));
+    return /\b(?:send\w*|submit\w*|good to go|done)\b/.test(t);
+  }
+
+  /** "afectó a como 40 usuarios" / "affected about 40 users" → 40. null si no. */
   function parseAfectados(text) {
-    const m = normalizeText(text).match(/(?:afecta\w*|impacta\w*|sin)\s+(?:a\s+)?(?:como\s+)?(\d{2,4})\s+(?:usuarios|empleados|personas|clientes|equipos|puestos)\b/);
+    const m = normalizeText(text).match(/(?:afecta\w*|impacta\w*|sin|affect\w*|impact\w*|without)\s+(?:a\s+)?(?:como\s+|about\s+|like\s+)?(\d{2,4})\s+(?:usuarios|empleados|personas|clientes|equipos|puestos|users|employees|people|clients|customers|machines|workstations)\b/);
     if (m) return Math.max(0, Math.round(+m[1]));
     return null;
   }
 
   function afectadosTxt(n) {
-    return n != null ? `, ${n} afectados` : '';
+    return n != null ? `, ${n} affected` : '';
   }
 
   function speakCount(n) {
-    const words = ['cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho', 'nueve', 'diez'];
+    const words = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
     return n >= 0 && n <= 10 ? words[n] : String(n);
   }
 
@@ -888,10 +909,10 @@ export function createIncidentMockAgentChannel({
   function extractActionItems(text) {
     const out = [];
     const m = String(text ?? '').match(
-      /(?:deja|dejar|anota|ap[uú]ntame|apuntale|me falt[oó]|faltan?)\s+(?:dos|tres|cuatro|\d+)?\s*pendientes?\s*:?\s+(.+)$/is,
+      /(?:deja|dejar|anota|ap[uú]ntame|apuntale|me falt[oó]|faltan?|leave|note|noting|put down|log)\s+(?:dos|tres|cuatro|two|three|four|\d+)?\s*(?:pendientes?|follow[- ]?ups?)\s*:?\s+(.+)$/is,
     );
     if (m) {
-      for (const parte of m[1].split(/,?\s*y\s+(?:que|el|la)\s+|;\s*/)) {
+      for (const parte of m[1].split(/,?\s*y\s+(?:que|el|la)\s+|,?\s+and\s+(?:have|tell|get|ask|buy|order|leave)\s+|;\s*/)) {
         const item = limpiarItem(parte);
         if (item) out.push(item);
       }
@@ -903,7 +924,7 @@ export function createIncidentMockAgentChannel({
 
   function limpiarItem(s) {
     const t = String(s ?? '')
-      .replace(/\s*[.,;]*(?:eso es todo|es todo|ya est[aá]|listo|m[aá]nda\w*)[\s\S]*$/i, '')
+      .replace(/\s*[.,;]*(?:eso es todo|es todo|ya est[aá]|listo|m[aá]nda\w*|that'?s all|that is all|send it|done deal)[\s\S]*$/i, '')
       .replace(/^que\s+(?:me|le|se|nos|te)?\s*/i, '')
       .replace(/[.,;]\s*$/, '')
       .replace(/\s+/g, ' ')

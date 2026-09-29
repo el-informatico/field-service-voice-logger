@@ -10,7 +10,7 @@
  * read-backs, barge-ins) y verifica la INVARIANTE de ficha vs ground-truth:
  * servicios (ids exactos, todos confirmados), severidad, timeline (horas
  * exactas + evento sim ≥ 0.6), action items (recall 100% a sim ≥ 0.6) y
- * estado=enviada. Exit 1 en cualquier desviación.
+ * estado=sent. Exit 1 en cualquier desviación.
  *
  * Uso:   node web/js/smoke-incidente.mjs
  * Sales: .data/smoke-incidente/artifact-<scenario_id>.json
@@ -135,7 +135,7 @@ function summarize(artifact, gt) {
   if (artifact.schema_version !== 1) problems.push('schema_version != 1');
   if (!ev.length) problems.push('events vacío');
   if (toolCalls.length !== toolResults.length) problems.push('tool_call sin tool_result');
-  if (f.estado !== 'enviada') problems.push('estado != enviada');
+  if (f.estado !== 'sent') problems.push('estado != sent');
   if (!f.servicios_afectados.every((s) => s.confirmado)) problems.push('servicios sin confirmar');
   if (artifact.audio_retained !== false) problems.push('audio_retained != false');
   if (!f.que_paso) problems.push('que_paso vacío');

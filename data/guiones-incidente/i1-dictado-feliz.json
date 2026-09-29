@@ -103,14 +103,14 @@
     {
       "n": 17,
       "role": "user",
-      "text": "Yes, that's right... and leave two follow-ups: get me another spare switch for the warehouse, and tell the systems lead when they do the node maintenance.",
+      "text": "Yes, that's right... and leave two follow-ups: get me another spare switch to keep in the van, and tell the systems lead when they do the node maintenance.",
       "expect": "tool:agregar_action_item",
       "note": "confirms severity on the first try and dictates two action items"
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "agregar_action_item('Buy another spare switch for the warehouse'); agregar_action_item('Tell the systems lead when they do the node maintenance'); brief read-back of both; read the summary: 'Office-wide network outage from a failed core switch; network restored in an hour and a half with a spare switch.' and ask whether to send."
+      "hint": "agregar_action_item('Buy another spare switch to keep in the van'); agregar_action_item('Tell the systems lead when they do the node maintenance'); brief read-back of both; read the summary: 'Office-wide network outage from a failed core switch; network restored in an hour and a half with a spare switch.' and ask whether to send."
     },
     {
       "n": 19,

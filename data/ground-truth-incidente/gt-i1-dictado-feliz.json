@@ -17,7 +17,7 @@
       { "id": "SRV-VPN-REMOTO", "confirmado": true }
     ],
     "action_items": [
-      "Buy another spare switch for the warehouse",
+      "Buy another spare switch to keep in the van",
       "Tell the systems lead when they do the node maintenance"
     ],
     "severidad": "high",
@@ -32,7 +32,7 @@
     { "n": 11, "text": "Well, the internal DNS went down, that was the first one... and the VPN too, because the delivery crew couldn't get into the system from the street." },
     { "n": 13, "text": "Yes, that one." },
     { "n": 15, "text": "Put it down as high... they went about an hour and a half without invoicing or shipping, that hurt." },
-    { "n": 17, "text": "Yes, that's right... and leave two follow-ups: get me another spare switch for the warehouse, and tell the systems lead when they do the node maintenance." },
+    { "n": 17, "text": "Yes, that's right... and leave two follow-ups: get me another spare switch to keep in the van, and tell the systems lead when they do the node maintenance." },
     { "n": 19, "text": "That's fine... send it now, I've got another job waiting." }
   ],
   "seeded_errors": [],
