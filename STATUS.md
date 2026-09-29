@@ -1,6 +1,6 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-17** (re-audit galería a 63 envíos + fila barge-in real-session en docs de submit + refresh a master de video 3:00 tras 3 iteraciones; únicos gates restantes: revisión humana del video + push).
+Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — nivel L1 en `en-migration`, aún sin push; master de video vigente = v4 3:39 con QA visual aprobado; corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + tabla N=10 EN + subida de videos + submit).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
@@ -12,7 +12,7 @@ Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:0
 | Scaffold + contrato | ✅ | `docs/architecture.md` (esquemas §4–§9), LICENSE Apache-2.0, CI (`npm run selftest` + `smoke:mock`) |
 | Datos sembrados + GT | ✅ | `node data/validate.js` OK: 10 órdenes (5 HVAC + 5 eléctrico), 25 piezas con pares confundibles, 3 guiones, 3 GT (s2: error sembrado 3/4→3/8; s3: 3 interrupciones) |
 | Harness de métricas | ✅ | `node metrics/cli.js --selftest` OK (oráculo hand-computed en fixtures/expected.json). Salida: tabla markdown + report.json |
-| Backend token/sessions | ✅ | `bash api/selfcheck.sh` 33/33: token real|mock, rechaza `audio_retained≠false` y payloads tipo-audio, same-origin, no-store |
+| Backend token/sessions | ✅ | `bash api/selfcheck.sh` 25/25: token real|mock, rechaza `audio_retained≠false` y payloads tipo-audio, same-origin, no-store |
 | Frontend + engine + mock | ✅ | 15 archivos, ESM, cero deps. Canal real (ws-agent.js con mappers puros testeados) + canal mock determinista con MISMA interfaz |
 | Pipeline end-to-end (CI) | ✅ | `npm run smoke:mock`: 3 sesiones → artefactos §6 → métricas vs GT → ficha exacta. Piezas P/R/F1 100%, errores sembrados rescatados 2/2, barge-ins 3/3 (255–337 ms), WER 0.003 |
 | README + diferenciación | ✅ v1 | Tabla de métricas (placeholders honestos + qué ya está CI-proven), sección "How we differ from Relay" con evidencia citada |
@@ -23,7 +23,7 @@ Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:0
 ```bash
 npm run selftest      # metrics selftest (oráculo) + data/validate.js
 npm run smoke:mock    # 3 sesiones mock → artefactos → métricas vs GT + invariante de ficha
-bash api/selfcheck.sh # 33 checks del backend (token mock/real, invariants de privacidad)
+bash api/selfcheck.sh # 25 checks del backend (token mock/real, invariants de privacidad)
 npm run dev           # http://[::1]:3000 (WSL2 mirrored networking: usar [::1], no 127.0.0.1)
 ```
 
@@ -413,3 +413,23 @@ UTC). Plan de ejecución ítem por ítem con owners (REPO-YA vs HUMANO):
 Commits del bloque (lógicos): C1 textos+checklist · C2 guías de video · C3
 auditoría+fixes de STATUS · C4 este bloque. Verde final verificado:
 `npm run selftest` + `npm run smoke:mock`.
+
+## EN-REWRITE (2026-09-29) — build EN mergeada y desplegada; docs de submit a EN (nivel L1); gates: push de docs + tabla N=10 EN + submit
+
+- **Merge + deploy**: la build EN del dominio incidente vive en `main`
+  (push 29-sep ~14:08 Lima, `5b2ea9f`); demo pública verificada en inglés
+  (redeploy manual — la integración Git de Vercel sigue rota).
+- **Docs de submit a EN**: paquete nivel L1 aplicado sobre `en-migration`
+  (`7bbb623` SUBMISSION + `59be087` README): frase dual-build 24 h + línea de
+  historial as-is + giro de honestidad video-ES/demo-EN. **Aún sin push**
+  (regla del "YES"). La tabla N=10 publicada sigue siendo la del build ES,
+  rotulada "measured on the original Spanish-language build" en README y
+  SUBMISSION.
+- **Video**: master vigente = v4 3:39 (sha `8adfea08…`), QA visual aprobado;
+  existe un take del re-grabado EN (QA 7/7) para un eventual master v5, aún
+  no construido.
+- **Barrido de verificación (29-sep noche)**: revisión de números en 3
+  familias (métricas N=10 / video / conteos) — único hallazgo E2: este
+  archivo decía "33" self-checks cuando el real es 25 (corregido arriba, en
+  la tabla de estado y en el bloque de verificación local); video y tabla
+  N=10 sin hallazgos E2.
