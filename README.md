@@ -115,7 +115,7 @@ not added to the N=10 table: the rig changed after the audit.
 WER and agent-first-word latency stay excluded as driver artifacts —
 matched-pair WER is the reported figure. (8) Designed barge-ins never made
 the 500 ms respect window: the hour-correction turn (the one scripted
-interrupt, three i3 runs — R3a/R3b/R5c) measured 1,338 / 9,034 / 20,501 ms
+interrupt, three i3 runs — R3a/R3b/R5c) measured 9,034 / 1,338 / 20,501 ms
 speech-start → reply-cut with `interrupt_response: true,
 interruption_delay: 0` configured throughout; 25 further opportunistic
 `barge_in` events carry no timing anchor and are excluded by the canonical
