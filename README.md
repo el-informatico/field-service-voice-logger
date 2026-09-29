@@ -134,11 +134,13 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 
 ## Demo video (D6)
 
-**Watch (3:00, EN, captions burned):** *link added at submission — hosted
-unlisted by the owner; `demo-video-d6.srt` ships alongside it.* A 55-second
+**Watch (3:39, EN, captions burned):** *link added at submission — hosted
+unlisted by the owner; the caption track `demo-video-d6-v4.srt` (67 cues)
+ships alongside it and doubles as the closed-captions upload.* A 66-second
 companion clip of a **real live-API session** (silent by design, disclosure
 bands burned in: scripted wav, audio never stored) is submitted with it:
-`real-session-clip.mp4`.
+`real-session-clip-v4.mp4` — the session replayed frame-by-frame from its own
+JSON artifact.
 
 Script beat-by-beat with timestamps: [docs/video-script-en.md](docs/video-script-en.md) ·
 recording plan: [docs/video-recording-plan.md](docs/video-recording-plan.md) ·
