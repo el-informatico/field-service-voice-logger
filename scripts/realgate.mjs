@@ -23,7 +23,7 @@
  * Requiere ASSEMBLYAI_API_KEY en .env (jamás se imprime ni se envía al browser).
  * Coste: ~$4.50/h facturado por WS abierto — cada sesión del guion ≈ 2-4 min.
  */
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync, existsSync, createWriteStream } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, resolve } from 'node:path';
 import { performance } from 'node:perf_hooks';
@@ -345,23 +345,55 @@ const pump = setInterval(() => {
 }, 25);
 
 /* ----------------------------- events del server --------------------------- */
+/* Evidencia cruda: TODO mensaje del server (sin audio, que nunca viaja hacia
+ * acá) a raw-<stem>.ndjson. Post-mortem de qué emitió el server exactamente —
+ * p. ej. el "VAD mudo" (turnos user sin input.speech.started/transcript.user). */
+mkdirSync(join(ROOT, args.outdir), { recursive: true });
+const rawLog = createWriteStream(
+  join(ROOT, args.outdir, `raw-${args.guion}-${noiseCondition}-${args.label}.ndjson`),
+  { flags: 'w' },
+);
+const t0Wall = performance.now();
+function logRaw(msg) {
+  try { rawLog.write(`${JSON.stringify({ t_ms: Math.round(performance.now() - t0Wall), ...msg })}\n`); } catch {}
+}
+
+/* El server a veces deja de emitir el par input.speech.started/transcript.user
+ * tras un barge-in (VAD mudo: interrumpe al agente y el LLM escucha los
+ * parciales, pero el par nunca llega — el artifact perdía los turnos user
+ * finales). El engine descarta user_turn_end sin turno abierto y los delta sin
+ * turno abierto; aquí llevamos el estado de apertura del server y SINTETIZAMOS
+ * la apertura que falte para que ningún texto user se pierda del artifact
+ * (cadena de evidencia §4.1: transcript + ficha + evento tool). */
+let serverUserTurnOpen = false;
+
 function onServerMessage(msg) {
+  logRaw(msg);
   switch (msg.type) {
     case 'session.ready':
       console.log(`  sesión ${msg.session_id} lista`);
       break;
     case 'input.speech.started':
+      serverUserTurnOpen = true;
       engine.handleEvent('user_turn_start', {});
       break;
     case 'transcript.user.delta':
+      if (!serverUserTurnOpen) {
+        serverUserTurnOpen = true;
+        engine.handleEvent('user_turn_start', {}); // delta sin started: apertura perezosa
+      }
       engine.handleEvent('user_turn_delta', { text: msg.text });
       break;
     case 'transcript.user':
+      // transcript huérfano (sin started): sintetizar la apertura — el texto no se suelta
+      if (!serverUserTurnOpen) engine.handleEvent('user_turn_start', {});
+      serverUserTurnOpen = false;
       engine.handleEvent('user_turn_end', { text: msg.text });
       driver.onUserTurnEnd?.(msg.text);
       break;
     case 'reply.started':
       agentReplyActive = true;
+      serverUserTurnOpen = false; // el engine cierra el turno user al abrir el reply
       engine.handleEvent('agent_turn_start', {});
       driver.onReplyStarted?.();
       break;
@@ -569,6 +601,7 @@ function finish(reason) {
     console.log(`  ficha: ${artifact.final_form.piezas.map((p) => `${p.sku}x${p.qty}${p.confirmada ? '✓' : '?'}`).join(' · ') || '(sin piezas)'} · tiempo=${artifact.final_form.tiempo_minutos ?? '?'}min · estado=${artifact.final_form.estado}`);
   }
   console.log(`  métricas: node metrics/cli.js ${JSON.stringify(out)} --gt data/${gtDir}/gt-${args.guion}.json`);
+  try { rawLog.end(); } catch {}
   setTimeout(() => process.exit(0), 1800).unref?.();
 }
 
