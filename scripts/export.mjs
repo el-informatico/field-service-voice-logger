@@ -1,16 +1,21 @@
 #!/usr/bin/env node
 /**
- * export.mjs — CLI de exportación de una orden cerrada (zero-dep, Node >= 22).
+ * export.mjs — CLI de exportación de una sesión cerrada (zero-dep, Node >= 22).
  *
  *   node scripts/export.mjs <artefacto.json> [--out <dir>]
  *
  * Produce, con los MISMOS builders que usa el botón "CSV" del navegador
- * (web/js/export.js), dos archivos:
+ * (web/js/export.js), dos archivos — orden o incidente según el artefacto
+ * (esIncidente: final_form con incidente_id + timeline):
  *
- *   order-<id>-<yyyymmdd-hhmm>.csv   ficha en dos bloques + detalle de piezas
- *                                    (BOM UTF-8 + CRLF; formato en web/README.md)
- *   order-<id>-<yyyymmdd-hhmm>.md    versión humana de la orden con la nota de
- *                                    auditoría de voz
+ *   order-<id>-<yyyymmdd-hhmm>.csv     ficha en dos bloques + detalle de piezas
+ *   order-<id>-<yyyymmdd-hhmm>.md      versión humana de la orden con la nota
+ *                                      de auditoría de voz
+ *   incident-<id>-<yyyymmdd-hhmm>.csv  ficha del incidente + bloques timeline/
+ *                                      servicios/pendientes (BOM UTF-8 + CRLF;
+ *                                      formato en web/README.md)
+ *   incident-<id>-<yyyymmdd-hhmm>.md   versión humana del incidente (espejo de
+ *                                      la vista de impresión)
  *
  * El sello del nombre de archivo sale del cierre de la sesión (ended_at, con
  * fallback a started_at), así que la salida es determinista para métricas/CI.
@@ -23,12 +28,18 @@ import {
   buildOrdenCsv,
   buildOrdenMarkdown,
   ordenFilename,
+  esIncidente,
+  buildIncidentCsv,
+  buildIncidenteMarkdown,
+  incidenteFilename,
 } from '../web/js/export.js';
 
 const HELP = `Usage: node scripts/export.mjs <artifact.json> [--out <dir>]
 
 Exports the close of a voice session: §6 artifact (docs/architecture.md)
-→ two-block CSV (form + parts) and a human-readable markdown of the order.
+→ two-block CSV and a human-readable markdown. Order artifacts produce
+order-<id>-*.{csv,md} (form + parts); incident artifacts produce
+incident-<id>-*.{csv,md} (form + timeline/services/follow-ups).
 
   <artifact.json>   path to the session artifact (e.g. .data/smoke/artifact-s1-happy-path.json)
   --out <dir>       output directory (default: next to the input artifact)
@@ -87,17 +98,27 @@ async function main() {
     fail('the artifact has no final_form (is it a closed §6 artifact?).');
   }
 
+  // Dominio orden o incidente: mismos builders y nombres que el navegador.
+  const incidente = esIncidente(artifact);
+  const id = incidente
+    ? (ff.incidente_id || artifact.order_id)
+    : (ff.order_id || artifact.order_id);
+
   // Sello determinista: el cierre de la sesión, no el reloj del que corre el CLI.
   const cierre = new Date(artifact.ended_at || artifact.started_at || Date.now());
-  const csvName = ordenFilename(ff.order_id || artifact.order_id, cierre);
+  const csvName = incidente
+    ? incidenteFilename(id, cierre)
+    : ordenFilename(id, cierre);
   const mdName = csvName.replace(/\.csv$/, '.md');
 
   const dir = outDir || path.dirname(path.resolve(artifactPath));
   const csvPath = path.join(dir, csvName);
   const mdPath = path.join(dir, mdName);
 
-  const csv = buildOrdenCsv(artifact);
-  const md = buildOrdenMarkdown(artifact, { generatedAt: cierre.toISOString() });
+  const csv = incidente ? buildIncidentCsv(artifact) : buildOrdenCsv(artifact);
+  const md = incidente
+    ? buildIncidenteMarkdown(artifact, { generatedAt: cierre.toISOString() })
+    : buildOrdenMarkdown(artifact, { generatedAt: cierre.toISOString() });
 
   try {
     await mkdir(dir, { recursive: true });
@@ -107,8 +128,14 @@ async function main() {
     fail(`could not write the export to ${dir} (${err.code || err.message}).`);
   }
 
-  const piezas = Array.isArray(ff.piezas) ? ff.piezas.length : 0;
-  console.log(`export.mjs: order ${ff.order_id || '(no id)'} (${piezas} part${piezas === 1 ? '' : 's'})`);
+  if (incidente) {
+    const nEv = Array.isArray(ff.timeline) ? ff.timeline.length : 0;
+    const nSv = Array.isArray(ff.servicios_afectados) ? ff.servicios_afectados.length : 0;
+    console.log(`export.mjs: incident ${ff.incidente_id || '(no id)'} (${nEv} event${nEv === 1 ? '' : 's'}, ${nSv} service${nSv === 1 ? '' : 's'})`);
+  } else {
+    const piezas = Array.isArray(ff.piezas) ? ff.piezas.length : 0;
+    console.log(`export.mjs: order ${ff.order_id || '(no id)'} (${piezas} part${piezas === 1 ? '' : 's'})`);
+  }
   console.log(`  CSV : ${csvPath}`);
   console.log(`  MD  : ${mdPath}`);
 }
