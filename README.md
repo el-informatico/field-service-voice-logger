@@ -17,8 +17,17 @@ WER clean vs +noise, and barge-in respected-vs-stolen. See [Metrics](#metrics).
 
 > Built for the [AssemblyAI Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) (Sept 2026).
 > Status: built and measured — **10 real voice sessions** against the live
-> AssemblyAI API (metrics below), demo video recorded, submission pack in
+> AssemblyAI API (metrics below), measured on the original Spanish-language
+> build, demo video recorded, submission pack in
 > [docs/SUBMISSION.md](docs/SUBMISSION.md). Live progress: [STATUS.md](STATUS.md).
+>
+> **Born in Spanish** with real Mexican field data; the live incident domain
+> rewritten end-to-end in English in the final 24 hours — the legacy work-order
+> domain kept in its original Spanish data as evidence of the shared engine.
+>
+> **Commit history kept as-is:** the project was born in Spanish with real
+> Mexican field data and rewritten to English in the final 24 hours — the
+> history is the honest record of that journey.
 
 ## Why (the 45-minute problem)
 
@@ -134,13 +143,15 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 
 ## Demo video (D6)
 
-**Watch (3:39, EN, captions burned):** *link added at submission — hosted
-unlisted by the owner; the caption track `demo-video-d6-v4.srt` (67 cues)
-ships alongside it and doubles as the closed-captions upload.* A 66-second
+**Watch ([RELLENAR: M:SS], EN, captions burned):** *link added at submission —
+hosted unlisted by the owner; the caption track `[RELLENAR: nombre SRT]`
+([RELLENAR: cues] cues) ships alongside it and doubles as the closed-captions
+upload.* Re-recorded on the English UI in the final 24 hours; the measured
+metrics below come from the original Spanish-language build. A 66-second
 companion clip of a **real live-API session** (silent by design, disclosure
 bands burned in: scripted wav, audio never stored) is submitted with it:
 `real-session-clip-v4.mp4` — the session replayed frame-by-frame from its own
-JSON artifact.
+JSON artifact, recorded on the original Spanish-language build.
 
 Script beat-by-beat with timestamps: [docs/video-script-en.md](docs/video-script-en.md) ·
 recording plan: [docs/video-recording-plan.md](docs/video-recording-plan.md) ·
