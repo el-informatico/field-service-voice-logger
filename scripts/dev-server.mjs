@@ -87,8 +87,8 @@ const FSVL_404_PAGE = `<!doctype html>
 </head><body><h1>404 — not found</h1>
 <p>The dev server could not find that route. Routes served:</p>
 <ul>
-<li><code>/</code> — estáticos de <code>web/</code></li>
-<li><code>/data/*</code> — JSONs de <code>data/</code></li>
+<li><code>/</code> — static files from <code>web/</code></li>
+<li><code>/data/*</code> — JSON files from <code>data/</code></li>
 <li><code>GET|POST /api/token</code></li>
 <li><code>GET|POST /api/sessions</code></li>
 <li><code>GET|POST /api/fsm/report</code></li>

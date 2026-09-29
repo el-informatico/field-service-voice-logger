@@ -262,15 +262,15 @@ export function createRealAgentChannel({ token, tools = [], config = AGENT_CONFI
 
   async function start() {
     if (typeof WebSocket === 'undefined') {
-      throw new Error('WebSocket no disponible (este canal es browser-only)');
+      throw new Error('WebSocket unavailable (this channel is browser-only)');
     }
     const url = `${WS_URL}?token=${encodeURIComponent(token)}`;
     ws = new WebSocket(url);
     ws.onopen = () => sendRaw(buildSessionUpdate(config, tools));
     ws.onmessage = (ev) => onRawMessage(ev.data);
-    ws.onerror = () => emit('error', { code: 'ws_error', message: 'error de WebSocket' });
+    ws.onerror = () => emit('error', { code: 'ws_error', message: 'WebSocket error' });
     ws.onclose = (ev) => {
-      if (!closed) emit('error', { code: `ws_close_${ev.code}`, message: ev.reason || 'WS cerrado' });
+      if (!closed) emit('error', { code: `ws_close_${ev.code}`, message: ev.reason || 'WS closed' });
       emit('ended', {});
     };
   }
