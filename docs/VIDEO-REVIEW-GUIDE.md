@@ -69,10 +69,12 @@ Los cortes entre segmentos son fundidos de 0.4 s: los límites de la tabla tiene
 
 ## Check-off visual — los 15 valores de la escena de métricas (1:43–2:04)
 
-Valores **tal como aparecen en pantalla** (tabla N=10 del build; validados
-verbatim por la QA determinista contra la escena fuente == README §Metrics).
+Valores **tal como aparecen en pantalla** (tabla N=10 del build **ES**;
+validados verbatim por la QA determinista contra la escena fuente == README
+§Metrics → subsección "Development evidence" — el video habla el set ES por
+diseño).
 
-| # | Valor en pantalla (= README N=10) |
+| # | Valor en pantalla (= README → Development evidence, tabla ES N=10) |
 |---|---|
 | 1 | `10 REAL voice sessions` (kicker/sub-línea) |
 | 2 | `7–10 of 9–11 per session` (turn completion, `10 sessions`) |
