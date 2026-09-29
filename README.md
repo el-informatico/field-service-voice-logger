@@ -16,14 +16,16 @@ confirmation-loop precision/recall, end-of-speech→tool-call latency (p50/p95),
 WER clean vs +noise, and barge-in respected-vs-stolen. See [Metrics](#metrics).
 
 > Built for the [AssemblyAI Voice Agent Hackathon](https://lablab.ai/ai-hackathons/assemblyai-voice-agent-hackathon) (Sept 2026).
-> Status: built and measured — **10 real voice sessions** against the live
-> AssemblyAI API (metrics below), measured on the original Spanish-language
-> build, demo video recorded, submission pack in
+> Status: built and measured — **10 real voice sessions on the English
+> build** against the live AssemblyAI API (metrics below; the original
+> Spanish-language development set is published alongside it), demo video
+> recorded, submission pack in
 > [docs/SUBMISSION.md](docs/SUBMISSION.md). Live progress: [STATUS.md](STATUS.md).
 >
 > **Born in Spanish** with real Mexican field data; the live incident domain
-> rewritten end-to-end in English in the final 24 hours — the legacy work-order
-> domain kept in its original Spanish data as evidence of the shared engine.
+> rewritten end-to-end in English in the final 24 hours — and re-measured
+> there (N=10) — with the legacy work-order domain kept in its original
+> Spanish data as evidence of the shared engine.
 >
 > **Commit history kept as-is:** the project was born in Spanish with real
 > Mexican field data and rewritten to English in the final 24 hours — the
@@ -146,8 +148,8 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 **Watch (3:40, EN, captions burned):** *link added at submission —
 hosted unlisted by the owner; the caption track `demo-video-d6-v5.srt`
 (68 cues) ships alongside it and doubles as the closed-captions
-upload.* Re-recorded on the English UI in the final 24 hours; the measured
-metrics below come from the original Spanish-language build. A 66-second
+upload.* Re-recorded on the English UI in the final 24 hours; the development
+evidence below is the original Spanish-language build. A 66-second
 companion clip of a **real live-API session** (silent by design, disclosure
 bands burned in: scripted wav, audio never stored) is submitted with it:
 `real-session-clip-v4.mp4` — the session replayed frame-by-frame from its own
