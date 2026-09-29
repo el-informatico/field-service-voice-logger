@@ -143,9 +143,9 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 
 ## Demo video (D6)
 
-**Watch ([RELLENAR: M:SS], EN, captions burned):** *link added at submission —
-hosted unlisted by the owner; the caption track `[RELLENAR: nombre SRT]`
-([RELLENAR: cues] cues) ships alongside it and doubles as the closed-captions
+**Watch (3:40, EN, captions burned):** *link added at submission —
+hosted unlisted by the owner; the caption track `demo-video-d6-v5.srt`
+(68 cues) ships alongside it and doubles as the closed-captions
 upload.* Re-recorded on the English UI in the final 24 hours; the measured
 metrics below come from the original Spanish-language build. A 66-second
 companion clip of a **real live-API session** (silent by design, disclosure
