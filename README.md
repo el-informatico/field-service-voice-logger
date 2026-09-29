@@ -73,12 +73,81 @@ noise-gate evidence is what drove the post-visit pivot.
 ## Metrics
 
 Produced by [metrics/](metrics/README.md) from session artifacts; definitions are
+exact and reproducible. **10 REAL voice sessions on the English build,
+measured in the final 24 hours** (Voice Incident Reporter, post-visit quiet
+dictation, scripted operator, AssemblyAI Voice Agent API; all 10 on interview
+prompt v4-en — the English edition of the prompt selected by the Spanish
+set's v3→v4 comparison — frozen with zero prompt iterations; **all ten
+session artifacts committed as evidence in
+[docs/evidence/gate/](docs/evidence/gate/)**, plus the two WP7 gate takes;
+the rig is identical to the Spanish-language development set's — same
+driver, same seeded ground truth translated with the domain, same oracle):
+
+| Metric | Value | N | Condition |
+|---|---|---|---|
+| Turn completion (scripted turns transcribed) | 9–11 of 9–11 per session (100%) | 10 sessions | quiet dictation |
+| WER, matched pairs (pooled) | **0.685** (0.440–0.845/session) | 2,443 ref words | quiet dictation |
+| End-of-speech → tool call, p50 / p95 | 3,031 ms / 3,479 ms | 73 tool turns | real API |
+| Severidad exacta | 9/10 sessions | 10 | read-back loop |
+| Servicios afectados set precision | 100% (18 TP / 0 FP) | 10 | catalog enum |
+| Servicios afectados set recall | 100% (0 FN) | 10 | see notes |
+| Timeline horas exactas | 28/35 GT events (80.0%) | 10 | hora exacta; see notes |
+| Confirmation-loop precision (read-backs → correction) | 71.0% | 31 read-backs | real dialogue |
+| Action items recall | 60.0% (12/20) | 10 sessions | quiet dictation |
+
+*(Spanish row labels are the final form's literal field names — the English
+build kept the original field names: severidad = severity, servicios
+afectados = affected services, horas exactas = hour-exact entries.)*
+
+**Barge-in respected** is not measured on the English set (no
+designed-interrupt take in the N=10 composition) — the row is omitted rather
+than inherited; the Spanish development set measured 0/3 (see its notes
+below).
+
+Honest notes: (1) WER 0.685 is dominated by a VAD segmentation artifact, not
+hearing — word coverage is 0.85–0.96× of ground truth per session with clean
+transcripts; the English wavs' intra-turn pauses split each turn into ~2
+transcript hypotheses (17–23 items per session for 9–11 scripted turns, vs
+≈1:1 for the Spanish control artifacts), and the greedy matcher pairs one
+item per turn, counting the unpaired half as deletions. The split is decided
+by the server VAD (threshold 0.4, identical to the Spanish baseline) before
+any prompt acts on it; raising the threshold would improve the number and
+break protocol identity — declined as metric-gaming. (2) Prompt v4-en was
+frozen with zero iterations: every prompt-controlled metric was green at
+freeze — turn completion 100%, severity 9/10, services 100/100, timeline
+hours 80.0%, confirm precision 71.0% (stop criterion and full rationale in
+[STATUS.md](STATUS.md) METRICS-N10-EN). (3) All 10 sessions close with the
+report-send tool call (`enviar_reporte`); 0 of 10 hit the 300 s driver
+watchdog (the Spanish set: 2 of 10 — its close-out race was fixed before
+these runs). (4) N08's severity was never set (ground truth: medium) despite
+a complete session — agent variance under 8 barge-ins; published as
+measured, because re-running to fix it would bias the table. (5) Strict
+timeline (hour + event text sim ≥ 0.6) is 0 TP in every session, same policy
+and cause as the Spanish set: verbatim agent phrasing vs clean ground-truth
+phrases — hour-exact is the reported signal. (6) End-of-speech → tool p50 is
+3,031 ms vs 1,554 ms on the Spanish set: the English prompt's few-shots
+(hours, multi-fact narrative) lengthen agent turns before the tool call;
+documented, no plan target. (7) One run per scenario — run-to-run variance
+was measured on the Spanish set, not re-measured here. (8)
+Confirm-precision derivation undercounts rescues when the operator answers
+with content instead of yes/no (same as the Spanish set); the
+designed-rescue chain was measured separately by the WP7 gate takes
+committed alongside — 2/2 takes with ≥1/2 mechanical rescues (prod↔staging
+correction; severity medium→high). (9) Barge-in respected is not measured on
+the English set — the row is omitted rather than inherited (Spanish
+development set: 0/3). (10) Action-items recall (60.0%, 12/20) is a row the
+English table adds; the Spanish real-session table does not publish it.
+
+### Development evidence (original Spanish-language build, N=10)
+
+Produced by [metrics/](metrics/README.md) from session artifacts; definitions are
 exact and reproducible. **10 REAL voice sessions** (Voice Incident Reporter,
 post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API;
 5 sessions on interview prompt v3 + 5 on prompt v4, the narrative-capture fix
 documented in [STATUS.md](STATUS.md) METRICS-N10; three sample artifacts plus
 one post-audit session are committed as evidence in
-[docs/evidence/gate/](docs/evidence/gate/), the full set stays local):
+[docs/evidence/gate/](docs/evidence/gate/), the full set stays local,
+measured on the original Spanish-language build — see the note at the top):
 
 | Metric | Value | N | Condition |
 |---|---|---|---|

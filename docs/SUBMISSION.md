@@ -77,7 +77,37 @@ After the visit, the technician opens the incident and starts a voice session �
 - Reducing the residual run-to-run variance of the interview agent (v4 mitigates; one v4 session still spoke read-backs without registering the timeline).
 - A verbatim-vs-normalized capture policy for free text, and mobile/headset validation of the live session UI.
 
-## Metrics (N=10 real sessions)
+## Metrics (N=10 real sessions, English build)
+
+10 real voice sessions **on the English build, measured in the final 24 hours**: Voice Incident Reporter, post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API. All 10 on interview prompt v4-en — the English edition of the prompt selected by the Spanish-language development set's v3→v4 comparison — frozen with zero prompt iterations. Produced by `metrics/` from per-session artifacts (all ten committed as evidence in docs/evidence/gate/, plus the two WP7 gate takes); definitions are exact and reproducible, and the rig is identical to the one that produced the Spanish-language development set — same driver, same seeded ground truth translated with the domain, same oracle.
+
+| Metric | Value | N | Condition |
+|---|---|---|---|
+| Turn completion (scripted turns transcribed) | 9–11 of 9–11 per session (100%) | 10 sessions | quiet dictation |
+| WER, matched pairs (pooled) | **0.685** (0.440–0.845/session) | 2,443 ref words | quiet dictation |
+| End-of-speech → tool call, p50 / p95 | 3,031 ms / 3,479 ms | 73 tool turns | real API |
+| Severidad exacta | 9/10 sessions | 10 | read-back loop |
+| Servicios afectados set precision | 100% (18 TP / 0 FP) | 10 | catalog enum |
+| Servicios afectados set recall | 100% (0 FN) | 10 | see notes |
+| Timeline horas exactas | 28/35 GT events (80.0%) | 10 | hora exacta; see notes |
+| Confirmation-loop precision (read-backs → correction) | 71.0% | 31 read-backs | real dialogue |
+| Action items recall | 60.0% (12/20) | 10 sessions | quiet dictation |
+
+*(Spanish row labels are the final form's literal field names — the English build kept the original field names: severidad = severity, servicios afectados = affected services, horas exactas = hour-exact entries.)*
+
+**Barge-in respected** is not measured on the English set (no designed-interrupt take in the N=10 composition) — the row is omitted rather than inherited; the Spanish development set measured 0/3 (see its notes below).
+
+**Honest notes (compressed; full list in README §Metrics):**
+
+- WER 0.685 is dominated by a VAD segmentation artifact, not hearing: the English operator wavs' intra-turn pauses split each turn into ~2 transcript hypotheses (17–23 transcript items per session for 9–11 scripted turns; the Spanish control runs ≈1:1), and the matcher pairs one item per turn — the unpaired half counts as deletions. Word coverage is 0.85–0.96× of ground truth with clean transcripts: the ASR hears nearly everything. Raising the VAD threshold would lift the number and break protocol identity with the Spanish baseline — declined as metric-gaming.
+- Every prompt-controlled metric was green at freeze (turn completion 100%, severity 9/10, services 100/100, timeline hours 80.0%, confirm precision 71.0%) — prompt v4-en frozen with zero iterations; the WER row is measurement, not behavior (full rationale in STATUS.md, METRICS-N10-EN).
+- All 10 sessions close with the report-send tool call (`enviar_reporte`) — the close-out race documented in the Spanish set was fixed before these runs — and 0 of 10 hit the 300 s watchdog (the Spanish set: 2 of 10).
+- N08's severity was never set (ground truth: medium) despite a complete session — agent variance under 8 barge-ins; published as measured, because re-running to fix it would bias the table.
+- Strict timeline (hour + event text sim ≥ 0.6) is 0 TP under the same D4 policy as the Spanish set: the agent captures verbatim phrasing against clean ground-truth phrases.
+- End-of-speech → tool p50 is 3,031 ms vs 1,554 ms on the Spanish set: the English prompt's few-shots lengthen agent turns before the tool call; documented, no plan target.
+- One run per scenario: run-to-run variance was measured on the Spanish set, not re-measured here.
+
+### Development evidence (original Spanish-language build, N=10)
 
 10 real voice sessions: Voice Incident Reporter, post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API. 5 sessions on interview prompt v3 + 5 on prompt v4 (the narrative-capture fix documented in STATUS.md, METRICS-N10). Produced by `metrics/` from per-session artifacts (three committed as evidence in docs/evidence/gate/ plus one post-audit session, the full set local); definitions are exact and reproducible. *(measured on the original Spanish-language build; see the English-build note in How we built it)*
 
