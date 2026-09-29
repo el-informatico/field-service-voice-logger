@@ -1,0 +1,1765 @@
+{
+  "schema_version": 1,
+  "session_id": "gate_N09_mun8tt26",
+  "scenario_id": "i4-mixto",
+  "mode": "real",
+  "order_id": "IC-2002",
+  "started_at": "2026-09-29T22:23:49.855Z",
+  "ended_at": "2026-09-29T22:26:13.277Z",
+  "audio_retained": false,
+  "turn_detection": {
+    "vad_threshold": 0.4,
+    "interrupt_response": true,
+    "interruption_delay": 0,
+    "transcription_mode": "balanced",
+    "voice_focus": null,
+    "label": "N09",
+    "reason": "completed"
+  },
+  "noise_condition": "tranquilo",
+  "events": [
+    {
+      "t_ms": 1618,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 12889,
+      "type": "agent_turn_end",
+      "text": "Good day! I've loaded incident IC-2002 for Despacho Contable Sifuentes y Asociados. Tell me calmly what happened, with times and everything, and I'll log each thing as you say it. "
+    },
+    {
+      "t_ms": 14167,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 15469,
+      "type": "user_turn_end",
+      "text": "Can you hear me okay?"
+    },
+    {
+      "t_ms": 15470,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 16066,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 16066,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 19969,
+      "type": "user_turn_end",
+      "text": "I'm out of the accountant's office now. It was that network room that smelled overheated."
+    },
+    {
+      "t_ms": 20467,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 23568,
+      "type": "user_turn_end",
+      "text": "Log the incident report for me before the detail slips away."
+    },
+    {
+      "t_ms": 34767,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 38569,
+      "type": "user_turn_end",
+      "text": "Well, I got there around 7:50 and you could already smell the burning from the doorway."
+    },
+    {
+      "t_ms": 38571,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 38966,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 38966,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 47571,
+      "type": "user_turn_end",
+      "text": "At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing."
+    },
+    {
+      "t_ms": 48609,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-aa2c90010dd63801",
+      "tool": "set_que_paso",
+      "args": {
+        "texto": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing."
+      }
+    },
+    {
+      "t_ms": 48609,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-80d4c7b31ba2611e",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "could already smell the burning from the doorway",
+        "hora": "7:50"
+      }
+    },
+    {
+      "t_ms": 48609,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-aa2c90010dd63801",
+      "tool": "set_que_paso",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "campo": "que_paso",
+        "caracteres": 223
+      }
+    },
+    {
+      "t_ms": 48610,
+      "type": "form_update",
+      "changed": [
+        "que_paso",
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:set_que_paso"
+    },
+    {
+      "t_ms": 48610,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-80d4c7b31ba2611e",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "07:50",
+        "evento": "could already smell the burning from the doorway",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 48610,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 48610,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-87928682d8ad3b83",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm",
+        "hora": "8:15"
+      }
+    },
+    {
+      "t_ms": 48610,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-87928682d8ad3b83",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:15",
+        "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 48610,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 48610,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-80c3dfb7799f01f0",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "Rack 3 cabinet"
+      }
+    },
+    {
+      "t_ms": 48612,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-80c3dfb7799f01f0",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "Rack 3 cabinet",
+        "found": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "score": 5
+          },
+          {
+            "id": "SRV-RACK-A8",
+            "nombre": "Server rack cabinet A8 (telecom room)",
+            "score": 5
+          }
+        ],
+        "best": {
+          "id": "SRV-RACK-A3",
+          "nombre": "Server rack cabinet A3 (network room)"
+        },
+        "confusable_warning": {
+          "id": "SRV-RACK-A8",
+          "nombre": "Server rack cabinet A8 (telecom room)",
+          "mensaje": "\"Server rack cabinet A3 (network room)\" is easily confused with \"Server rack cabinet A8 (telecom room)\". Ask the disambiguation out loud naming BOTH before accepting the service."
+        },
+        "siguiente_paso": "DEVIATION: ask the disambiguation out loud (\"Server rack cabinet A3 (network room)\" or \"Server rack cabinet A8 (telecom room)\"?) and add ONLY the one the operator confirms."
+      }
+    },
+    {
+      "t_ms": 49003,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 51569,
+      "type": "agent_turn_end",
+      "text": "Noted.  At  seven  fifty,  you  could  smell  the  burning  from  the  doorway,  and  at  eight  fifteen,  the  rack  cabinet  was  at  thirty  six  degrees  and  the  mini-split was blowing warm, correct? Also, regarding the cabinet, did you mean the Server rack cabinet A three in the network room, or the Server rack cabinet A eight in the telecom room? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 51569,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 52071,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 54676,
+      "type": "barge_in",
+      "agent_text_cut": "Noted.  At  seven  fifty,  you  could  smell  the  burning  from  the  doorway,  and  at  eight  fifteen,  the  rack  cabinet  was  at  thirty  six  degrees  and  the  mini-split was blowing warm, correct? Also, regarding the cabinet, did you mean the Server rack cabinet A three in the network room, or the Server rack cabinet A eight in the telecom room? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 54677,
+      "type": "user_turn_end",
+      "text": "Then at 8:45, I put an industrial fan at the room door."
+    },
+    {
+      "t_ms": 54677,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 55269,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 55269,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 58769,
+      "type": "user_turn_end",
+      "text": "And around 10:30, I had the cabinet down to 28 degrees steady."
+    },
+    {
+      "t_ms": 61814,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8cdb65ee0bce65cf",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "I put an industrial fan at the room door",
+        "hora": "8:45"
+      }
+    },
+    {
+      "t_ms": 61814,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8c515a795c175327",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "I had the cabinet down to 28 degrees steady",
+        "hora": "10:30"
+      }
+    },
+    {
+      "t_ms": 61814,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8cdb65ee0bce65cf",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:45",
+        "evento": "I put an industrial fan at the room door",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 61814,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 61814,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8c515a795c175327",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "10:30",
+        "evento": "I had the cabinet down to 28 degrees steady",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 61814,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 62194,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 62472,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-a7784df7f262c449",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "Rack 3 cabinet"
+      }
+    },
+    {
+      "t_ms": 62475,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-a7784df7f262c449",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "Rack 3 cabinet",
+        "found": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "score": 5
+          },
+          {
+            "id": "SRV-RACK-A8",
+            "nombre": "Server rack cabinet A8 (telecom room)",
+            "score": 5
+          }
+        ],
+        "best": {
+          "id": "SRV-RACK-A3",
+          "nombre": "Server rack cabinet A3 (network room)"
+        },
+        "confusable_warning": {
+          "id": "SRV-RACK-A8",
+          "nombre": "Server rack cabinet A8 (telecom room)",
+          "mensaje": "\"Server rack cabinet A3 (network room)\" is easily confused with \"Server rack cabinet A8 (telecom room)\". Ask the disambiguation out loud naming BOTH before accepting the service."
+        },
+        "siguiente_paso": "DEVIATION: ask the disambiguation out loud (\"Server rack cabinet A3 (network room)\" or \"Server rack cabinet A8 (telecom room)\"?) and add ONLY the one the operator confirms."
+      }
+    },
+    {
+      "t_ms": 62700,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 62845,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 63369,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 63369,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 64370,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 66678,
+      "type": "barge_in",
+      "agent_text_cut": "Got  it.  So,  at  eight  forty-five you put an industrial fan at the door, and at ten thirty the cabinet was down to twenty-eight degrees steady, correct? Also, I need to clarify the rack: were you talking about the Server rack cabinet A3 in the network room, or the Server rack cabinet A8 in the telecom room? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 66679,
+      "type": "user_turn_end",
+      "text": "The one that— A3, the one in the network room."
+    },
+    {
+      "t_ms": 66679,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 67269,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 67269,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 70570,
+      "type": "user_turn_end",
+      "text": "The A8, the telecom one, never even flinched, still healthy."
+    },
+    {
+      "t_ms": 73613,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-b1f36ed520f8ba99",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-RACK-A3"
+      }
+    },
+    {
+      "t_ms": 73613,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-b1f36ed520f8ba99",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-RACK-A3",
+        "nombre": "Server rack cabinet A3 (network room)",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 73613,
+      "type": "form_update",
+      "changed": [
+        "servicios_afectados"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_servicio_afectado"
+    },
+    {
+      "t_ms": 73985,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 75769,
+      "type": "agent_turn_end",
+      "text": "Noted.  Affecting  Server  rack  cabinet  A3  in  the  network  room,  correct? \n\n Also,  confirming  the  timeline:at seven fifty, burning smell at the doorway; at eight fifteen, Rack 3 was thirty-six degrees and the mini-split was blowing warm; at eight forty-five, you put an industrial fan at the door; at ten thirty, the cabinet was down to twenty-eight degrees, correct? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 75769,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 75769,
+      "type": "confirm_request",
+      "field": "hora",
+      "value": "10:30",
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 76271,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 77178,
+      "type": "barge_in",
+      "agent_text_cut": "Noted.  Affecting  Server  rack  cabinet  A3  in  the  network  room,  correct? \n\n Also,  confirming  the  timeline:at seven fifty, burning smell at the doorway; at eight fifteen, Rack 3 was thirty-six degrees and the mini-split was blowing warm; at eight forty-five, you put an industrial fan at the door; at ten thirty, the cabinet was down to twenty-eight degrees, correct? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 77178,
+      "type": "user_turn_end",
+      "text": "The one in the network room."
+    },
+    {
+      "t_ms": 77178,
+      "type": "confirm_result",
+      "field": "hora",
+      "value": "10:30",
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 77179,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 77571,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 77571,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 81172,
+      "type": "user_turn_end",
+      "text": "I never touched A8. I'm telling you that one is healthy."
+    },
+    {
+      "t_ms": 84221,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-a8c24a3d6135a531",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "could already smell the burning from the doorway",
+        "hora": "07:50"
+      }
+    },
+    {
+      "t_ms": 84221,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-a8c24a3d6135a531",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "07:50",
+        "evento": "could already smell the burning from the doorway",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 84222,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-81808e3e00508486",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm",
+        "hora": "08:15"
+      }
+    },
+    {
+      "t_ms": 84222,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-81808e3e00508486",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:15",
+        "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 84223,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-86bf2601192cfbc9",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "I put an industrial fan at the room door",
+        "hora": "08:45"
+      }
+    },
+    {
+      "t_ms": 84223,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-90a82ab4a2b8f8f6",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "I had the cabinet down to 28 degrees steady",
+        "hora": "10:30"
+      }
+    },
+    {
+      "t_ms": 84223,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-86bf2601192cfbc9",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:45",
+        "evento": "I put an industrial fan at the room door",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 84223,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-90a82ab4a2b8f8f6",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "10:30",
+        "evento": "I had the cabinet down to 28 degrees steady",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 84597,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 84965,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8b8ca14df77b8f89",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-RACK-A3"
+      }
+    },
+    {
+      "t_ms": 84965,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8b8ca14df77b8f89",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-RACK-A3",
+        "nombre": "Server rack cabinet A3 (network room)",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 85191,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 85334,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 85670,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 85670,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 86673,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 91674,
+      "type": "barge_in",
+      "agent_text_cut": "Understood,  A3  in  the  network  room.  I've got that service added.Let's confirm everything so far:At seven fifty, you smelled burning from the doorway. At eight fifteen, the cabinet was at thirty six degrees and the mini-split was blowing warm. At eight forty five, you put an industrial fan at the door. At ten thirty, the cabinet was steady at twenty eight degrees. And we're affecting the Server rack cabinet A3 in the network room. Is that all correct? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 91975,
+      "type": "user_turn_end",
+      "text": "That one, and the VPN also went down for a while. The outside accountants couldn't get in to pull their reports."
+    },
+    {
+      "t_ms": 91982,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 92369,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 92370,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 94072,
+      "type": "user_turn_end",
+      "text": "That was everything that was affected."
+    },
+    {
+      "t_ms": 95115,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-810d989c495d22e7",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "VPN"
+      }
+    },
+    {
+      "t_ms": 95116,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-810d989c495d22e7",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "VPN",
+        "found": [
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "score": 6
+          }
+        ],
+        "best": {
+          "id": "SRV-VPN-REMOTO",
+          "nombre": "Staff remote access VPN"
+        },
+        "confusable_warning": null,
+        "siguiente_paso": "ADD THIS service now with agregar_servicio_afectado({\"id\":\"SRV-VPN-REMOTO\"}) and read the name back."
+      }
+    },
+    {
+      "t_ms": 95477,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 95817,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-940e6bfa17a1a81e",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-VPN-REMOTO"
+      }
+    },
+    {
+      "t_ms": 95817,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-940e6bfa17a1a81e",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-VPN-REMOTO",
+        "nombre": "Staff remote access VPN",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 95817,
+      "type": "form_update",
+      "changed": [
+        "servicios_afectados"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_servicio_afectado"
+    },
+    {
+      "t_ms": 96033,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 96175,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 96470,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 96470,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 97671,
+      "type": "user_turn_end",
+      "text": "Yes, that one."
+    },
+    {
+      "t_ms": 97678,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 98172,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 98172,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 103776,
+      "type": "user_turn_end",
+      "text": "And put it down as high. If that rack had gone dark, the filings for 11 clients would have stopped. Better high."
+    },
+    {
+      "t_ms": 106819,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-99ca25ca9cdf23d1",
+      "tool": "set_severidad",
+      "args": {
+        "severidad": "high"
+      }
+    },
+    {
+      "t_ms": 106819,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-99ca25ca9cdf23d1",
+      "tool": "set_severidad",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "severidad": "high",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 106819,
+      "type": "form_update",
+      "changed": [
+        "severidad"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:set_severidad"
+    },
+    {
+      "t_ms": 107178,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 107730,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8277ca6383c53b78",
+      "tool": "set_resumen",
+      "args": {
+        "texto": "Network room overheating affected Server rack cabinet A3 and Staff remote access VPN, high severity."
+      }
+    },
+    {
+      "t_ms": 107731,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8277ca6383c53b78",
+      "tool": "set_resumen",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "campo": "resumen",
+        "caracteres": 100
+      }
+    },
+    {
+      "t_ms": 107731,
+      "type": "form_update",
+      "changed": [
+        "resumen"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "Network room overheating affected Server rack cabinet A3 and Staff remote access VPN, high severity.",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:set_resumen"
+    },
+    {
+      "t_ms": 107943,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 108086,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 108872,
+      "type": "agent_turn_end",
+      "text": "Noted.  Setting  it  to  high  severity.\n\n ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 108872,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 109473,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 111083,
+      "type": "barge_in",
+      "agent_text_cut": "Noted.  Setting  it  to  high  severity.\n\n ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 111083,
+      "type": "user_turn_end",
+      "text": "Hi, yes, note 2 follow-ups."
+    },
+    {
+      "t_ms": 111084,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 111572,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 111572,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 116474,
+      "type": "user_turn_end",
+      "text": "Have maintenance check the mini-split this same week and buy a spare industrial fan for the room."
+    },
+    {
+      "t_ms": 119519,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8e2c0238aacf76b8",
+      "tool": "agregar_action_item",
+      "args": {
+        "descripcion": "Have maintenance check the mini-split this same week"
+      }
+    },
+    {
+      "t_ms": 119519,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8e2c0238aacf76b8",
+      "tool": "agregar_action_item",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "descripcion": "Have maintenance check the mini-split this same week"
+      }
+    },
+    {
+      "t_ms": 119519,
+      "type": "form_update",
+      "changed": [
+        "action_items"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "Network room overheating affected Server rack cabinet A3 and Staff remote access VPN, high severity.",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [
+          "Have maintenance check the mini-split this same week"
+        ],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_action_item"
+    },
+    {
+      "t_ms": 119519,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8064d5697a8e171f",
+      "tool": "agregar_action_item",
+      "args": {
+        "descripcion": "Buy a spare industrial fan for the room"
+      }
+    },
+    {
+      "t_ms": 119519,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8064d5697a8e171f",
+      "tool": "agregar_action_item",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "descripcion": "Buy a spare industrial fan for the room"
+      }
+    },
+    {
+      "t_ms": 119519,
+      "type": "form_update",
+      "changed": [
+        "action_items"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "Network room overheating affected Server rack cabinet A3 and Staff remote access VPN, high severity.",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [
+          "Have maintenance check the mini-split this same week",
+          "Buy a spare industrial fan for the room"
+        ],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_action_item"
+    },
+    {
+      "t_ms": 119879,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 122875,
+      "type": "agent_turn_end",
+      "text": "Got  it.  I've  noted  those  two  follow-ups: maintenance checking the mini-split this week and buying a spare industrial fan. Before I send the report, I need to confirm a few things: At seven fifty, burning smell; at eight fifteen, rack was at thirty six degrees and mini-split was warm; at eight forty five, industrial fan placed; and at ten thirty, rack was down to twenty eight degrees. Correct? Also, I have the affected services as Server rack cabinet A3 and Staff remote access VPN, with high severity. Is that all correct? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 122875,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 122875,
+      "type": "confirm_request",
+      "field": "severidad",
+      "value": "high",
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 123377,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 124984,
+      "type": "barge_in",
+      "agent_text_cut": "Got  it.  I've  noted  those  two  follow-ups: maintenance checking the mini-split this week and buying a spare industrial fan. Before I send the report, I need to confirm a few things: At seven fifty, burning smell; at eight fifteen, rack was at thirty six degrees and mini-split was warm; at eight forty five, industrial fan placed; and at ten thirty, rack was down to twenty eight degrees. Correct? Also, I have the affected services as Server rack cabinet A3 and Staff remote access VPN, with high severity. Is that all correct? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 124985,
+      "type": "user_turn_end",
+      "text": "Send it now. I've got the next job on top of me."
+    },
+    {
+      "t_ms": 124985,
+      "type": "confirm_result",
+      "field": "severidad",
+      "value": "high",
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 124986,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 128021,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-887e74fdc7a14681",
+      "tool": "enviar_reporte",
+      "args": {}
+    },
+    {
+      "t_ms": 128021,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-887e74fdc7a14681",
+      "tool": "enviar_reporte",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "estado": "sent",
+        "resumen": {
+          "incidente_id": "IC-2002",
+          "eventos": 4,
+          "servicios": 2,
+          "servicios_confirmados": 0,
+          "action_items": 2,
+          "severidad": "high",
+          "advertencias": [
+            "servicios_sin_confirmar:SRV-RACK-A3,SRV-VPN-REMOTO"
+          ]
+        }
+      }
+    },
+    {
+      "t_ms": 128021,
+      "type": "form_update",
+      "changed": [
+        "estado"
+      ],
+      "form": {
+        "incidente_id": "IC-2002",
+        "resumen": "Network room overheating affected Server rack cabinet A3 and Staff remote access VPN, high severity.",
+        "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+        "timeline": [
+          {
+            "hora": "07:50",
+            "evento": "could already smell the burning from the doorway"
+          },
+          {
+            "hora": "08:15",
+            "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+          },
+          {
+            "hora": "08:45",
+            "evento": "I put an industrial fan at the room door"
+          },
+          {
+            "hora": "10:30",
+            "evento": "I had the cabinet down to 28 degrees steady"
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-RACK-A3",
+            "nombre": "Server rack cabinet A3 (network room)",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [
+          "Have maintenance check the mini-split this same week",
+          "Buy a spare industrial fan for the room"
+        ],
+        "severidad": "high",
+        "estado": "sent"
+      },
+      "why": "tool:enviar_reporte"
+    },
+    {
+      "t_ms": 128225,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 128368,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 132584,
+      "type": "agent_turn_end",
+      "text": "Done.  The  report  has  been  sent.  Good  luck  with  your  next  job! "
+    }
+  ],
+  "transcript": [
+    {
+      "role": "agent",
+      "text": "Good day! I've loaded incident IC-2002 for Despacho Contable Sifuentes y Asociados. Tell me calmly what happened, with times and everything, and I'll log each thing as you say it. ",
+      "t_start_ms": 1618,
+      "t_end_ms": 12889
+    },
+    {
+      "role": "user",
+      "text": "Can you hear me okay?",
+      "t_start_ms": 14167,
+      "t_end_ms": 15469
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 15470,
+      "t_end_ms": 16066
+    },
+    {
+      "role": "user",
+      "text": "I'm out of the accountant's office now. It was that network room that smelled overheated.",
+      "t_start_ms": 16066,
+      "t_end_ms": 19969
+    },
+    {
+      "role": "user",
+      "text": "Log the incident report for me before the detail slips away.",
+      "t_start_ms": 20467,
+      "t_end_ms": 23568
+    },
+    {
+      "role": "user",
+      "text": "Well, I got there around 7:50 and you could already smell the burning from the doorway.",
+      "t_start_ms": 34767,
+      "t_end_ms": 38569
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 38571,
+      "t_end_ms": 38966
+    },
+    {
+      "role": "user",
+      "text": "At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+      "t_start_ms": 38966,
+      "t_end_ms": 47571
+    },
+    {
+      "role": "agent",
+      "text": "Noted.  At  seven  fifty,  you  could  smell  the  burning  from  the  doorway,  and  at  eight  fifteen,  the  rack  cabinet  was  at  thirty  six  degrees  and  the  mini-split was blowing warm, correct? Also, regarding the cabinet, did you mean the Server rack cabinet A three in the network room, or the Server rack cabinet A eight in the telecom room? ",
+      "t_start_ms": 49003,
+      "t_end_ms": 51569
+    },
+    {
+      "role": "user",
+      "text": "Then at 8:45, I put an industrial fan at the room door.",
+      "t_start_ms": 52071,
+      "t_end_ms": 54677
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 54677,
+      "t_end_ms": 55269
+    },
+    {
+      "role": "user",
+      "text": "And around 10:30, I had the cabinet down to 28 degrees steady.",
+      "t_start_ms": 55269,
+      "t_end_ms": 58769
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 62194,
+      "t_end_ms": 62700
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 62845,
+      "t_end_ms": 63369
+    },
+    {
+      "role": "user",
+      "text": "The one that— A3, the one in the network room.",
+      "t_start_ms": 64370,
+      "t_end_ms": 66679
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 66679,
+      "t_end_ms": 67269
+    },
+    {
+      "role": "user",
+      "text": "The A8, the telecom one, never even flinched, still healthy.",
+      "t_start_ms": 67269,
+      "t_end_ms": 70570
+    },
+    {
+      "role": "agent",
+      "text": "Noted.  Affecting  Server  rack  cabinet  A3  in  the  network  room,  correct? \n\n Also,  confirming  the  timeline:at seven fifty, burning smell at the doorway; at eight fifteen, Rack 3 was thirty-six degrees and the mini-split was blowing warm; at eight forty-five, you put an industrial fan at the door; at ten thirty, the cabinet was down to twenty-eight degrees, correct? ",
+      "t_start_ms": 73985,
+      "t_end_ms": 75769
+    },
+    {
+      "role": "user",
+      "text": "The one in the network room.",
+      "t_start_ms": 76271,
+      "t_end_ms": 77178
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 77179,
+      "t_end_ms": 77571
+    },
+    {
+      "role": "user",
+      "text": "I never touched A8. I'm telling you that one is healthy.",
+      "t_start_ms": 77571,
+      "t_end_ms": 81172
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 84597,
+      "t_end_ms": 85191
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 85334,
+      "t_end_ms": 85670
+    },
+    {
+      "role": "user",
+      "text": "That one, and the VPN also went down for a while. The outside accountants couldn't get in to pull their reports.",
+      "t_start_ms": 86673,
+      "t_end_ms": 91975
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 91982,
+      "t_end_ms": 92369
+    },
+    {
+      "role": "user",
+      "text": "That was everything that was affected.",
+      "t_start_ms": 92370,
+      "t_end_ms": 94072
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 95477,
+      "t_end_ms": 96032
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 96175,
+      "t_end_ms": 96470
+    },
+    {
+      "role": "user",
+      "text": "Yes, that one.",
+      "t_start_ms": 96470,
+      "t_end_ms": 97671
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 97678,
+      "t_end_ms": 98172
+    },
+    {
+      "role": "user",
+      "text": "And put it down as high. If that rack had gone dark, the filings for 11 clients would have stopped. Better high.",
+      "t_start_ms": 98172,
+      "t_end_ms": 103776
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 107178,
+      "t_end_ms": 107943
+    },
+    {
+      "role": "agent",
+      "text": "Noted.  Setting  it  to  high  severity.\n\n ",
+      "t_start_ms": 108086,
+      "t_end_ms": 108872
+    },
+    {
+      "role": "user",
+      "text": "Hi, yes, note 2 follow-ups.",
+      "t_start_ms": 109473,
+      "t_end_ms": 111083
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 111084,
+      "t_end_ms": 111572
+    },
+    {
+      "role": "user",
+      "text": "Have maintenance check the mini-split this same week and buy a spare industrial fan for the room.",
+      "t_start_ms": 111572,
+      "t_end_ms": 116474
+    },
+    {
+      "role": "agent",
+      "text": "Got  it.  I've  noted  those  two  follow-ups: maintenance checking the mini-split this week and buying a spare industrial fan. Before I send the report, I need to confirm a few things: At seven fifty, burning smell; at eight fifteen, rack was at thirty six degrees and mini-split was warm; at eight forty five, industrial fan placed; and at ten thirty, rack was down to twenty eight degrees. Correct? Also, I have the affected services as Server rack cabinet A3 and Staff remote access VPN, with high severity. Is that all correct? ",
+      "t_start_ms": 119879,
+      "t_end_ms": 122875
+    },
+    {
+      "role": "user",
+      "text": "Send it now. I've got the next job on top of me.",
+      "t_start_ms": 123377,
+      "t_end_ms": 124985
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 124986,
+      "t_end_ms": 128225
+    },
+    {
+      "role": "agent",
+      "text": "Done.  The  report  has  been  sent.  Good  luck  with  your  next  job! ",
+      "t_start_ms": 128368,
+      "t_end_ms": 132584
+    }
+  ],
+  "final_form": {
+    "incidente_id": "IC-2002",
+    "resumen": "Network room overheating affected Server rack cabinet A3 and Staff remote access VPN, high severity.",
+    "que_paso": "I got there around 7:50 and you could already smell the burning from the doorway. At 8:15, the Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm. I serviced it, cleaned the filters, and nothing.",
+    "timeline": [
+      {
+        "hora": "07:50",
+        "evento": "could already smell the burning from the doorway"
+      },
+      {
+        "hora": "08:15",
+        "evento": "Rack 3 cabinet was reading 36 degrees and the mini-split was only blowing warm"
+      },
+      {
+        "hora": "08:45",
+        "evento": "I put an industrial fan at the room door"
+      },
+      {
+        "hora": "10:30",
+        "evento": "I had the cabinet down to 28 degrees steady"
+      }
+    ],
+    "servicios_afectados": [
+      {
+        "id": "SRV-RACK-A3",
+        "nombre": "Server rack cabinet A3 (network room)",
+        "afectados": null,
+        "confirmado": false
+      },
+      {
+        "id": "SRV-VPN-REMOTO",
+        "nombre": "Staff remote access VPN",
+        "afectados": null,
+        "confirmado": false
+      }
+    ],
+    "action_items": [
+      "Have maintenance check the mini-split this same week",
+      "Buy a spare industrial fan for the room"
+    ],
+    "severidad": "high",
+    "estado": "sent"
+  }
+}

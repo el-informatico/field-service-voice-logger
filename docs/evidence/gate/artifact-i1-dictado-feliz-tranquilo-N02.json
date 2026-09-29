@@ -1,0 +1,1516 @@
+{
+  "schema_version": 1,
+  "session_id": "gate_N02_mun83oyd",
+  "scenario_id": "i1-dictado-feliz",
+  "mode": "real",
+  "order_id": "IC-2003",
+  "started_at": "2026-09-29T22:03:31.478Z",
+  "ended_at": "2026-09-29T22:06:03.539Z",
+  "audio_retained": false,
+  "turn_detection": {
+    "vad_threshold": 0.4,
+    "interrupt_response": true,
+    "interruption_delay": 0,
+    "transcription_mode": "balanced",
+    "voice_focus": null,
+    "label": "N02",
+    "reason": "completed"
+  },
+  "noise_condition": "tranquilo",
+  "events": [
+    {
+      "t_ms": 1548,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 13049,
+      "type": "agent_turn_end",
+      "text": "Good day! I've loaded incident IC-2003 for Envíos y Mensajería Kimsa. Tell me calmly what happened, with times and everything, and I'll log each thing as you say it. "
+    },
+    {
+      "t_ms": 14378,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 15685,
+      "type": "user_turn_end",
+      "text": "Can you hear me okay?"
+    },
+    {
+      "t_ms": 15685,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 16180,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 16180,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 23184,
+      "type": "user_turn_end",
+      "text": "Okay, I'm on my way out in the van. Just finished the network job at Kimsa. Help me out with the incident report, alright?"
+    },
+    {
+      "t_ms": 32781,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 34384,
+      "type": "user_turn_end",
+      "text": "Well, the outage started early."
+    },
+    {
+      "t_ms": 34384,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 34983,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 34983,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 40183,
+      "type": "user_turn_end",
+      "text": "Around 8:50, reception called me that there was no internet in the whole office, no IP phones either."
+    },
+    {
+      "t_ms": 40680,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 45683,
+      "type": "user_turn_end",
+      "text": "I went in to check and the core switch wasn't responding, the status LED just stayed orange."
+    },
+    {
+      "t_ms": 46720,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-a2032c8e68802f6e",
+      "tool": "set_que_paso",
+      "args": {
+        "texto": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange."
+      }
+    },
+    {
+      "t_ms": 46721,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-a2032c8e68802f6e",
+      "tool": "set_que_paso",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "campo": "que_paso",
+        "caracteres": 220
+      }
+    },
+    {
+      "t_ms": 46721,
+      "type": "form_update",
+      "changed": [
+        "que_paso"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:set_que_paso"
+    },
+    {
+      "t_ms": 46945,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-96b1aa798a45a80e",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "reception called me that there was no internet in the whole office, no IP phones either",
+        "hora": "08:50"
+      }
+    },
+    {
+      "t_ms": 46945,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-96b1aa798a45a80e",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "08:50",
+        "evento": "reception called me that there was no internet in the whole office, no IP phones either",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 46945,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 47335,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 49882,
+      "type": "agent_turn_end",
+      "text": "Noted.  At  eight  fifty,  reception  called  about  the  internet  and  IP  phones  being  down,  correct?  Please  continue  with  the  rest. ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 49882,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 50386,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 53289,
+      "type": "barge_in",
+      "agent_text_cut": "Noted.  At  eight  fifty,  reception  called  about  the  internet  and  IP  phones  being  down,  correct?  Please  continue  with  the  rest. ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 53290,
+      "type": "user_turn_end",
+      "text": "The reception call was at 8:50. Log that one first."
+    },
+    {
+      "t_ms": 53290,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 61472,
+      "type": "agent_turn_end",
+      "text": "I  already  logged  that  event  for  eight  fifty,  correct?  Please  continue  with  what  happened  next. "
+    },
+    {
+      "t_ms": 62882,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 63184,
+      "type": "user_turn_end",
+      "text": "That's it."
+    },
+    {
+      "t_ms": 63184,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 64081,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 64081,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 69785,
+      "type": "user_turn_end",
+      "text": "Then around 9:15, I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer."
+    },
+    {
+      "t_ms": 70823,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8ed3b7cc12849fa9",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer",
+        "hora": "09:15"
+      }
+    },
+    {
+      "t_ms": 70823,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8ed3b7cc12849fa9",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "09:15",
+        "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 70823,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 71203,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 73084,
+      "type": "agent_turn_end",
+      "text": "Noted.  At  nine  fifteen,  you  pinned  it  to  the  core  switch  after  testing  with  the  diagnostic  kit,  correct? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 73084,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 73084,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-DNS-INTERNO"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 73584,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 75191,
+      "type": "barge_in",
+      "agent_text_cut": "Noted.  At  nine  fifteen,  you  pinned  it  to  the  core  switch  after  testing  with  the  diagnostic  kit,  correct? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 75191,
+      "type": "user_turn_end",
+      "text": "I put in the new spare switch I had with me."
+    },
+    {
+      "t_ms": 75191,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 75191,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-DNS-INTERNO"
+      },
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 75682,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 75682,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 79384,
+      "type": "user_turn_end",
+      "text": "And by 10:20, I had the whole network back up, email and phones."
+    },
+    {
+      "t_ms": 80427,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-b18d986b0b965ed4",
+      "tool": "agregar_evento_timeline",
+      "args": {
+        "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones.",
+        "hora": "10:20"
+      }
+    },
+    {
+      "t_ms": 80427,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-b18d986b0b965ed4",
+      "tool": "agregar_evento_timeline",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "hora": "10:20",
+        "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones.",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 80427,
+      "type": "form_update",
+      "changed": [
+        "timeline"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_evento_timeline"
+    },
+    {
+      "t_ms": 80799,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 82783,
+      "type": "agent_turn_end",
+      "text": "Noted.  At  ten  twenty,  the  network  was  back  up,  including  email  and  phones,  correct? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 82783,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 82783,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-DNS-INTERNO"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 83283,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 84891,
+      "type": "barge_in",
+      "agent_text_cut": "Noted.  At  ten  twenty,  the  network  was  back  up,  including  email  and  phones,  correct? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 84892,
+      "type": "user_turn_end",
+      "text": "DNS went down. That was the first one."
+    },
+    {
+      "t_ms": 84892,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-DNS-INTERNO"
+      },
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 84893,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 85384,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 85384,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 90489,
+      "type": "user_turn_end",
+      "text": "And the VPN too, because the delivery crew couldn't get into the system from the street."
+    },
+    {
+      "t_ms": 91529,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-92e3916209892f13",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "DNS"
+      }
+    },
+    {
+      "t_ms": 91532,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-92e3916209892f13",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "DNS",
+        "found": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "score": 6
+          }
+        ],
+        "best": {
+          "id": "SRV-DNS-INTERNO",
+          "nombre": "Internal office DNS server"
+        },
+        "confusable_warning": null,
+        "siguiente_paso": "ADD THIS service now with agregar_servicio_afectado({\"id\":\"SRV-DNS-INTERNO\"}) and read the name back."
+      }
+    },
+    {
+      "t_ms": 91532,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-bdf496de6542ef80",
+      "tool": "buscar_servicio",
+      "args": {
+        "consulta": "VPN"
+      }
+    },
+    {
+      "t_ms": 91534,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-bdf496de6542ef80",
+      "tool": "buscar_servicio",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "consulta": "VPN",
+        "found": [
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "score": 6
+          }
+        ],
+        "best": {
+          "id": "SRV-VPN-REMOTO",
+          "nombre": "Staff remote access VPN"
+        },
+        "confusable_warning": null,
+        "siguiente_paso": "ADD THIS service now with agregar_servicio_afectado({\"id\":\"SRV-VPN-REMOTO\"}) and read the name back."
+      }
+    },
+    {
+      "t_ms": 91898,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 92284,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-84b99b13bfd0bbaf",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-DNS-INTERNO"
+      }
+    },
+    {
+      "t_ms": 92285,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-84b99b13bfd0bbaf",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-DNS-INTERNO",
+        "nombre": "Internal office DNS server",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 92285,
+      "type": "form_update",
+      "changed": [
+        "servicios_afectados"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_servicio_afectado"
+    },
+    {
+      "t_ms": 92350,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-ae9e19000c9116d5",
+      "tool": "agregar_servicio_afectado",
+      "args": {
+        "id": "SRV-VPN-REMOTO"
+      }
+    },
+    {
+      "t_ms": 92350,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-ae9e19000c9116d5",
+      "tool": "agregar_servicio_afectado",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "id": "SRV-VPN-REMOTO",
+        "nombre": "Staff remote access VPN",
+        "afectados": null,
+        "confirmado": false,
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 92350,
+      "type": "form_update",
+      "changed": [
+        "servicios_afectados"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": null,
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_servicio_afectado"
+    },
+    {
+      "t_ms": 92572,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 92716,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 93184,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 93184,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 94086,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 94684,
+      "type": "barge_in",
+      "agent_text_cut": "I've  noted  those.  So,  we  have  the  Internal  office  DNS  server  and  the  Staff  remote  access  VPN  affected,  correct? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 94685,
+      "type": "user_turn_end",
+      "text": "Yes, that's correct."
+    },
+    {
+      "t_ms": 94685,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 105594,
+      "type": "agent_turn_end",
+      "text": "Noted.  So,  I  have  the  Internal  office  DNS  server  and  the  Staff  remote  access  VPN.  Correct? "
+    },
+    {
+      "t_ms": 105594,
+      "type": "confirm_request",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-DNS-INTERNO"
+      },
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 106883,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 108086,
+      "type": "user_turn_end",
+      "text": "Put it down as high."
+    },
+    {
+      "t_ms": 108086,
+      "type": "confirm_result",
+      "field": "servicio",
+      "value": {
+        "id": "SRV-DNS-INTERNO"
+      },
+      "confirmed": false,
+      "derived": "transcript"
+    },
+    {
+      "t_ms": 108089,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 108584,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 108584,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 112489,
+      "type": "user_turn_end",
+      "text": "They went about an hour and a half without invoicing or shipping. That hurt."
+    },
+    {
+      "t_ms": 115532,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8e54b079c82dc1a9",
+      "tool": "set_severidad",
+      "args": {
+        "severidad": "high"
+      }
+    },
+    {
+      "t_ms": 115532,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8e54b079c82dc1a9",
+      "tool": "set_severidad",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "severidad": "high",
+        "requiere_read_back": true
+      }
+    },
+    {
+      "t_ms": 115532,
+      "type": "form_update",
+      "changed": [
+        "severidad"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:set_severidad"
+    },
+    {
+      "t_ms": 115904,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 117784,
+      "type": "agent_turn_end",
+      "text": "Noting  high  severity,  correct?  Any  follow-ups or pending items to add before I finish this up? ",
+      "interrupted": true
+    },
+    {
+      "t_ms": 117784,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 118085,
+      "type": "user_turn_end",
+      "text": "Right."
+    },
+    {
+      "t_ms": 118686,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 119185,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 120091,
+      "type": "barge_in",
+      "agent_text_cut": "Noting  high  severity,  correct?  Any  follow-ups or pending items to add before I finish this up? ",
+      "user_text": "",
+      "latency_ms": null
+    },
+    {
+      "t_ms": 120093,
+      "type": "user_turn_end",
+      "text": "And leave 2 follow-ups."
+    },
+    {
+      "t_ms": 120094,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 120887,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 120887,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 126087,
+      "type": "user_turn_end",
+      "text": "Get me another spare switch to keep in the van and tell the systems lead when they do the node maintenance."
+    },
+    {
+      "t_ms": 129130,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-a91884e047f402fb",
+      "tool": "agregar_action_item",
+      "args": {
+        "descripcion": "Tell the systems lead when they do the node maintenance"
+      }
+    },
+    {
+      "t_ms": 129130,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-a91884e047f402fb",
+      "tool": "agregar_action_item",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "descripcion": "Tell the systems lead when they do the node maintenance"
+      }
+    },
+    {
+      "t_ms": 129130,
+      "type": "form_update",
+      "changed": [
+        "action_items"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [
+          "Tell the systems lead when they do the node maintenance"
+        ],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_action_item"
+    },
+    {
+      "t_ms": 129339,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-86acea64e53f52ea",
+      "tool": "agregar_action_item",
+      "args": {
+        "descripcion": "Get another spare switch to keep in the van"
+      }
+    },
+    {
+      "t_ms": 129339,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-86acea64e53f52ea",
+      "tool": "agregar_action_item",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "descripcion": "Get another spare switch to keep in the van"
+      }
+    },
+    {
+      "t_ms": 129339,
+      "type": "form_update",
+      "changed": [
+        "action_items"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [
+          "Tell the systems lead when they do the node maintenance",
+          "Get another spare switch to keep in the van"
+        ],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:agregar_action_item"
+    },
+    {
+      "t_ms": 129690,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 130348,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-8918496ae0c3c52d",
+      "tool": "set_resumen",
+      "args": {
+        "texto": "Network outage caused by core switch failure; Internal office DNS and Staff remote access VPN affected, high severity."
+      }
+    },
+    {
+      "t_ms": 130348,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-8918496ae0c3c52d",
+      "tool": "set_resumen",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "campo": "resumen",
+        "caracteres": 118
+      }
+    },
+    {
+      "t_ms": 130348,
+      "type": "form_update",
+      "changed": [
+        "resumen"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "Network outage caused by core switch failure; Internal office DNS and Staff remote access VPN affected, high severity.",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [
+          "Tell the systems lead when they do the node maintenance",
+          "Get another spare switch to keep in the van"
+        ],
+        "severidad": "high",
+        "estado": "in_progress"
+      },
+      "why": "tool:set_resumen"
+    },
+    {
+      "t_ms": 130565,
+      "type": "agent_turn_end",
+      "text": ""
+    },
+    {
+      "t_ms": 130709,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 130786,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 130786,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 131688,
+      "type": "user_turn_end",
+      "text": "That's fine."
+    },
+    {
+      "t_ms": 131691,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 132484,
+      "type": "agent_turn_end",
+      "text": "",
+      "interrupted": true
+    },
+    {
+      "t_ms": 132484,
+      "type": "user_turn_start"
+    },
+    {
+      "t_ms": 134488,
+      "type": "user_turn_end",
+      "text": "Send it now. I've got another job waiting."
+    },
+    {
+      "t_ms": 137530,
+      "type": "tool_call",
+      "call_id": "chatcmpl-tool-a6631455b0dc81c2",
+      "tool": "enviar_reporte",
+      "args": {}
+    },
+    {
+      "t_ms": 137530,
+      "type": "tool_result",
+      "call_id": "chatcmpl-tool-a6631455b0dc81c2",
+      "tool": "enviar_reporte",
+      "ok": true,
+      "result": {
+        "ok": true,
+        "estado": "sent",
+        "resumen": {
+          "incidente_id": "IC-2003",
+          "eventos": 3,
+          "servicios": 2,
+          "servicios_confirmados": 0,
+          "action_items": 2,
+          "severidad": "high",
+          "advertencias": [
+            "servicios_sin_confirmar:SRV-DNS-INTERNO,SRV-VPN-REMOTO"
+          ]
+        }
+      }
+    },
+    {
+      "t_ms": 137530,
+      "type": "form_update",
+      "changed": [
+        "estado"
+      ],
+      "form": {
+        "incidente_id": "IC-2003",
+        "resumen": "Network outage caused by core switch failure; Internal office DNS and Staff remote access VPN affected, high severity.",
+        "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+        "timeline": [
+          {
+            "hora": "08:50",
+            "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+          },
+          {
+            "hora": "09:15",
+            "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+          },
+          {
+            "hora": "10:20",
+            "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+          }
+        ],
+        "servicios_afectados": [
+          {
+            "id": "SRV-DNS-INTERNO",
+            "nombre": "Internal office DNS server",
+            "afectados": null,
+            "confirmado": false
+          },
+          {
+            "id": "SRV-VPN-REMOTO",
+            "nombre": "Staff remote access VPN",
+            "afectados": null,
+            "confirmado": false
+          }
+        ],
+        "action_items": [
+          "Tell the systems lead when they do the node maintenance",
+          "Get another spare switch to keep in the van"
+        ],
+        "severidad": "high",
+        "estado": "sent"
+      },
+      "why": "tool:enviar_reporte"
+    },
+    {
+      "t_ms": 137870,
+      "type": "agent_turn_start"
+    },
+    {
+      "t_ms": 141165,
+      "type": "agent_turn_end",
+      "text": "Report  sent.  Good  luck  with  your  next  job! "
+    }
+  ],
+  "transcript": [
+    {
+      "role": "agent",
+      "text": "Good day! I've loaded incident IC-2003 for Envíos y Mensajería Kimsa. Tell me calmly what happened, with times and everything, and I'll log each thing as you say it. ",
+      "t_start_ms": 1548,
+      "t_end_ms": 13049
+    },
+    {
+      "role": "user",
+      "text": "Can you hear me okay?",
+      "t_start_ms": 14378,
+      "t_end_ms": 15685
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 15685,
+      "t_end_ms": 16180
+    },
+    {
+      "role": "user",
+      "text": "Okay, I'm on my way out in the van. Just finished the network job at Kimsa. Help me out with the incident report, alright?",
+      "t_start_ms": 16180,
+      "t_end_ms": 23184
+    },
+    {
+      "role": "user",
+      "text": "Well, the outage started early.",
+      "t_start_ms": 32781,
+      "t_end_ms": 34384
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 34384,
+      "t_end_ms": 34983
+    },
+    {
+      "role": "user",
+      "text": "Around 8:50, reception called me that there was no internet in the whole office, no IP phones either.",
+      "t_start_ms": 34983,
+      "t_end_ms": 40183
+    },
+    {
+      "role": "user",
+      "text": "I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+      "t_start_ms": 40680,
+      "t_end_ms": 45683
+    },
+    {
+      "role": "agent",
+      "text": "Noted.  At  eight  fifty,  reception  called  about  the  internet  and  IP  phones  being  down,  correct?  Please  continue  with  the  rest. ",
+      "t_start_ms": 47335,
+      "t_end_ms": 49882
+    },
+    {
+      "role": "user",
+      "text": "The reception call was at 8:50. Log that one first.",
+      "t_start_ms": 50386,
+      "t_end_ms": 53290
+    },
+    {
+      "role": "agent",
+      "text": "I  already  logged  that  event  for  eight  fifty,  correct?  Please  continue  with  what  happened  next. ",
+      "t_start_ms": 53290,
+      "t_end_ms": 61472
+    },
+    {
+      "role": "user",
+      "text": "That's it.",
+      "t_start_ms": 62882,
+      "t_end_ms": 63184
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 63184,
+      "t_end_ms": 64081
+    },
+    {
+      "role": "user",
+      "text": "Then around 9:15, I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer.",
+      "t_start_ms": 64081,
+      "t_end_ms": 69785
+    },
+    {
+      "role": "agent",
+      "text": "Noted.  At  nine  fifteen,  you  pinned  it  to  the  core  switch  after  testing  with  the  diagnostic  kit,  correct? ",
+      "t_start_ms": 71203,
+      "t_end_ms": 73084
+    },
+    {
+      "role": "user",
+      "text": "I put in the new spare switch I had with me.",
+      "t_start_ms": 73584,
+      "t_end_ms": 75191
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 75191,
+      "t_end_ms": 75682
+    },
+    {
+      "role": "user",
+      "text": "And by 10:20, I had the whole network back up, email and phones.",
+      "t_start_ms": 75682,
+      "t_end_ms": 79384
+    },
+    {
+      "role": "agent",
+      "text": "Noted.  At  ten  twenty,  the  network  was  back  up,  including  email  and  phones,  correct? ",
+      "t_start_ms": 80799,
+      "t_end_ms": 82783
+    },
+    {
+      "role": "user",
+      "text": "DNS went down. That was the first one.",
+      "t_start_ms": 83283,
+      "t_end_ms": 84892
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 84893,
+      "t_end_ms": 85384
+    },
+    {
+      "role": "user",
+      "text": "And the VPN too, because the delivery crew couldn't get into the system from the street.",
+      "t_start_ms": 85384,
+      "t_end_ms": 90489
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 91898,
+      "t_end_ms": 92572
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 92716,
+      "t_end_ms": 93184
+    },
+    {
+      "role": "user",
+      "text": "Yes, that's correct.",
+      "t_start_ms": 94086,
+      "t_end_ms": 94685
+    },
+    {
+      "role": "agent",
+      "text": "Noted.  So,  I  have  the  Internal  office  DNS  server  and  the  Staff  remote  access  VPN.  Correct? ",
+      "t_start_ms": 94685,
+      "t_end_ms": 105594
+    },
+    {
+      "role": "user",
+      "text": "Put it down as high.",
+      "t_start_ms": 106883,
+      "t_end_ms": 108086
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 108089,
+      "t_end_ms": 108584
+    },
+    {
+      "role": "user",
+      "text": "They went about an hour and a half without invoicing or shipping. That hurt.",
+      "t_start_ms": 108584,
+      "t_end_ms": 112489
+    },
+    {
+      "role": "agent",
+      "text": "Noting  high  severity,  correct?  Any  follow-ups or pending items to add before I finish this up? ",
+      "t_start_ms": 115904,
+      "t_end_ms": 117784
+    },
+    {
+      "role": "user",
+      "text": "Right.",
+      "t_start_ms": 117784,
+      "t_end_ms": 118085
+    },
+    {
+      "role": "user",
+      "text": "And leave 2 follow-ups.",
+      "t_start_ms": 119185,
+      "t_end_ms": 120093
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 120094,
+      "t_end_ms": 120887
+    },
+    {
+      "role": "user",
+      "text": "Get me another spare switch to keep in the van and tell the systems lead when they do the node maintenance.",
+      "t_start_ms": 120887,
+      "t_end_ms": 126087
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 129690,
+      "t_end_ms": 130565
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 130709,
+      "t_end_ms": 130786
+    },
+    {
+      "role": "user",
+      "text": "That's fine.",
+      "t_start_ms": 130786,
+      "t_end_ms": 131688
+    },
+    {
+      "role": "agent",
+      "text": "",
+      "t_start_ms": 131691,
+      "t_end_ms": 132484
+    },
+    {
+      "role": "user",
+      "text": "Send it now. I've got another job waiting.",
+      "t_start_ms": 132484,
+      "t_end_ms": 134488
+    },
+    {
+      "role": "agent",
+      "text": "Report  sent.  Good  luck  with  your  next  job! ",
+      "t_start_ms": 137870,
+      "t_end_ms": 141165
+    }
+  ],
+  "final_form": {
+    "incidente_id": "IC-2003",
+    "resumen": "Network outage caused by core switch failure; Internal office DNS and Staff remote access VPN affected, high severity.",
+    "que_paso": "the outage started early. Around 8:50, reception called me that there was no internet in the whole office, no IP phones either. I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
+    "timeline": [
+      {
+        "hora": "08:50",
+        "evento": "reception called me that there was no internet in the whole office, no IP phones either"
+      },
+      {
+        "hora": "09:15",
+        "evento": "I had it pinned to the core switch because I tested it with the diagnostic kit and it wouldn't answer"
+      },
+      {
+        "hora": "10:20",
+        "evento": "I put in the new spare switch I had with me. And by 10:20, I had the whole network back up, email and phones."
+      }
+    ],
+    "servicios_afectados": [
+      {
+        "id": "SRV-DNS-INTERNO",
+        "nombre": "Internal office DNS server",
+        "afectados": null,
+        "confirmado": false
+      },
+      {
+        "id": "SRV-VPN-REMOTO",
+        "nombre": "Staff remote access VPN",
+        "afectados": null,
+        "confirmado": false
+      }
+    ],
+    "action_items": [
+      "Tell the systems lead when they do the node maintenance",
+      "Get another spare switch to keep in the van"
+    ],
+    "severidad": "high",
+    "estado": "sent"
+  }
+}

@@ -371,6 +371,89 @@ disciplina de tool calls, no de escucha.
   R5c/R5d.json` (patrón existente, fuera de git).
 - Coste: 6 sesiones reales nuevas (R4a, R4b, R5a–R5d) ≈ $1.5 USD.
 
+## METRICS-N10-EN (2026-09-29) — N=10 sesiones reales EN, prompt v4-en CONGELADO
+
+Protocolo idéntico al ES (realgate incident, ambiente tranquilo, vad 0.4,
+idelay 0, tmode balanced), wavs operador Brian (`en-US-BrianMultilingualNeural`),
+agente `alba`. Composición: i1×3 (N01–N03), i2×3 (N04–N06), i3×2 (N07–N08),
+i4×2 (N09–N10). Prompt v4-en (WP3) SIN iteraciones — decisión de congelado
+abajo. Artefactos de las 10 sesiones + los 2 takes del gate WP7 comprometidos
+en `docs/evidence/gate/` (los 12 JSON son parseables y reproducen la tabla con
+`node scripts/n10-table.mjs docs/evidence/gate/artifact-*-N*.json`).
+
+### Tabla N=10 EN (agregados, `scripts/n10-table.mjs`)
+| métrica | valor EN (N=10) | valor ES (N=10, referencia) |
+|---|---|---|
+| Turn completion | 9–11 de 9–11 por sesión (100%, 10/10 sesiones) | 7–10 de 9–11 |
+| WER emparejado (pooled) | **0.685** (rango 0.440–0.845, 2443 palabras) | 0.231 (0.164–0.382) |
+| EOS→tool p50/p95 | 3031 / 3479 ms (73 turnos) | 1554 / 4810 ms |
+| Severidad exacta | **9/10** | 6/10 |
+| Servicios P / R | **100% (18 TP/0 FP) / 100% (0 FN)** | 100% (12 TP/0 FP) / 70.6% (5 FN) |
+| Timeline hora exacta | **28 TP / 7 FN (80.0%)** | 19/35 (54.3%) |
+| Timeline estricto (sim≥0.6) | 0 TP / 30 FP / 35 FN | 0 TP (misma política D4) |
+| Action items recall | 60.0% (12/20) | — |
+| Confirm precision | 71.0% (31 read-backs; 22 correcciones, 9 falsas alarmas, 2 rescatados) | 62.1% (29) |
+
+Por sesión: N01 10/10 0.586 · N02 10/10 0.845 · N03 10/10 0.664 · N04 11/11
+0.812 · N05 11/11 0.801 · N06 11/11 0.785 · N07 11/11 0.474 · N08 11/11 0.440
+· N09 9/9 0.738 · N10 9/9 0.661 (turnos completados / total, matched-WER).
+Las 10 sesiones terminan `enviada` (enviar_reporte OK — el cierre del rig ya
+no mata el reply final, fix del 28-sep).
+
+### El WER 0.685 es un artefacto de segmentación VAD, no de ASR (evidencia)
+1. **Cobertura de palabras**: cada sesión transcribe 0.85–0.96× las palabras
+   del GT con transcripciones limpias — el ASR escucha casi todo.
+2. **Régimen de segmentos**: EN produce 17–23 items de transcript por sesión
+   para 9–11 turnos de guion (≈2:1 — las pausas intra-turno de los wavs Brian
+   parten cada turno en ~2 hipótesis); el control ES (artefactos R6a/R5b/R3a/
+   R5d) da 5–12 items (≈1:1). El matcher greedy empareja un item por turno;
+   la mitad no emparejada cuenta como deleciones → WER inflado.
+3. **Invariancia al prompt**: la partición de segmentos la decide el VAD del
+   server (umbral 0.4, idéntico al baseline ES por identidad de protocolo),
+   antes de que el prompt intervenga. Ninguna iteración de prompt lo mueve
+   (lección v3→v4 ES: el WER no se movió de 0.231 cuando el fix fue
+   disciplina de tool calls).
+Subir `--vad` mejoraría el número Y rompería la identidad de protocolo con el
+baseline ES — descartado como metric-gaming. El 0.685 se publica con este
+caveat; la métrica de escucha honesta aquí es la cobertura de palabras.
+
+### Congelado del prompt (criterio de parada R1, plan l.249)
+Precisión de servicios 100% ≥ 80% ✓ (criterio verde); WER 0.685 > 0.40 pero
+no addressable por prompt (arriba). **Decisión: 0 iteraciones de prompt,
+v4-en congelado**, se publica lo logrado con números reales (rama "publicar
+lo logrado" del criterio; R2 N=5 queda disponible si se prefiere el framing
+de cross-check). Todas las métricas de comportamiento del prompt están
+verdes: turn completion 100%, severidad 9/10, servicios 100/100, timeline
+hora 80%, confirm 71%, y las 10 sesiones cierran `enviada`.
+
+### Gate WP7 (sesión real EN, 2/2 takes con ≥1/2 rescates) — VERDE
+- W7T1/T2 (annulados como evidencia): el server dejó de emitir el par
+  `input.speech.started`/`transcript.user` tras barge-ins ("VAD mudo") y el
+  artifact perdía los turnos user finales → la cadena §4.1 quedaba
+  invisible aunque el agente SÍ escuchó (tools y fichas correctas).
+- Fix `scripts/realgate.mjs` (commit `805fed2`, driver-only, engine intacto):
+  síntesis de la apertura de turno faltante + log crudo del WS
+  (`raw-<guion>-<ruido>-<label>.ndjson` en `.data/gate/`, local). Validado en
+  mesa (4/4 textos) + smoke 4/4 + selftest ANTES de gastar API.
+- W7T3 **2/2** (rescate prod↔staging + corrección sev medium→high, cadena
+  transcript+ficha+evento tool completa) · W7T4 **1/2** (sev medium→high).
+  Gate: 2/2 takes con ≥1/2 → VERDE.
+
+### Débil residual EN (documentado)
+1. N08: severidad nunca seteada (GT medium) pese a sesión completa — varianza
+   del agente ante 8 barge-ins; se publica como está (re-correr para
+   cherry-pick sesgaría la tabla).
+2. Timeline estricto 0 TP (textos escuetos vs GT, misma política D4 que ES).
+3. EOS→tool p50 3031 vs 1554 ms ES: el prompt EN (few-shots de horas,
+   narrativa multi-dato) hace turnos de agente más largos antes del tool;
+   sin objetivo del plan, documentado.
+4. La derivación de confirmaciones subcuenta rescates igual que en ES
+   (respuestas con contenido vs sí/no).
+
+### Presupuesto
+G1-b $0.63 + WP7 4 takes $0.88 + N=10 $2.1 ≈ **$3.6 de $8** (teche compartido).
+Sin iteraciones de prompt → $4.4 restantes intactos para R2/contingencia.
+
 ## SUBMISSION-READINESS (2026-09-16) — pack de submit completo; gates restantes: revisión humana del video + push
 
 Meta: día del submit = ejecución pura (objetivo 28-sep; cierre 30-sep 15:00
