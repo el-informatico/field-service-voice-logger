@@ -520,7 +520,7 @@ async function doSendFsm() {
     line('err', 'Cannot send to FSM: artifact has no session_id.');
     return;
   }
-  line('info', `Sending order ${orderId} to FSM…`);
+  line('info', `Sending ${ff.incidente_id ? 'incident' : 'order'} ${orderId} to FSM…`);
   let res;
   try {
     res = await fetch('/api/fsm/report', {
