@@ -90,6 +90,12 @@ reaches the browser; audio never persisted — transcript + tool events only.
 
 ## Production notes
 
+> **SUPERSEDED (números):** esta lista es de la era N=5. El master v5 (3:40)
+> habla los números de la tabla **ES N=10** — el check-off verbatim de lo que
+> aparece en pantalla vive en `docs/VIDEO-REVIEW-GUIDE.md` §"Check-off
+> visual". El README actual publica la tabla EN N=10 como primaria y la ES
+> como subsección "Development evidence".
+
 - Numbers cited (must match README if table updates): N=5 real sessions;
   turn completion 8–10/10–11; matched-WER 0.231 (0.164–0.382); tool-call
   latency p50 1,775 ms / p95 6,192 ms; services precision 100% / recall 37.5%;
