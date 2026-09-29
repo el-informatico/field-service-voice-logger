@@ -1,6 +1,6 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — nivel L1 en `en-migration`, aún sin push; master de video vigente = v4 3:39 con QA visual aprobado; corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + tabla N=10 EN + subida de videos + submit).
+Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — **nivel L3** en `en-migration` — swap aplicado: tabla EN N=10 primaria, ES → "development evidence" — aún sin push; master de video vigente = **v5 EN 3:40** (sha `705e8022…`, QA visual aprobado; el v4 `8adfea08…` queda descartado — no subir); corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + subida de videos + submit).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
@@ -497,7 +497,7 @@ Commits del bloque (lógicos): C1 textos+checklist · C2 guías de video · C3
 auditoría+fixes de STATUS · C4 este bloque. Verde final verificado:
 `npm run selftest` + `npm run smoke:mock`.
 
-## EN-REWRITE (2026-09-29) — build EN mergeada y desplegada; docs de submit a EN (nivel L1); gates: push de docs + tabla N=10 EN + submit
+## EN-REWRITE (2026-09-29) — build EN mergeada y desplegada; docs de submit a EN (nivel L3 — tabla EN primaria); gates: push de docs + subida de videos + submit
 
 - **Merge + deploy**: la build EN del dominio incidente vive en `main`
   (push 29-sep ~14:08 Lima, `5b2ea9f`); demo pública verificada en inglés
@@ -505,12 +505,15 @@ auditoría+fixes de STATUS · C4 este bloque. Verde final verificado:
 - **Docs de submit a EN**: paquete nivel L1 aplicado sobre `en-migration`
   (`7bbb623` SUBMISSION + `59be087` README): frase dual-build 24 h + línea de
   historial as-is + giro de honestidad video-ES/demo-EN. **Aún sin push**
-  (regla del "YES"). La tabla N=10 publicada sigue siendo la del build ES,
-  rotulada "measured on the original Spanish-language build" en README y
-  SUBMISSION.
-- **Video**: master vigente = v4 3:39 (sha `8adfea08…`), QA visual aprobado;
-  existe un take del re-grabado EN (QA 7/7) para un eventual master v5, aún
-  no construido.
+  (regla del "YES"). **[Actualizado nivel L3, 29-sep noche:]** tras el
+  congelado de la tabla N=10 EN (S-A, `bb4d7a5`) y la verificación de los
+  gates G-A..G-E, el swap se ejecutó (`b3358ce`, más fixes post-swap
+  `71b680e`/`691d660`): la tabla publicada en README y SUBMISSION es ahora
+  la **EN N=10**; la del build ES pasó a subsección "Development evidence".
+- **Video**: **[Actualizado 29-sep noche:]** master vigente = **v5 EN 3:40
+  (sha `705e8022…`)**, QA de visión aprobado — el take EN (QA 7/7) se
+  construyó como master v5 en la Fase B de S-B (`cb6442a`). El v4 3:39
+  (sha `8adfea08…`, UI ES) queda descartado — no subir.
 - **Barrido de verificación (29-sep noche)**: revisión de números en 3
   familias (métricas N=10 / video / conteos) — único hallazgo E2: este
   archivo decía "33" self-checks cuando el real es 25 (corregido arriba, en
