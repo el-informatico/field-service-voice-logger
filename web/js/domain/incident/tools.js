@@ -3,23 +3,23 @@
  * INCIDENTE (docs/incident-contract.md §5). ESM, sin dependencias, DOM-free.
  *
  * Mismo formato y estilo que web/js/tools.js (orden de trabajo): van dentro de
- * `session.update`, el agente (LLM real) las lee para decidir CUÁNDO llamar y
+ * `session.update`, el agente (LLM real) las lee para decidir CUANDO llamar y
  * las implementa tool-runner.js (dominio incidente) en el cliente.
  *
- * El `enum` del parámetro `id` de agregar_servicio_afectado se construye EN
- * TIEMPO DE SESIÓN desde data/servicios.json: guarda a nivel schema contra
- * servicios fuera de catálogo (el LLM no puede inventar ids).
+ * El `enum` del parametro `id` de agregar_servicio_afectado se construye EN
+ * TIEMPO DE SESION desde data/servicios.json: guarda a nivel schema contra
+ * servicios fuera de catalogo (el LLM no puede inventar ids).
  */
 
-/** Severidades válidas del contrato §5. */
-export const SEVERIDADES = ['baja', 'media', 'alta', 'critica'];
+/** Severidades validas del contrato §5. */
+export const SEVERIDADES = ['low', 'medium', 'high', 'critical'];
 
-/** Regex de hora del timeline (contrato §5): "9:20" y "09:20" son válidas. */
+/** Regex de hora del timeline (contrato §5): "9:20" y "09:20" son validas. */
 export const HORA_PATTERN = '^\\d{1,2}:\\d{2}$';
 
 /**
- * @param {string[]} servicioIds ids válidos del catálogo (data/servicios.json).
- *   Si viene vacío se omite el `enum` (tool-runner rechazará el id igualmente).
+ * @param {string[]} servicioIds ids validos del catalogo (data/servicios.json).
+ *   Si viene vacio se omite el `enum` (tool-runner rechazara el id igualmente).
  * @returns {Array<object>} definiciones listas para `session.update.session.tools`
  */
 export function buildIncidentToolDefinitions(servicioIds = []) {
@@ -28,23 +28,23 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     ? {
       type: 'string',
       enum: ids,
-      description: 'ID exacto del catálogo (respetado por el enum: no inventes ids). Formato SRV-XXX.',
+      description: 'Exact catalog ID (enforced by the enum: do not invent ids). Format SRV-XXX.',
     }
-    : { type: 'string', description: 'ID exacto del catálogo de servicios.' };
+    : { type: 'string', description: 'Exact ID from the service catalog.' };
 
   return [
     {
       type: 'function',
       name: 'get_incidente',
       description:
-        'Carga el incidente activo y devuelve todos sus datos (cliente, sitio, equipo, reporte inicial, categoría). ' +
-        'Llámala UNA vez al inicio de la sesión: el incidente YA está asignado por la app, no hace falta dictar el número.',
+        'Loads the active incident and returns all of its data (customer, site, equipment, initial report, category). ' +
+        'Call it ONCE at the start of the session: the incident is ALREADY assigned by the app, the operator does not need to dictate the number.',
       parameters: {
         type: 'object',
         properties: {
           incidente_id: {
             type: 'string',
-            description: 'OPCIONAL — si se omite (o el técnico no lo dice), devuelve el incidente ACTIVO de la sesión. Formato IC-2xxx.',
+            description: 'OPTIONAL — if omitted (or the technician does not say it), returns the ACTIVE incident of the session. Format IC-2xxx.',
           },
         },
         required: [],
@@ -55,14 +55,14 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'set_resumen',
       description:
-        'Fija el resumen del incidente en UNA sola línea (qué pasó, servicio(s) afectado(s) y severidad). ' +
-        'Es el encabezado de la ficha: breve, sin jerga innecesaria, pero fiel a lo que dijo el operador.',
+        'Sets the incident summary in ONE single line (what happened, affected service(s) and severity). ' +
+        'It is the header of the report card: brief, no unnecessary jargon, but faithful to what the operator said.',
       parameters: {
         type: 'object',
         properties: {
           texto: {
             type: 'string',
-            description: 'Una línea que resuma el incidente (p. ej. "Caída del portal por saturación en el rack; servicio web de producción afectado, severidad alta").',
+            description: 'One line summarizing the incident (e.g. "Online store down from a saturated rack; production web server affected, high severity").',
           },
         },
         required: ['texto'],
@@ -73,14 +73,14 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'set_que_paso',
       description:
-        'Fija la narrativa "qué pasó" con las palabras DEL OPERADOR (el dictado post-visita). ' +
-        'NO parafrasees, NO resumas, NO traduzcas su jerga: es evidencia textual del incidente.',
+        'Sets the "what happened" narrative with THE OPERATOR\'s words (the post-visit dictation). ' +
+        'Do NOT paraphrase, do NOT summarize, do NOT translate their jargon: it is textual evidence of the incident.',
       parameters: {
         type: 'object',
         properties: {
           texto: {
             type: 'string',
-            description: 'Texto del operador narrando lo que pasó (primera persona, verbatim o casi).',
+            description: 'The operator\'s text narrating what happened (first person, verbatim or close).',
           },
         },
         required: ['texto'],
@@ -91,17 +91,17 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'buscar_servicio',
       description:
-        'Busca un servicio del catálogo por nombre hablado, jerga o alias (búsqueda tolerante: minúsculas, sin acentos, sin plurales). ' +
-        'Llámala SIEMPRE que el operador mencione un servicio o equipo afectado ANTES de agregarlo. ' +
-        'La respuesta incluye el mejor candidato (best), hasta 3 alternativas (found) y una advertencia (confusable_warning) ' +
-        'si el mejor candidato tiene un par confundible en catálogo (p. ej. web de producción vs web de staging): ' +
-        'en ese caso debes preguntar la desambiguación en voz alta nombrando AMBOS candidatos antes de dar por bueno el servicio.',
+        'Searches a catalog service by spoken name, jargon or alias (tolerant search: lowercase, accent-free, no plurals). ' +
+        'Call it EVERY time the operator mentions an affected service or piece of equipment BEFORE adding it. ' +
+        'The response includes the best candidate (best), up to 3 alternatives (found) and a warning (confusable_warning) ' +
+        'if the best candidate has a confusable pair in the catalog (e.g. production web vs staging web): ' +
+        'in that case you must ask the disambiguation out loud naming BOTH candidates before accepting the service.',
       parameters: {
         type: 'object',
         properties: {
           consulta: {
             type: 'string',
-            description: 'Lo que dijo el operador, tal cual (p. ej. "se cayó el servidor web de producción"). No limpies ni traduzcas.',
+            description: 'What the operator said, verbatim (e.g. "the production web server went down"). Do not clean up or translate it.',
           },
         },
         required: ['consulta'],
@@ -112,9 +112,9 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'agregar_servicio_afectado',
       description:
-        'Agrega un servicio afectado a la ficha. Solo acepta ids del enum (los devueltos por buscar_servicio). ' +
-        'El servicio queda SIN confirmar (confirmado=false): la confirmación llega únicamente del read-back hablado — ' +
-        'debes leer en voz alta el nombre del servicio (y cuántos afectados, si se dijo) y esperar el "sí" del operador.',
+        'Adds an affected service to the report card. Only accepts ids from the enum (those returned by buscar_servicio). ' +
+        'The service stays UNCONFIRMED (confirmado=false): confirmation comes only from the spoken read-back — ' +
+        'you must read the service name out loud (and how many affected, if stated) and wait for the operator\'s "yes".',
       parameters: {
         type: 'object',
         properties: {
@@ -122,7 +122,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
           afectados: {
             type: 'integer',
             minimum: 0,
-            description: 'OPCIONAL — número de usuarios/equipos afectados que declaró el operador. Omitir si no se dijo.',
+            description: 'OPTIONAL — number of users/devices affected as stated by the operator. Omit if not said.',
           },
         },
         required: ['id'],
@@ -133,20 +133,20 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'agregar_evento_timeline',
       description:
-        'Agrega un evento al timeline del incidente con su hora. La hora se valida con el patrón "H:MM" u "HH:MM" ' +
-        '(24 h). SIEMPRE haz read-back de la hora en voz alta tras agregar ("a las nueve veinte, ¿correcto?"): ' +
-        'las horas mal oídas son el error más caro de un reporte.',
+        'Adds an event to the incident timeline with its time. The time is validated against the "H:MM" or "HH:MM" ' +
+        'pattern (24 h). ALWAYS read the time back out loud after adding ("at nine twenty, correct?"): ' +
+        'misheard times are the most expensive error in a report.',
       parameters: {
         type: 'object',
         properties: {
           hora: {
             type: 'string',
             pattern: HORA_PATTERN,
-            description: 'Hora del evento en formato 24 h, "9:20" u "09:20" (dígitos y dos puntos, nada más).',
+            description: 'Event time in 24-hour format, "9:20" or "09:20" (digits and a colon, nothing else).',
           },
           evento: {
             type: 'string',
-            description: 'Qué pasó a esa hora, con las palabras del operador (p. ej. "se cayó el portal y empezaron los tickets").',
+            description: 'What happened at that time, in the operator\'s words (e.g. "the portal went down and the tickets started").',
           },
         },
         required: ['hora', 'evento'],
@@ -157,14 +157,14 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'agregar_action_item',
       description:
-        'Agrega un pendiente / action item a la ficha (lo que queda por hacer tras el incidente: seguimientos, ' +
-        'avisos, cambios pendientes, compras). Un llamado por ítem.',
+        'Adds a pending item / action item to the report card (what remains to be done after the incident: follow-ups, ' +
+        'notifications, pending changes, purchases). One call per item.',
       parameters: {
         type: 'object',
         properties: {
           descripcion: {
             type: 'string',
-            description: 'El pendiente en una frase (p. ej. "avisar al jefe de TI cuando se recupere el enlace").',
+            description: 'The pending item in one sentence (e.g. "tell the IT lead once the link is back up").',
           },
         },
         required: ['descripcion'],
@@ -175,15 +175,15 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'set_severidad',
       description:
-        'Fija la severidad del incidente (baja | media | alta | critica). SOLO con el valor que declaró el operador. ' +
-        'Esta tool SIEMPRE dispara read-back de confirmación en voz alta: "anoto severidad alta, ¿correcto?".',
+        'Sets the incident severity (low | medium | high | critical). ONLY with the value the operator declared. ' +
+        'This tool ALWAYS triggers an out-loud confirmation read-back: "noting high severity, correct?".',
       parameters: {
         type: 'object',
         properties: {
           severidad: {
             type: 'string',
             enum: SEVERIDADES,
-            description: 'Severidad declarada por el operador (enum estricto: baja, media, alta o critica).',
+            description: 'Severity as declared by the operator (strict enum: low, medium, high or critical).',
           },
         },
         required: ['severidad'],
@@ -194,15 +194,15 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
       type: 'function',
       name: 'enviar_reporte',
       description:
-        'CIERRA y envía la ficha del incidente (estado=enviada). Llámala solo cuando el operador lo pida ("mándalo", "ya está") ' +
-        'Y cuando resumen, qué pasó, timeline, servicios (todos confirmados) y severidad estén capturados; si falta algo, pregúntalo antes de enviar.',
+        'CLOSES and sends the incident report card (state=sent). Call it only when the operator asks for it ("send it", "that\'s all") ' +
+        'AND when summary, what happened, timeline, services (all confirmed) and severity are captured; if anything is missing, ask before sending.',
       parameters: { type: 'object', properties: {} },
       execution_mode: 'interactive',
     },
   ];
 }
 
-/** Nombres de las 9 tools públicas (para validación en tool-runner/smoke). */
+/** Nombres de las 9 tools publicas (para validacion en tool-runner/smoke). */
 export const INCIDENT_TOOL_NAMES = [
   'get_incidente', 'set_resumen', 'set_que_paso', 'buscar_servicio',
   'agregar_servicio_afectado', 'agregar_evento_timeline',

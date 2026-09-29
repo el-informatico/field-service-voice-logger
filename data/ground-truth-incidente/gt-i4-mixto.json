@@ -4,24 +4,24 @@
   "ambiente": "tranquilo",
   "expected_form": {
     "incidente_id": "IC-2002",
-    "resumen": "Cuarto de redes recalentado: gabinete rack A3 a 36 °C por minisplit sin enfriar, estabilizado a 28 °C con ventilación forzada; VPN caída temporalmente para los contadores remotos.",
-    "que_paso": "Llegó al cuarto de redes con olor a recalentado: el gabinete rack A3 marcaba 36 grados y el minisplit solo soplaba aire tibio; se le dio mantenimiento y se limpiaron los filtros sin mejora; con un abanico industrial en la puerta el gabinete bajó a 28 grados y quedó estable. La VPN se cayó un rato mientras el rack sufría y los contadores de fuera no podían entrar a sacar sus reportes.",
+    "resumen": "Overheated network room: rack cabinet A3 at 36 °C from a minisplit not cooling, brought down to 28 °C with forced ventilation; VPN briefly down for the remote accountants.",
+    "que_paso": "He got to the network room to a burnt smell: rack cabinet A3 was reading 36 degrees and the minisplit was only blowing warm air; it got serviced and the filters cleaned with no improvement; with an industrial fan at the door the cabinet came down to 28 degrees and held steady. The VPN was down for a while as the rack struggled and the outside accountants could not pull their reports.",
     "timeline": [
-      { "hora": "07:50", "evento": "Llegada al cuarto de redes; olor a recalentado desde la puerta" },
-      { "hora": "08:15", "evento": "Gabinete rack A3 marcando 36 °C; minisplit soplando aire tibio" },
-      { "hora": "08:45", "evento": "Ventilación forzada con abanico industrial en la puerta del cuarto" },
-      { "hora": "10:30", "evento": "Gabinete enfriado a 28 °C, temperatura estable" }
+      { "hora": "07:50", "evento": "Arrival at the network room; burnt smell from the doorway" },
+      { "hora": "08:15", "evento": "Rack cabinet A3 reading 36 °C; minisplit blowing warm air" },
+      { "hora": "08:45", "evento": "Forced ventilation with an industrial fan at the room door" },
+      { "hora": "10:30", "evento": "Cabinet cooled to 28 °C, temperature stable" }
     ],
     "servicios_afectados": [
       { "id": "SRV-RACK-A3", "confirmado": true },
       { "id": "SRV-VPN-REMOTO", "confirmado": true }
     ],
     "action_items": [
-      "Reparar el minisplit del cuarto de redes (mantenimiento, esta misma semana)",
-      "Comprar un abanico industrial de repuesto para el cuarto de redes"
+      "Fix the network room minisplit (maintenance, this same week)",
+      "Buy a spare industrial fan for the network room"
     ],
-    "severidad": "alta",
-    "estado": "enviada"
+    "severidad": "high",
+    "estado": "sent"
   },
   "user_utterances": [
     { "n": 1, "text": "¿Me oyes bien?... ya salí del despacho de los contadores, era lo del cuarto de redes que olía a recalentado... échame el reporte del incidente antes de que se me vaya el detalle." },

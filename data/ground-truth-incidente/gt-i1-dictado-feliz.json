@@ -4,24 +4,24 @@
   "ambiente": "tranquilo",
   "expected_form": {
     "incidente_id": "IC-2003",
-    "resumen": "Corte de red general en las oficinas por falla del switch de salida; red restablecida en una hora y media con un switch de repuesto.",
-    "que_paso": "El corte empezó temprano: como a las ocho cincuenta llamaron de recepción porque no había internet en toda la oficina ni los teléfonos de ip; al revisar, el switch de salida no respondía y el led de estatus quedaba en naranja.",
+    "resumen": "Office-wide network outage from a failed core switch; network restored in an hour and a half with a spare switch.",
+    "que_paso": "The outage started early: around eight fifty reception called because there was no internet in the whole office and no IP phones either; on inspection the core switch was not responding and the status LED stayed orange.",
     "timeline": [
-      { "hora": "08:50", "evento": "Llamada de recepción reportando el corte de red general" },
-      { "hora": "09:15", "evento": "Identificado el switch de salida como causa tras prueba de diagnóstico" },
-      { "hora": "10:10", "evento": "Sustitución del switch de salida por uno de repuesto" },
-      { "hora": "10:20", "evento": "Red restablecida: correos y telefonía ip arriba" }
+      { "hora": "08:50", "evento": "Reception call reporting the office-wide network outage" },
+      { "hora": "09:15", "evento": "Core switch identified as the cause after a diagnostic test" },
+      { "hora": "10:10", "evento": "Core switch swapped for a spare unit" },
+      { "hora": "10:20", "evento": "Network restored: email and IP telephony back up" }
     ],
     "servicios_afectados": [
       { "id": "SRV-DNS-INTERNO", "confirmado": true },
       { "id": "SRV-VPN-REMOTO", "confirmado": true }
     ],
     "action_items": [
-      "Comprar otro switch de repuesto para el almacén",
-      "Avisar al jefe de sistemas cuando hagan el mantenimiento del nodo"
+      "Buy another spare switch for the warehouse",
+      "Tell the systems lead when they do the node maintenance"
     ],
-    "severidad": "alta",
-    "estado": "enviada"
+    "severidad": "high",
+    "estado": "sent"
   },
   "user_utterances": [
     { "n": 1, "text": "¿Me oyes bien?... va, ya voy de salida, en la camioneta, ya terminé lo de la red en Kimsa... échame la mano con el reporte del incidente, ¿sí?" },

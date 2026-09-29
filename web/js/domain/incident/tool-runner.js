@@ -94,16 +94,16 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
         confusable_warning = {
           id: sibId,
           nombre: sib ? sib.nombre : null,
-          mensaje: `«${s.nombre}» se confunde fácilmente con «${sib ? sib.nombre : sibId}». ` +
-            'Pregunta la desambiguación en voz alta nombrando AMBOS antes de dar por bueno el servicio.',
+          mensaje: `"${s.nombre}" is easily confused with "${sib ? sib.nombre : sibId}". ` +
+            'Ask the disambiguation out loud naming BOTH before accepting the service.',
         };
       }
     }
     const result = { ok: true, consulta: q, found, best, confusable_warning };
     // Guion de acción para el LLM: el resultado le dice cuál es el siguiente paso.
     result.siguiente_paso = confusable_warning
-      ? `DESVIACIÓN: pregunta la desambiguación en voz alta («¿${best?.nombre} o ${confusable_warning.nombre}?») y agrega SOLO el que confirme.`
-      : (best ? `AGREGA YA este servicio con agregar_servicio_afectado({"id":"${best.id}"}) y haz el read-back del nombre.` : 'Sin candidato claro: pregunta al operador el nombre exacto del servicio.');
+      ? `DEVIATION: ask the disambiguation out loud ("${best?.nombre}" or "${confusable_warning.nombre}"?) and add ONLY the one the operator confirms.`
+      : (best ? `ADD THIS service now with agregar_servicio_afectado({"id":"${best.id}"}) and read the name back.` : 'No clear candidate: ask the operator for the exact name of the service.');
     store.applyToolResult('buscar_servicio', { consulta: q }, result);
     return result;
   }
@@ -113,7 +113,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     if (!entry) {
       return {
         ok: false, error: 'id_fuera_de_catalogo', id: String(id ?? ''),
-        pista: 'Llama buscar_servicio con las palabras del operador y usa un id del resultado.',
+        pista: 'Call buscar_servicio with the operator\'s words and use an id from the result.',
       };
     }
     const n = afectados != null && Number.isFinite(+afectados) && +afectados >= 0
@@ -133,7 +133,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     if (!esHoraValida(hora)) {
       return {
         ok: false, error: 'hora_invalida', hora: String(hora ?? ''),
-        pista: 'Hora en formato 24 h "H:MM" u "HH:MM" (p. ej. "9:20").',
+        pista: 'Time in 24-hour "H:MM" or "HH:MM" format (e.g. "9:20").',
       };
     }
     const canon = canonHora(hora);
@@ -155,7 +155,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     if (!SEVERIDADES.includes(s)) {
       return {
         ok: false, error: 'severidad_invalida', severidad: String(severidad ?? ''),
-        pista: `Severidad del enum: ${SEVERIDADES.join(', ')}.`,
+        pista: `Enum severity: ${SEVERIDADES.join(', ')}.`,
       };
     }
     const result = { ok: true, severidad: s, requiere_read_back: true };
@@ -198,7 +198,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     if (sinConfirmar.length) faltantes.push(`servicios_sin_confirmar:${sinConfirmar.join(',')}`);
     if (!f.severidad) faltantes.push('severidad');
     const result = {
-      ok: true, estado: 'enviada',
+      ok: true, estado: 'sent',
       resumen: {
         incidente_id: f.incidente_id,
         eventos: f.timeline.length,

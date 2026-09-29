@@ -84,7 +84,7 @@ export function parseAgentDirectives(agentTurn) {
   const addRe = /agregar_servicio_afectado\s*\(\s*(SRV-[A-Z0-9-]+)\s*\)/g;
   while ((m = addRe.exec(hint)) !== null) d.addServicios.push(m[1]);
 
-  m = /set_severidad\s*\(\s*(baja|media|alta|critica)\s*\)/.exec(hint);
+  m = /set_severidad\s*\(\s*(low|medium|high|critical)\s*\)/.exec(hint);
   if (m) d.setSeveridad = m[1];
 
   // action items: forma nombrada + formas cortas "y ('…')"

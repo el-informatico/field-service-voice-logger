@@ -81,7 +81,7 @@ function actionItemsRecall(pred = [], gt = []) {
   return { covered, n_gt: gt.length, n_pred: pred.length, recall, threshold: ACTION_SIM_THRESHOLD, details, correct: covered === gt.length };
 }
 
-/** severidad exacta (enum baja|media|alta|critica — compare lowercased). */
+/** severidad exacta (enum low|medium|high|critical — compare lowercased). */
 function severidadExact(pred, gt) {
   const p = pred == null ? null : String(pred).toLowerCase();
   const g = gt == null ? null : String(gt).toLowerCase();

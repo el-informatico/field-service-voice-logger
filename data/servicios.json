@@ -1,106 +1,106 @@
 [
   {
     "id": "SRV-WEB-PROD",
-    "nombre": "Servidor web de la tienda en línea (producción)",
-    "alias": ["servidor web de producción", "página web de producción", "portal de ventas", "web de producción"],
+    "nombre": "Online store web server (production)",
+    "alias": ["production web server", "the live store", "prod web", "online store server"],
     "tipo": "web",
     "confundible_con": ["SRV-WEB-STG"]
   },
   {
     "id": "SRV-WEB-STG",
-    "nombre": "Servidor web de pruebas (staging)",
-    "alias": ["servidor web de staging", "página de pruebas", "web de staging", "servidor de pruebas"],
+    "nombre": "Web server for testing (staging)",
+    "alias": ["staging web server", "the test store", "staging web", "test web server"],
     "tipo": "web",
     "confundible_con": ["SRV-WEB-PROD"]
   },
   {
     "id": "SRV-RACK-A3",
-    "nombre": "Gabinete de servidores rack A3 (cuarto de redes)",
-    "alias": ["rack a3", "gabinete a3", "rack del cuarto de redes", "rack chico"],
+    "nombre": "Server rack cabinet A3 (network room)",
+    "alias": ["rack a3", "cabinet a3", "network room rack", "small rack"],
     "tipo": "infraestructura",
     "confundible_con": ["SRV-RACK-A8"]
   },
   {
     "id": "SRV-RACK-A8",
-    "nombre": "Gabinete de servidores rack A8 (cuarto de telecomunicaciones)",
-    "alias": ["rack a8", "gabinete a8", "rack de telecomunicaciones", "rack grande"],
+    "nombre": "Server rack cabinet A8 (telecom room)",
+    "alias": ["rack a8", "cabinet a8", "telecom room rack", "big rack"],
     "tipo": "infraestructura",
     "confundible_con": ["SRV-RACK-A3"]
   },
   {
     "id": "SRV-BOMBA-PRIMARIA",
-    "nombre": "Bomba de agua primaria del edificio",
-    "alias": ["bomba primaria", "bomba principal", "bomba uno", "bomba de agua principal"],
+    "nombre": "Primary building water pump",
+    "alias": ["primary pump", "main pump", "pump one", "main water pump"],
     "tipo": "hidraulico",
     "confundible_con": ["SRV-BOMBA-SECUNDARIA"]
   },
   {
     "id": "SRV-BOMBA-SECUNDARIA",
-    "nombre": "Bomba de agua secundaria (respaldo manual)",
-    "alias": ["bomba secundaria", "bomba de respaldo", "bomba dos", "bomba de emergencia"],
+    "nombre": "Secondary water pump (manual backup)",
+    "alias": ["secondary pump", "backup pump", "pump two", "emergency pump"],
     "tipo": "hidraulico",
     "confundible_con": ["SRV-BOMBA-PRIMARIA"]
   },
   {
     "id": "SRV-CORREO-PROD",
-    "nombre": "Servidor de correo de la empresa (producción)",
-    "alias": ["correo de producción", "servidor de correo", "correo de la empresa", "mail de producción"],
+    "nombre": "Company email server (production)",
+    "alias": ["production mail server", "the mail server", "company email", "production email"],
     "tipo": "correo",
     "confundible_con": ["SRV-CORREO-BACKUP"]
   },
   {
     "id": "SRV-CORREO-BACKUP",
-    "nombre": "Servidor de correo de respaldo",
-    "alias": ["correo de respaldo", "servidor de correo secundario", "mail de respaldo", "correo backup"],
+    "nombre": "Backup email server",
+    "alias": ["backup mail server", "secondary mail server", "backup email", "standby mail server"],
     "tipo": "correo",
     "confundible_con": ["SRV-CORREO-PROD"]
   },
   {
     "id": "SRV-VPN-REMOTO",
-    "nombre": "VPN de acceso remoto del personal",
-    "alias": ["vpn", "vpn remota", "acceso remoto", "vpn de la empresa"],
+    "nombre": "Staff remote access VPN",
+    "alias": ["vpn", "remote vpn", "remote access", "company vpn"],
     "tipo": "red",
     "confundible_con": null
   },
   {
     "id": "SRV-API-PAGOS",
-    "nombre": "API de pasarela de pagos de la tienda",
-    "alias": ["api de pagos", "pasarela de pagos", "servicio de pagos", "api de cobros"],
+    "nombre": "Store payment gateway API",
+    "alias": ["payments api", "payment gateway", "payments service", "payment api"],
     "tipo": "aplicacion",
     "confundible_con": null
   },
   {
     "id": "SRV-DNS-INTERNO",
-    "nombre": "Servidor DNS interno de oficinas",
-    "alias": ["dns", "dns interno", "servidor de nombres", "dns de la oficina"],
+    "nombre": "Internal office DNS server",
+    "alias": ["dns", "internal dns", "name server", "office dns"],
     "tipo": "red",
     "confundible_con": null
   },
   {
     "id": "SRV-CCTV-NAVE1",
-    "nombre": "Circuito cerrado de cámaras (nave 1)",
-    "alias": ["cámaras", "cctv", "circuito cerrado", "cámaras de la nave"],
+    "nombre": "Closed-circuit camera system (warehouse 1)",
+    "alias": ["cameras", "cctv", "closed circuit", "warehouse cameras"],
     "tipo": "seguridad",
     "confundible_con": null
   },
   {
     "id": "SRV-ILUM-PLANTA",
-    "nombre": "Iluminación LED de planta y nave",
-    "alias": ["iluminación de planta", "luces de la planta", "lámparas de la nave", "luces led"],
+    "nombre": "LED lighting for plant and warehouse",
+    "alias": ["plant lighting", "plant lights", "warehouse lamps", "led lights"],
     "tipo": "electrico",
     "confundible_con": null
   },
   {
     "id": "SRV-COMPRESOR-AIRE",
-    "nombre": "Compresor de aire del taller",
-    "alias": ["compresor", "compresor de aire", "compresora del taller", "turbina de aire"],
+    "nombre": "Workshop air compressor",
+    "alias": ["compressor", "air compressor", "workshop compressor", "shop compressor"],
     "tipo": "mecanico",
     "confundible_con": null
   },
   {
     "id": "SRV-ACCESO-PUERTAS",
-    "nombre": "Sistema de control de acceso y chapas electrónicas",
-    "alias": ["control de acceso", "chapas electrónicas", "lectoras de tarjetas", "acceso de puertas"],
+    "nombre": "Access control system and electronic locks",
+    "alias": ["access control", "electronic locks", "card readers", "door access"],
     "tipo": "seguridad",
     "confundible_con": null
   }

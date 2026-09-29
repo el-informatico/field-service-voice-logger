@@ -14,7 +14,7 @@
  *   timeline: [{hora: "HH:MM", evento}],
  *   servicios_afectados: [{id, nombre, afectados, confirmado}],
  *   action_items: [string],
- *   severidad: 'baja'|'media'|'alta'|'critica'|null, estado
+ *   severidad: 'low'|'medium'|'high'|'critical'|null, estado
  */
 
 const FORM_FIELDS = [
@@ -43,7 +43,7 @@ export function createIncidentStore({ incidenteId, now } = {}) {
     servicios_afectados: [],
     action_items: [],
     severidad: null,
-    estado: 'en_proceso',
+    estado: 'in_progress',
   };
 
   /** Marca de inicio (ms del reloj de sesión). La controla el driver. */
@@ -157,7 +157,7 @@ export function createIncidentStore({ incidenteId, now } = {}) {
         break;
       }
       case 'enviar_reporte':
-        changed = updateForm({ estado: 'enviada' }).changed;
+        changed = updateForm({ estado: 'sent' }).changed;
         logAudit('reporte_enviado', {});
         break;
       default:

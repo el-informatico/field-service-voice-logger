@@ -21,7 +21,7 @@ const readJson = (rel) => {
 const HORA_RE = /^\d{1,2}:\d{2}$/;
 const EXPECT_RE = /^(tool:[a-z_]+(\s*\|[a-z_:\s]*)?|readback|none)$/;
 const CREADA_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}-\d{2}:\d{2}$/;
-const SEVERIDADES = ["baja", "media", "alta", "critica"];
+const SEVERIDADES = ["low", "medium", "high", "critical"];
 const horaValida = (h) =>
   typeof h === "string" && HORA_RE.test(h) &&
   Number(h.split(":")[0]) <= 23 && Number(h.split(":")[1]) <= 59;
@@ -42,7 +42,7 @@ if (incidentes) {
     for (const c of camposI) ok(typeof inc[c] === "string" && inc[c].length > 0, `incidente ${inc.id}: campo '${c}' ausente o vacío`);
     ok(inc.equipo === undefined || (typeof inc.equipo === "string" && inc.equipo.length > 0), `incidente ${inc.id}: equipo debe ser string no vacío si existe`);
     ok(["TI", "facilities"].includes(inc.categoria), `incidente ${inc.id}: categoria inválida '${inc.categoria}' (TI|facilities)`);
-    ok(inc.estado === "abierta", `incidente ${inc.id}: estado debe ser 'abierta' en semilla, hay '${inc.estado}'`);
+    ok(inc.estado === "open", `incidente ${inc.id}: estado debe ser 'open' en semilla, hay '${inc.estado}'`);
     ok(CREADA_RE.test(inc.creada ?? ""), `incidente ${inc.id}: creada no es ISO con offset ('${inc.creada}')`);
     if (inc.categoria === "TI") ti++; else fac++;
     tecnicos.add(inc.tecnico);
@@ -194,7 +194,7 @@ for (const sid of escenarios) {
     ok(Array.isArray(f.action_items) && f.action_items.length > 0 &&
       f.action_items.every((a) => typeof a === "string" && a.length > 0), `gt-${sid}: action_items vacío o con entradas vacías`);
     ok(SEVERIDADES.includes(f.severidad), `gt-${sid}: severidad inválida '${f.severidad}' (${SEVERIDADES.join("|")})`);
-    ok(f.estado === "enviada", `gt-${sid}: estado debe ser 'enviada' al cierre, hay '${f.estado}'`);
+    ok(f.estado === "sent", `gt-${sid}: estado debe ser 'sent' al cierre, hay '${f.estado}'`);
   }
 
   // seeded_errors: forma y referencias según escenario
@@ -221,8 +221,8 @@ for (const sid of escenarios) {
     if (sid === "i2-servicio-confundido") {
       ok(se.some((e) => e.field === "servicio" && e.captured?.id === "SRV-WEB-STG" && e.truth?.id === "SRV-WEB-PROD"),
         `gt-${sid}: falta el error sembrado WEB-STG→WEB-PROD`);
-      ok(se.some((e) => e.field === "severidad" && e.captured === "media" && e.truth === "alta"),
-        `gt-${sid}: falta el error sembrado de severidad media→alta`);
+      ok(se.some((e) => e.field === "severidad" && e.captured === "medium" && e.truth === "high"),
+        `gt-${sid}: falta el error sembrado de severidad medium→high`);
     }
     if (sid === "i3-correccion-hora") {
       ok(se.some((e) => e.field === "hora" && e.captured === "09:20" && e.truth === "09:40"),

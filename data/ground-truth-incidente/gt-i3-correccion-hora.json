@@ -4,22 +4,22 @@
   "ambiente": "tranquilo",
   "expected_form": {
     "incidente_id": "IC-2005",
-    "resumen": "Bomba de agua primaria del edificio parada por relevador de arranque carbonizado; sustituido el relevador y restablecida la presión en todos los pisos.",
-    "que_paso": "La bomba primaria andaba tripeando desde temprano: arrancaba y a los ratos se paraba, y los pisos de arriba se quedaban sin presión; al llegar al cuarto de bombas estaba parada del todo; el relevador de arranque estaba carbonizado y se sustituyó por uno nuevo.",
+    "resumen": "Building primary water pump stopped by a burnt-out starter relay; relay replaced and pressure restored on every floor.",
+    "que_paso": "The primary pump had been tripping since early on: it would start, stop after a while, and the upper floors lost pressure; on arrival at the pump room it was stopped completely; the starter relay was burnt out and was replaced with a new one.",
     "timeline": [
-      { "hora": "08:10", "evento": "Primer síntoma: la bomba arrancaba y se paraba, reportado por intendencia" },
-      { "hora": "09:40", "evento": "Llegada al cuarto de bombas; bomba primaria parada del todo" },
-      { "hora": "11:05", "evento": "Arranque correcto con relevador nuevo; presión estabilizada en todos los pisos" }
+      { "hora": "08:10", "evento": "First symptom: the pump starting and stopping, reported by building maintenance" },
+      { "hora": "09:40", "evento": "Arrival at the pump room; primary pump fully stopped" },
+      { "hora": "11:05", "evento": "Clean start with the new relay; pressure stable on every floor" }
     ],
     "servicios_afectados": [
       { "id": "SRV-BOMBA-PRIMARIA", "confirmado": true }
     ],
     "action_items": [
-      "Pedir el relevador de arranque de repuesto (el que quedaba ya se usó)",
-      "Recabar la firma del intendente del edificio en la hoja de servicio al día siguiente"
+      "Order a spare starter relay (the last one has been used)",
+      "Get the building superintendent's signature on the service sheet the next day"
     ],
-    "severidad": "media",
-    "estado": "enviada"
+    "severidad": "medium",
+    "estado": "sent"
   },
   "user_utterances": [
     { "n": 1, "text": "¿Aló?... ya acabé con lo de la bomba del edificio, voy en la camioneta, todo tranquilo por acá... échame el reporte del incidente." },
