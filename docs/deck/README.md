@@ -1,8 +1,10 @@
 # Slide deck (submission-required PDF)
 
 `voice-incident-reporter-deck.pdf` — 11 slides, 16:9, EN, built from `deck.html`.
-All figures are verbatim from [README.md](../../README.md) §Metrics and
-[docs/SUBMISSION.md](../SUBMISSION.md); the deck introduces no new claims.
+All figures are verbatim from [README.md](../../README.md) §Metrics — the
+English-build N=10 table (primary, slide 8) and its Spanish-language
+development-evidence subsection (quoted on slides 7/9, labeled as such) — and
+from [docs/SUBMISSION.md](../SUBMISSION.md); the deck introduces no new claims.
 
 ## Rebuild
 
