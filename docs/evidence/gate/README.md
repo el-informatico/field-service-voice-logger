@@ -34,7 +34,8 @@ measurement, not behavior).
 
 ## ES — N=10 evidence + post-audit R6a (2026-09-16)
 
-Three of the ten real sessions behind the README §Metrics table, plus one
+Three of the ten real sessions behind the README's Spanish-language
+development-evidence table, plus one
 post-audit session, picked to back the claims a judge is most likely to probe:
 
 | Artifact | Session | Why it's here |
