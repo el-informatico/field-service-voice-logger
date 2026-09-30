@@ -1,6 +1,6 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — **nivel L3** en `en-migration` — swap aplicado: tabla EN N=10 primaria, ES → "development evidence" — aún sin push; master de video vigente = **v6 EN 3:42** (sha `6e04741e…`, QA lanes 9/9 — re-render del v5 sin el claim "real Mexican field data"; el v5 `9a9b632e…` y el v4 `8adfea08…` quedan descartados — no subir); corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + subida de videos + submit).
+Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — **nivel L3** en `en-migration` — swap aplicado: tabla EN N=10 primaria, ES → "development evidence" — aún sin push; master de video vigente = **v6.1 EN 3:42** (sha `be362137…` — v6 + fixes del QA de auditoría del owner: captions de conversación del operador quemadas en r4/r6 + x-real rediseñado; QA frame-por-frame APTO, lanes 9/9; el v6 `6e04741e…`, el v5 `9a9b632e…` y el v4 `8adfea08…` quedan descartados — no subir); corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + subida de videos + submit).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
@@ -519,8 +519,13 @@ auditoría+fixes de STATUS · C4 este bloque. Verde final verificado:
   gates G-A..G-E, el swap se ejecutó (`b3358ce`, más fixes post-swap
   `71b680e`/`691d660`): la tabla publicada en README y SUBMISSION es ahora
   la **EN N=10**; la del build ES pasó a subsección "Development evidence".
-- **Video**: **[Actualizado 29-sep noche:]** master vigente = **v6 EN 3:42
-  (sha `6e04741e…`)** — re-render del v5 con un único cambio de narración:
+- **Video**: **[Actualizado 30-sep:]** master vigente = **v6.1 EN 3:42
+  (sha `be362137…`)** — v6 + fixes del QA de auditoría del owner (captions
+  de conversación del operador quemadas en r4/r6, verbatim del transcript
+  real W7T3 — antes ilegibles por el zoom del take; x-real rediseñado con
+  disclosure de voces sintéticas en 1 línea); duración/cues/SRT idénticos;
+  QA frame-por-frame de la auditoría APTO. **[29-sep noche:]** v6 EN 3:42
+  (sha `6e04741e…`, descartado — no subir) — re-render del v5 con un único cambio de narración:
   fuera el claim "real Mexican field data" de m-metrics (orden del owner;
   cues 1-44 sin mover, 45-53 re-flowed ±0.5 s, 54-70 corridos −1.9 s; QA
   lanes 9/9) —. El v5 3:44 (re-render 18:08, swap W7T3 + tabla EN N=10;
