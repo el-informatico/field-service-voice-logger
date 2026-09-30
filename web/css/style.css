@@ -1,4 +1,10 @@
 /* style.css — mobile-first (360px), dark-aware, cero dependencias, sin assets */
+/* [hidden] debe ganar SIEMPRE: .ficha y .summary declaran display:grid y, sin
+   esta regla, la tarjeta del dominio inactivo (p.ej. la de ORDEN durante una
+   sesión de INCIDENTE) se renderiza vacía por encima de la activa (regresión
+   r7 del demo: pantalla final con todos los campos en "—"). */
+[hidden] { display: none !important; }
+
 :root {
   --bg: #f6f7f9;
   --card: #ffffff;

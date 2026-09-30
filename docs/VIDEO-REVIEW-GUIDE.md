@@ -1,13 +1,26 @@
 # Guía de revisión — demo video D6 (≤10 minutos)
 
-> **⭐ MASTER FINAL (re-render 30-sep, v6.1):** `demo-video-d6-v6.mp4`
-> — 221.7 s (3:42) · 45.0 MB · sha256 `be36213702662044` · SRT
-> `demo-video-d6-v6.srt` (70 cues / 534 palabras, sha `f0fc7fc156b04dbf`) ·
-> v6.1 = v6 + fixes del QA de auditoría del owner: captions de conversación
-> del operador quemadas en r4/r6 (verbatim del transcript real W7T3) y
-> x-real rediseñado (disclosure en 1 línea); duración/cues/SRT idénticos ·
-> v6 era el v5 sin el claim "real Mexican field data" en m-metrics
-> (cues 1-44 intactos, 45-53 re-flowed ±0.5 s, 54-70 corridos −1.9 s) · UI EN re-grabada; la escena
+> **⭐ MASTER FINAL (re-render 30-sep tarde, v6.3):** `demo-video-d6-v6.mp4`
+> — 222.0 s (3:42) · 48.3 MB · sha256 `27b79ab8a3a4b806` · SRT
+> `demo-video-d6-v6.srt` (70 cues / 534 palabras, sha `19d2f1add6ff4865`,
+> re-derivado: mismos cues/palabras, timings del take nuevo) ·
+> v6.3 = v6.1 + reclamo del owner resuelto CON TIEMPOS (4 defectos + zoom):
+> re-take del app real con la pantalla de sesión encajando EXACTA en
+> 1920×1080 (botón amarillo "Wait!" completo sobre el input, cabecera
+> "Live transcript" + quick-buttons completos, turno del operador y
+> respuesta del agente coexistiendo legibles ~7.5 s), sin coreografía de
+> zoom en las transcripciones; la confirmación "Did you mean…" vive en el
+> banner nativo del app (fuera la caja negra pegada del ensamblado); ficha
+> final de incidente 100 % poblada (fix CSS `[hidden]` en el app, commit
+> `58d6d05` — v6.1 la enmascaraba por el scroll del take viejo); caption
+> "two" verbatim con la burbuja. QA frame-por-frame independiente (GLM
+> visión, 145 frames + 36 lotes): reclamo 4/4 + zoom APTO, sin regresión
+> alta; lanes 9/9 ·
+> v6.1 (sha `be36213702662044`, 221.7 s / 45.0 MB, SRT `f0fc7fc156b04dbf`)
+> = v6 + captions de conversación del operador en r4/r6 + x-real
+> rediseñado — QUEDA SUPERSEDED (es el que está hoy en el URL unlisted;
+> re-subir con v6.3): sus 4 defectos de encuadre y la ficha final vacía
+> están documentados en `qa-reclamo/` del work de video. UI EN re-grabada; la escena
 > de métricas muestra **y narra** la tabla
 > **EN N=10** (severity 9/10 · services 100/100 · timeline 80% · WER 0.685
 > como artefacto de segmentación). El header histórico de abajo (3:00 /

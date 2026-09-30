@@ -1,6 +1,6 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — **nivel L3** en `en-migration` — swap aplicado: tabla EN N=10 primaria, ES → "development evidence" — aún sin push; master de video vigente = **v6.1 EN 3:42** (sha `be362137…` — v6 + fixes del QA de auditoría del owner: captions de conversación del operador quemadas en r4/r6 + x-real rediseñado; QA frame-por-frame APTO, lanes 9/9; el v6 `6e04741e…`, el v5 `9a9b632e…` y el v4 `8adfea08…` quedan descartados — no subir); corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + subida de videos + submit).
+Bitácora por bloque. Última actualización: **2026-09-30** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — **nivel L3** en `en-migration` — swap aplicado: tabla EN N=10 primaria, ES → "development evidence" — aún sin push; master de video vigente = **v6.3 EN 3:42** (sha `27b79ab8…` — v6.1 + reclamo del owner resuelto CON TIEMPOS: re-take con pantalla de sesión encajada, sin zoom en transcripciones, confirm nativo, ficha final 100 % poblada vía fix CSS `[hidden]` — commit local `58d6d05`; SRT re-derivado sha `19d2f1ad…`; QA frame-por-frame independiente APTO, lanes 9/9; el v6.1 `be362137…` — el que hoy sirve el URL unlisted, re-subir —, el v6 `6e04741e…`, el v5 `9a9b632e…` y el v4 `8adfea08…` quedan descartados — no subir); corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + subida de videos + submit).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
@@ -519,8 +519,25 @@ auditoría+fixes de STATUS · C4 este bloque. Verde final verificado:
   gates G-A..G-E, el swap se ejecutó (`b3358ce`, más fixes post-swap
   `71b680e`/`691d660`): la tabla publicada en README y SUBMISSION es ahora
   la **EN N=10**; la del build ES pasó a subsección "Development evidence".
-- **Video**: **[Actualizado 30-sep:]** master vigente = **v6.1 EN 3:42
-  (sha `be362137…`)** — v6 + fixes del QA de auditoría del owner (captions
+- **Video**: **[Actualizado 30-sep (tarde):]** master vigente = **v6.3 EN
+  3:42 (sha `27b79ab8…`, 222.0 s / 48.3 MB)** — v6.1 + reclamo del owner
+  resuelto CON TIEMPOS (4 defectos de encuadre + zoom): re-take con la
+  pantalla de sesión encajando exacta en 1920×1080 (botón amarillo "Wait!"
+  completo sobre el input, cabecera "Live transcript" + quick-buttons
+  enteros, turno del operador y respuesta del agente co-legibles ~7.5 s),
+  sin coreografía de zoom en las transcripciones, confirm "Did you mean…"
+  en el banner nativo del app (fuera la caja negra pegada), y ficha final
+  100 % poblada — fix CSS `[hidden]{display:none !important}` (commit local
+  `58d6d05` en `en-migration`) sobre un bug latente desde 15-sep
+  (`.ficha`/`.summary` con `display:grid` pisaban el `[hidden]` del UA)
+  que v6.1 enmascaraba por el scroll de su take. SRT re-derivado (70 cues /
+  534 palabras, mismos textos; sha `19d2f1ad…`). QA frame-por-frame
+  independiente (GLM visión, 145 frames + 36 lotes): reclamo 4/4 + zoom
+  APTO, sin regresión alta; lanes 9/9. v6.1 preservado en entregables como
+  `demo-video-d6-v6-preReclamo.mp4`/`.srt`. **[30-sep mañana:]** v6.1 EN
+  3:42 (sha `be362137…`, SRT `f0fc7fc1…`) queda **superseded — no subir
+  (es el que hoy sirve el URL unlisted de YouTube; re-subir con v6.3)** —
+  v6 + fixes del QA de auditoría del owner (captions
   de conversación del operador quemadas en r4/r6, verbatim del transcript
   real W7T3 — antes ilegibles por el zoom del take; x-real rediseñado con
   disclosure de voces sintéticas en 1 línea); duración/cues/SRT idénticos;
