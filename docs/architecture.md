@@ -175,6 +175,10 @@ Reglas del timeline:
 
 ## 7. Tools (definidas en web/js/tools.js, implementadas en tool-runner.js)
 
+> 2026-09-30: rename post-medición — `enviar_reporte` pasa a `send_report`
+> (nombre compartido con el dominio incidente); las demás tools legacy del
+> dominio orden conservan por ahora sus nombres.
+
 | Tool | Props (JSON Schema) | Efecto |
 |---|---|---|
 | `get_orden` | `{ orden_id: string }` | Devuelve la orden (de data/ordenes.json) |
@@ -183,7 +187,7 @@ Reglas del timeline:
 | `set_problema` | `{ texto: string }` | Fija problema (texto del técnico, no del LLM) |
 | `set_solucion` | `{ texto: string }` | Fija solución |
 | `get_tiempo_trabajo` | `{}` | Minutos transcurridos desde inicio del trabajo |
-| `enviar_reporte` | `{}` | Cierra la ficha, marca estado=enviada, emite artefacto |
+| `send_report` | `{}` | Cierra la ficha, marca estado=enviada, emite artefacto |
 
 El `enum` de `sku` se genera EN TIEMPO DE BUILD-DE-SESIÓN desde `data/piezas.json`
 (esto es lo que atrapa "3/4" vs "3.8" a nivel de schema). Las definiciones son

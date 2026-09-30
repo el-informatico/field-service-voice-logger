@@ -56,10 +56,10 @@ Technicians ask for exactly this ([r/FieldService](https://www.reddit.com/r/Fiel
    started at five forty, not seven") — turn detection parameters
    per the [official docs](https://www.assemblyai.com/docs/voice-agents/voice-agent-api/turn-detection-and-interruptions).
 3. Every statement becomes a **client-side tool call with JSON Schema**:
-   `get_incidente`, `buscar_servicio`, `set_que_paso`, `set_resumen`,
-   `set_severidad`, `agregar_evento_timeline`, `agregar_servicio_afectado`
-   (service validated against the catalog via `enum`), `agregar_action_item`,
-   `enviar_reporte`. The incident card (the "ficha") fills in live on screen,
+   `get_incident`, `search_service`, `set_what_happened`, `set_summary`,
+   `set_severity`, `add_timeline_event`, `add_affected_service`
+   (service validated against the catalog via `enum`), `add_action_item`,
+   `send_report`. The incident card (the "ficha") fills in live on screen,
    each field carrying its own audit trail (which tool set it, when, confirmed
    by voice or edited by hand). All nine are tabulated below.
 4. Critical values — services, severity, timeline hours — are **read back out
@@ -76,21 +76,22 @@ noise-gate evidence is what drove the post-visit pivot.
 
 Every operator statement lands as one of nine client-side function tools —
 source of truth: [web/js/domain/incident/tools.js](web/js/domain/incident/tools.js).
-Tool and field names keep their original Spanish (the domain was frozen when
-the English build re-measured it — the metrics rows carry the same literal
-names); severity values are English enums in the current build.
+2026-09-30: tool names renamed to English post-measurement (was `get_incidente`,
+`set_resumen`, … — the N=10 evidence in docs/evidence/gate/ keeps the pre-rename
+names); form field names keep their original Spanish, and severity values are
+English enums in the current build.
 
 | Tool | Parameters | Effect |
 |---|---|---|
-| `get_incidente` | `{incidente_id?}` | Loads the session's active incident (customer, site, equipment, initial report) |
-| `set_resumen` | `{texto}` | Sets the one-line summary that heads the report card |
-| `set_que_paso` | `{texto}` | Stores the operator's narrative verbatim — no paraphrase, jargon kept |
-| `buscar_servicio` | `{consulta}` | Tolerant catalog search (name, jargon, alias); returns best candidate + alternatives + `confusable_warning` |
-| `agregar_servicio_afectado` | `{id: enum(servicios), afectados?: int}` | Adds the service (enum-validated; enters unconfirmed) + spoken read-back |
-| `agregar_evento_timeline` | `{hora: "H:MM"\|"HH:MM", evento}` | Adds a timeline event; hour pattern-validated and read back out loud |
-| `agregar_action_item` | `{descripcion}` | Appends a pending item (one call per item) |
-| `set_severidad` | `{severidad: enum(low\|medium\|high\|critical)}` | Sets severity exactly as declared — **always** fires a confirmation read-back |
-| `enviar_reporte` | `{}` | Closes and sends the report (`estado: enviada`) |
+| `get_incident` | `{incidente_id?}` | Loads the session's active incident (customer, site, equipment, initial report) |
+| `set_summary` | `{texto}` | Sets the one-line summary that heads the report card |
+| `set_what_happened` | `{texto}` | Stores the operator's narrative verbatim — no paraphrase, jargon kept |
+| `search_service` | `{consulta}` | Tolerant catalog search (name, jargon, alias); returns best candidate + alternatives + `confusable_warning` |
+| `add_affected_service` | `{id: enum(servicios), afectados?: int}` | Adds the service (enum-validated; enters unconfirmed) + spoken read-back |
+| `add_timeline_event` | `{hora: "H:MM"\|"HH:MM", evento}` | Adds a timeline event; hour pattern-validated and read back out loud |
+| `add_action_item` | `{descripcion}` | Appends a pending item (one call per item) |
+| `set_severity` | `{severidad: enum(low\|medium\|high\|critical)}` | Sets severity exactly as declared — **always** fires a confirmation read-back |
+| `send_report` | `{}` | Closes and sends the report (`estado: enviada`) |
 
 The catalog `enum` is the first catch — the agent cannot invent services; the
 spoken read-back is the second (the rescue this loop caught in a real session
@@ -125,6 +126,11 @@ driver, same seeded ground truth translated with the domain, same oracle):
 build kept the original field names: severidad = severity, servicios
 afectados = affected services, horas exactas = hour-exact entries.)*
 
+*2026-09-30: the tool names cited in these notes were renamed to English after
+publication (e.g. `send_report` was `enviar_reporte`); the session artifacts in
+[docs/evidence/gate/](docs/evidence/gate/) keep the pre-rename tool names under
+which the N=10 table was measured.*
+
 **Barge-in respected** is not measured on the English set (no
 designed-interrupt take in the N=10 composition) — the row is omitted rather
 than inherited; the Spanish development set measured 0/3 (see its notes
@@ -143,8 +149,9 @@ frozen with zero iterations: every prompt-controlled metric was green at
 freeze — turn completion 100%, severity 9/10, services 100/100, timeline
 hours 80.0%, confirm precision 71.0% (stop criterion and full rationale in
 [STATUS.md](STATUS.md) METRICS-N10-EN). (3) All 10 sessions execute the
-report-send tool call (`enviar_reporte` — in three of them a final
-`set_resumen` follows in the same closing turn); 0 of 10 hit the 300 s driver
+report-send tool call (`send_report` (was `enviar_reporte`) — in three of them
+a final `set_summary` (was `set_resumen`) follows in the same closing turn);
+0 of 10 hit the 300 s driver
 watchdog (the Spanish set: 2 of 10 — its close-out race was fixed before
 these runs). (4) N08's severity was never set (ground truth: medium) despite
 a complete session — agent variance under 8 barge-ins; published as
@@ -212,13 +219,13 @@ phrases — hour-exact match is the reported signal. (5) The designed
 capture-error rescue (rack A8 heard → corrected to A3) completed in real
 session R5d; derived rescue counts undercount when the operator answers with
 content ("producción") instead of yes/no. (6) No session in the N=10 set
-reached `enviar_reporte` — post-audit diagnosis found a driver close-out
+reached `send_report` (was `enviar_reporte`) — post-audit diagnosis found a driver close-out
 race: the close loop only waited for already-open replies, and the final
 reply (which carries the send) takes ~1.5 s to open, so it died with
 `session.end`. The fix in `scripts/realgate.mjs` (cycled close-out: wait for
 the reply to open, then drain, repeat) is confirmed by one post-audit run —
 R6a, same script and prompt — which completed the arc: 23 tool calls ending
-in `enviar_reporte`, `estado: enviada` in the final form, services 100/100
+in `send_report` (was `enviar_reporte`), `estado: enviada` in the final form, services 100/100
 and severity exact vs ground truth (artifact committed as evidence). R6a is
 not added to the N=10 table: the rig changed after the audit.
 (7) Aggregate chronological

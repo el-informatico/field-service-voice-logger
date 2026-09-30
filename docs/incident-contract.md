@@ -44,18 +44,22 @@ desambiguación — MISMO mecanismo que válvulas 3/4↔3/8).
 
 ## 5. Tools (8) — mismo formato function-tool que tools.js
 
+> 2026-09-30: rename post-medición — las tool-names pasan a sus nombres EN
+> (era `get_incidente`, `set_resumen`, …); la evidencia de docs/evidence/gate/
+> conserva los nombres pre-rename.
+
 | Tool | Params | Efecto |
 |---|---|---|
-| `get_incidente` | `{}` (orden activa de sesión) | Devuelve el incidente activo |
-| `set_resumen` | `{texto}` | Fija el resumen (1 línea) |
-| `set_que_paso` | `{texto}` | Narrativa literal del operador |
-| `buscar_servicio` | `{consulta}` | Búsqueda tolerante + `confusable_warning` |
-| `agregar_servicio_afectado` | `{id: enum(servicios), afectados?: int}` | Agrega + read-back |
-| `agregar_evento_timeline` | `{hora: "HH:MM", evento: string}` | Hora validada por regex `^\d{1,2}:\d{2}$` + read-back de la hora |
-| `agregar_action_item` | `{descripcion}` | Lista de pendientes |
-| `enviar_reporte` | `{}` | Cierra (estado=enviada) |
+| `get_incident` | `{}` (orden activa de sesión) | Devuelve el incidente activo |
+| `set_summary` | `{texto}` | Fija el resumen (1 línea) |
+| `set_what_happened` | `{texto}` | Narrativa literal del operador |
+| `search_service` | `{consulta}` | Búsqueda tolerante + `confusable_warning` |
+| `add_affected_service` | `{id: enum(servicios), afectados?: int}` | Agrega + read-back |
+| `add_timeline_event` | `{hora: "HH:MM", evento: string}` | Hora validada por regex `^\d{1,2}:\d{2}$` + read-back de la hora |
+| `add_action_item` | `{descripcion}` | Lista de pendientes |
+| `send_report` | `{}` | Cierra (estado=enviada) |
 
-`set_severidad {severidad: enum(baja|media|alta|critica)}` es la 9ª tool y
+`set_severity {severidad: enum(baja|media|alta|critica)}` es la 9ª tool y
 SIEMPRE dispara read-back de confirmación.
 
 ## 6. Guiones (3) + GT — data/guiones-incidente/, data/ground-truth-incidente/
