@@ -150,8 +150,9 @@ post-visit quiet dictation, scripted operator, AssemblyAI Voice Agent API;
 5 sessions on interview prompt v3 + 5 on prompt v4, the narrative-capture fix
 documented in [STATUS.md](STATUS.md) METRICS-N10; three sample artifacts plus
 one post-audit session are committed as evidence in
-[docs/evidence/gate/](docs/evidence/gate/), the full set stays local,
-measured on the original Spanish-language build — see the note at the top):
+[docs/evidence/gate/](docs/evidence/gate/) and the full set stays local.
+*(Measured on the original Spanish-language build; see the English-build note
+at the top.)*
 
 | Metric | Value | N | Condition |
 |---|---|---|---|
@@ -221,9 +222,10 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 **Watch (3:44, EN, captions burned):** *link added at submission —
 hosted unlisted by the owner; the caption track `demo-video-d6-v5.srt`
 (70 cues) ships alongside it and doubles as the closed-captions
-upload.* Re-recorded on the English UI in the final 24 hours; the
-development-evidence table above and the companion clip below are the
-original Spanish-language build. A 66-second
+upload.* Re-recorded on the English UI in the final 24 hours — the numbers
+spoken in the video are the re-measured English-build table in the Metrics
+section; the development-evidence table above and the companion clip below
+are the original Spanish-language build. A 66-second
 companion clip of a **real live-API session** (silent by design, disclosure
 bands burned in: scripted wav, audio never stored) is submitted with it:
 `real-session-clip-v5.mp4` — the session replayed frame-by-frame from its own
