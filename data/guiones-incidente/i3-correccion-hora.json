@@ -1,57 +1,57 @@
 {
   "scenario_id": "i3-correccion-hora",
   "incidente_id": "IC-2005",
-  "description": "Hour correction: building primary water pump at Torre Horizonte stopped by a burnt relay, dictated post-visit from the quiet parking lot. The operator says 'at nine forty I got to the pump room' but the transcription captures 'nine twenty': agregar_evento_timeline registers 09:20 and the hour read-back exposes it; the operator corrects and the form keeps 09:40. The primary/secondary pump pair resolves on the first try because the operator clears it up on his own. At the end he cuts the agent's summary with a provoked interruption ('wait—') to add a follow-up he had missed.",
+  "description": "Hour correction: building primary water pump at Torre Horizonte stopped by a burnt relay, dictated post-visit from the quiet parking lot. The operator says 'at nine forty I got to the pump room' but the transcription captures 'nine twenty': add_timeline_event registers 09:20 and the hour read-back exposes it; the operator corrects and the form keeps 09:40. The primary/secondary pump pair resolves on the first try because the operator clears it up on his own. At the end he cuts the agent's summary with a provoked interruption ('wait—') to add a follow-up he had missed.",
   "ambiente": "tranquilo",
   "turns": [
     {
       "n": 1,
       "role": "user",
       "text": "Hello?... I'm done with the building pump job, I'm in the van now, all quiet over here... log the incident report for me.",
-      "expect": "tool:get_incidente",
+      "expect": "tool:get_incident",
       "note": "post-visit dictation in the parking lot, engine off; quiet environment"
     },
     {
       "n": 2,
       "role": "agent",
-      "hint": "get_incidente(IC-2005); recap the report (the building water pump kept stopping on its own and the rooftop tanks weren't filling) and ask him to walk through what happened."
+      "hint": "get_incident(IC-2005); recap the report (the building water pump kept stopping on its own and the rooftop tanks weren't filling) and ask him to walk through what happened."
     },
     {
       "n": 3,
       "role": "user",
       "text": "Well, the primary pump had been tripping since early... it would start, then stop after a while, and the upper floors were losing pressure... I checked the starter relay and it was burnt out, that was it.",
-      "expect": "tool:set_que_paso",
+      "expect": "tool:set_what_happened",
       "note": "the operator's literal narrative; the timeline is asked for separately"
     },
     {
       "n": 4,
       "role": "agent",
-      "hint": "set_que_paso with the operator's literal text; ask for the timeline from the first symptom."
+      "hint": "set_what_happened with the operator's literal text; ask for the timeline from the first symptom."
     },
     {
       "n": 5,
       "role": "user",
       "text": "The first symptom was around eight ten, when building maintenance called me that it was starting and stopping... log that one.",
-      "expect": "tool:agregar_evento_timeline",
+      "expect": "tool:add_timeline_event",
       "note": "hour said in words, clear"
     },
     {
       "n": 6,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '08:10', evento 'First symptom: the pump starting and stopping, reported by building maintenance'); read the hour back out loud: 'eight ten, confirm?'."
+      "hint": "add_timeline_event(hora '08:10', evento 'First symptom: the pump starting and stopping, reported by building maintenance'); read the hour back out loud: 'eight ten, confirm?'."
     },
     {
       "n": 7,
       "role": "user",
       "text": "Then at nine forty I got to the pump room and it was stopped for good, it would just try and nothing.",
-      "expect": "tool:agregar_evento_timeline",
-      "note": "SEEDED ERROR: THIS turn's transcription hears 'nine twenty' instead of 'nine forty' -> agregar_evento_timeline registers 09:20 ('Arrival at the pump room, pump fully stopped'). The truth is 09:40. The turn-8 hour read-back must catch it. The operator's real audio says 'nine forty'.",
+      "expect": "tool:add_timeline_event",
+      "note": "SEEDED ERROR: THIS turn's transcription hears 'nine twenty' instead of 'nine forty' -> add_timeline_event registers 09:20 ('Arrival at the pump room, pump fully stopped'). The truth is 09:40. The turn-8 hour read-back must catch it. The operator's real audio says 'nine forty'.",
       "as_heard": "Then at nine twenty I got to the pump room and it was stopped for good, it would just try and nothing."
     },
     {
       "n": 8,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '09:20', evento 'Arrival at the pump room; primary pump fully stopped') and read the hour back: 'nine twenty, confirm?'.",
+      "hint": "add_timeline_event(hora '09:20', evento 'Arrival at the pump room; primary pump fully stopped') and read the hour back: 'nine twenty, confirm?'.",
       "add_evento": {
         "hora": "09:20",
         "evento": "Arrival at the pump room; primary pump fully stopped"
@@ -77,25 +77,25 @@
       "n": 11,
       "role": "user",
       "text": "That's it... and around eleven oh five the pump was starting fine, with the new relay, and pressure stabilized on every floor.",
-      "expect": "tool:agregar_evento_timeline",
+      "expect": "tool:add_timeline_event",
       "note": "closing event; hour in words, clear"
     },
     {
       "n": 12,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '11:05', evento 'Clean start with the new relay; pressure stable on every floor'); read the hour back; ask about the affected services."
+      "hint": "add_timeline_event(hora '11:05', evento 'Clean start with the new relay; pressure stable on every floor'); read the hour back; ask about the affected services."
     },
     {
       "n": 13,
       "role": "user",
       "text": "Well, the primary pump, that's the one that stopped... we never even started the secondary, that one's manual and it's only for emergencies.",
-      "expect": "tool:buscar_servicio",
+      "expect": "tool:search_service",
       "note": "resolves the confusable pair on his own by mentioning the secondary was never touched"
     },
     {
       "n": 14,
       "role": "agent",
-      "hint": "buscar_servicio('primary pump') raises confusable_warning for the SRV-BOMBA-PRIMARIA<->SRV-BOMBA-SECUNDARIA pair; agregar_servicio_afectado(SRV-BOMBA-PRIMARIA) with a brief disambiguation read-back: 'the primary pump, and the secondary stays out, right?'."
+      "hint": "search_service('primary pump') raises confusable_warning for the SRV-BOMBA-PRIMARIA<->SRV-BOMBA-SECUNDARIA pair; add_affected_service(SRV-BOMBA-PRIMARIA) with a brief disambiguation read-back: 'the primary pump, and the secondary stays out, right?'."
     },
     {
       "n": 15,
@@ -113,38 +113,38 @@
       "n": 17,
       "role": "user",
       "text": "Medium... because it's working again, but it needs watching for a few days.",
-      "expect": "tool:set_severidad",
+      "expect": "tool:set_severity",
       "note": "severity with a follow-up justification"
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "set_severidad(medium); ALWAYS read back: 'noting medium severity, correct?'; once confirmed ASSEMBLE the form and start reading the final summary out loud: 'Let me sum up: building primary pump stopped by a burnt starter relay, replaced at eleven oh five, severity medium, and the follow-ups still missing—'. MUST let itself be interrupted as soon as the user speaks."
+      "hint": "set_severity(medium); ALWAYS read back: 'noting medium severity, correct?'; once confirmed ASSEMBLE the form and start reading the final summary out loud: 'Let me sum up: building primary pump stopped by a burnt starter relay, replaced at eleven oh five, severity medium, and the follow-ups still missing—'. MUST let itself be interrupted as soon as the user speaks."
     },
     {
       "n": 19,
       "role": "user",
       "text": "Wait—... I missed a follow-up: have them order the spare starter relay, the last one has been used... and have the building superintendent sign the service sheet tomorrow.",
-      "expect": "tool:agregar_action_item",
+      "expect": "tool:add_action_item",
       "note": "INTERRUPTION 1: cuts the agent's final summary mid-sentence (expected agent_text_cut: '...and the follow-ups still missing—'); the agent must yield within <500 ms and not finish the sentence",
       "interrupt": true
     },
     {
       "n": 20,
       "role": "agent",
-      "hint": "Yield immediately (barge_in registered); agregar_action_item('Order a spare starter relay (the last one has been used)'); agregar_action_item('Get the building superintendent to sign the service sheet the next day'); short read-back; propose the summary: 'Building primary water pump stopped by a burnt-out starter relay; relay replaced and pressure restored on every floor.' and ask whether to send."
+      "hint": "Yield immediately (barge_in registered); add_action_item('Order a spare starter relay (the last one has been used)'); add_action_item('Get the building superintendent to sign the service sheet the next day'); short read-back; propose the summary: 'Building primary water pump stopped by a burnt-out starter relay; relay replaced and pressure restored on every floor.' and ask whether to send."
     },
     {
       "n": 21,
       "role": "user",
       "text": "That's it, good to go... send it.",
-      "expect": "tool:enviar_reporte",
+      "expect": "tool:send_report",
       "note": "close"
     },
     {
       "n": 22,
       "role": "agent",
-      "hint": "enviar_reporte(); confirm 'incident form sent' (mention the rescued hour correction) and close the session."
+      "hint": "send_report(); confirm 'incident form sent' (mention the rescued hour correction) and close the session."
     }
   ]
 }

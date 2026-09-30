@@ -6,7 +6,7 @@
  * `session.update`, el agente (LLM real) las lee para decidir CUANDO llamar y
  * las implementa tool-runner.js (dominio incidente) en el cliente.
  *
- * El `enum` del parametro `id` de agregar_servicio_afectado se construye EN
+ * El `enum` del parametro `id` de add_affected_service se construye EN
  * TIEMPO DE SESION desde data/servicios.json: guarda a nivel schema contra
  * servicios fuera de catalogo (el LLM no puede inventar ids).
  */
@@ -35,7 +35,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
   return [
     {
       type: 'function',
-      name: 'get_incidente',
+      name: 'get_incident',
       description:
         'Loads the active incident and returns all of its data (customer, site, equipment, initial report, category). ' +
         'Call it ONCE at the start of the session: the incident is ALREADY assigned by the app, the operator does not need to dictate the number.',
@@ -53,7 +53,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'set_resumen',
+      name: 'set_summary',
       description:
         'Sets the incident summary in ONE single line (what happened, affected service(s) and severity). ' +
         'It is the header of the report card: brief, no unnecessary jargon, but faithful to what the operator said.',
@@ -71,7 +71,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'set_que_paso',
+      name: 'set_what_happened',
       description:
         'Sets the "what happened" narrative with THE OPERATOR\'s words (the post-visit dictation). ' +
         'Do NOT paraphrase, do NOT summarize, do NOT translate their jargon: it is textual evidence of the incident.',
@@ -89,7 +89,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'buscar_servicio',
+      name: 'search_service',
       description:
         'Searches a catalog service by spoken name, jargon or alias (tolerant search: lowercase, accent-free, no plurals). ' +
         'Call it EVERY time the operator mentions an affected service or piece of equipment BEFORE adding it. ' +
@@ -110,9 +110,9 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'agregar_servicio_afectado',
+      name: 'add_affected_service',
       description:
-        'Adds an affected service to the report card. Only accepts ids from the enum (those returned by buscar_servicio). ' +
+        'Adds an affected service to the report card. Only accepts ids from the enum (those returned by search_service). ' +
         'The service stays UNCONFIRMED (confirmado=false): confirmation comes only from the spoken read-back — ' +
         'you must read the service name out loud (and how many affected, if stated) and wait for the operator\'s "yes".',
       parameters: {
@@ -131,7 +131,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'agregar_evento_timeline',
+      name: 'add_timeline_event',
       description:
         'Adds an event to the incident timeline with its time. The time is validated against the "H:MM" or "HH:MM" ' +
         'pattern (24 h). ALWAYS read the time back out loud after adding ("at nine twenty, correct?"): ' +
@@ -155,7 +155,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'agregar_action_item',
+      name: 'add_action_item',
       description:
         'Adds a pending item / action item to the report card (what remains to be done after the incident: follow-ups, ' +
         'notifications, pending changes, purchases). One call per item.',
@@ -173,7 +173,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'set_severidad',
+      name: 'set_severity',
       description:
         'Sets the incident severity (low | medium | high | critical). ONLY with the value the operator declared. ' +
         'This tool ALWAYS triggers an out-loud confirmation read-back: "noting high severity, correct?".',
@@ -192,7 +192,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
     },
     {
       type: 'function',
-      name: 'enviar_reporte',
+      name: 'send_report',
       description:
         'CLOSES and sends the incident report card (state=sent). Call it only when the operator asks for it ("send it", "that\'s all") ' +
         'AND when summary, what happened, timeline, services (all confirmed) and severity are captured; if anything is missing, ask before sending.',
@@ -204,7 +204,7 @@ export function buildIncidentToolDefinitions(servicioIds = []) {
 
 /** Nombres de las 9 tools publicas (para validacion en tool-runner/smoke). */
 export const INCIDENT_TOOL_NAMES = [
-  'get_incidente', 'set_resumen', 'set_que_paso', 'buscar_servicio',
-  'agregar_servicio_afectado', 'agregar_evento_timeline',
-  'agregar_action_item', 'set_severidad', 'enviar_reporte',
+  'get_incident', 'set_summary', 'set_what_happened', 'search_service',
+  'add_affected_service', 'add_timeline_event',
+  'add_action_item', 'set_severity', 'send_report',
 ];

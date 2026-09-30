@@ -26,20 +26,20 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
   async function call(tool, args = {}) {
     try {
       switch (tool) {
-        case 'get_incidente': return ok(getIncidente(args));
-        case 'set_resumen':
-        case 'set_que_paso':
+        case 'get_incident': return ok(getIncidente(args));
+        case 'set_summary':
+        case 'set_what_happened':
           return ok(setTexto(tool, args));
-        case 'buscar_servicio': return ok(buscarServicio(args));
-        case 'agregar_servicio_afectado': return ok(agregarServicio(args));
-        case 'agregar_evento_timeline': return ok(agregarEvento(args));
-        case 'agregar_action_item': return ok(agregarActionItem(args));
-        case 'set_severidad': return ok(setSeveridad(args));
+        case 'search_service': return ok(buscarServicio(args));
+        case 'add_affected_service': return ok(agregarServicio(args));
+        case 'add_timeline_event': return ok(agregarEvento(args));
+        case 'add_action_item': return ok(agregarActionItem(args));
+        case 'set_severity': return ok(setSeveridad(args));
         case 'confirmar_servicio':
         case 'quitar_servicio':
         case 'corregir_hora':
           return ok(interno(tool, args));
-        case 'enviar_reporte': return ok(enviarReporte());
+        case 'send_report': return ok(enviarReporte());
         default:
           return { ok: false, result: { error: `tool_desconocida:${String(tool)}`, tool } };
       }
@@ -66,7 +66,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
         disponibles: incidentes.slice(0, 10).map((o) => o.id),
       };
     }
-    store.applyToolResult('get_incidente', { incidente_id: id }, incidente);
+    store.applyToolResult('get_incident', { incidente_id: id }, incidente);
     return { ok: true, incidente };
   }
 
@@ -103,8 +103,8 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     // Guion de acción para el LLM: el resultado le dice cuál es el siguiente paso.
     result.siguiente_paso = confusable_warning
       ? `DEVIATION: ask the disambiguation out loud ("${best?.nombre}" or "${confusable_warning.nombre}"?) and add ONLY the one the operator confirms.`
-      : (best ? `ADD THIS service now with agregar_servicio_afectado({"id":"${best.id}"}) and read the name back.` : 'No clear candidate: ask the operator for the exact name of the service.');
-    store.applyToolResult('buscar_servicio', { consulta: q }, result);
+      : (best ? `ADD THIS service now with add_affected_service({"id":"${best.id}"}) and read the name back.` : 'No clear candidate: ask the operator for the exact name of the service.');
+    store.applyToolResult('search_service', { consulta: q }, result);
     return result;
   }
 
@@ -113,7 +113,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     if (!entry) {
       return {
         ok: false, error: 'id_fuera_de_catalogo', id: String(id ?? ''),
-        pista: 'Call buscar_servicio with the operator\'s words and use an id from the result.',
+        pista: 'Call search_service with the operator\'s words and use an id from the result.',
       };
     }
     const n = afectados != null && Number.isFinite(+afectados) && +afectados >= 0
@@ -123,7 +123,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
       ok: true, id: entry.servicio.id, nombre: entry.servicio.nombre, afectados: n,
       confirmado: false, requiere_read_back: true,
     };
-    store.applyToolResult('agregar_servicio_afectado', { id: entry.servicio.id, afectados: n }, result);
+    store.applyToolResult('add_affected_service', { id: entry.servicio.id, afectados: n }, result);
     return result;
   }
 
@@ -138,7 +138,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     }
     const canon = canonHora(hora);
     const result = { ok: true, hora: canon, evento: ev, requiere_read_back: true };
-    store.applyToolResult('agregar_evento_timeline', { hora: canon, evento: ev }, result);
+    store.applyToolResult('add_timeline_event', { hora: canon, evento: ev }, result);
     return result;
   }
 
@@ -146,7 +146,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
     const d = String(descripcion ?? '').trim();
     if (!d) return { ok: false, error: 'descripcion_vacia', campo: 'descripcion' };
     const result = { ok: true, descripcion: d };
-    store.applyToolResult('agregar_action_item', { descripcion: d }, result);
+    store.applyToolResult('add_action_item', { descripcion: d }, result);
     return result;
   }
 
@@ -159,7 +159,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
       };
     }
     const result = { ok: true, severidad: s, requiere_read_back: true };
-    store.applyToolResult('set_severidad', { severidad: s }, result);
+    store.applyToolResult('set_severity', { severidad: s }, result);
     return result;
   }
 
@@ -209,7 +209,7 @@ export function createIncidentToolRunner({ incidentes = [], servicios = [], stor
         advertencias: faltantes,
       },
     };
-    store.applyToolResult('enviar_reporte', {}, result);
+    store.applyToolResult('send_report', {}, result);
     return result;
   }
 

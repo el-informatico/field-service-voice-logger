@@ -61,7 +61,7 @@
     { "t_ms": 43400, "type": "form_update", "changed": ["piezas"], "form": { "piezas": [ { "sku": "VLV-034-BR", "nombre": "Valvula de bola laton 3/4", "qty": 1, "confirmada": true }, { "sku": "REL-24V-10A", "nombre": "Relevador 24V 10A", "qty": 1, "confirmada": true }, { "sku": "FUS-2A-30", "nombre": "Fusible 30A (paq 2)", "qty": 2, "confirmada": false } ] } },
     { "t_ms": 43600, "type": "user_turn_start" },
     { "t_ms": 47400, "type": "user_turn_end", "text": "cierra la orden" },
-    { "t_ms": 49400, "type": "tool_call", "call_id": "b7", "tool": "enviar_reporte", "args": {} },
+    { "t_ms": 49400, "type": "tool_call", "call_id": "b7", "tool": "send_report", "args": {} },
     { "t_ms": 49430, "type": "tool_result", "call_id": "b7", "ok": true, "result": { "estado": "enviada" } },
     { "t_ms": 50000, "type": "report_sent" }
   ],

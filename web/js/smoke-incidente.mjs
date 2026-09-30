@@ -49,11 +49,11 @@ async function main() {
   try {
     guionFiles = (await readdir(join(DATA, 'guiones-incidente'))).filter((f) => f.endsWith('.json')).sort();
   } catch {
-    console.error('ERROR: no existe data/guiones-incidente/ — corre el bloque de datos del dominio incidente.');
+    console.error('ERROR: data/guiones-incidente/ does not exist — run the incident-domain data block.');
     process.exit(1);
   }
   if (!incidentes?.length || !servicios?.length) {
-    console.error('ERROR: data/incidentes.json o data/servicios.json vacíos/ausentes.');
+    console.error('ERROR: data/incidentes.json or data/servicios.json empty/missing.');
     process.exit(1);
   }
 
@@ -66,16 +66,16 @@ async function main() {
   const names = defs.map((d) => d.name).sort();
   const expected = [...INCIDENT_TOOL_NAMES].sort();
   if (JSON.stringify(names) !== JSON.stringify(expected)) {
-    console.error('ERROR: buildIncidentToolDefinitions no coincide con INCIDENT_TOOL_NAMES:', names);
+    console.error('ERROR: buildIncidentToolDefinitions does not match INCIDENT_TOOL_NAMES:', names);
     process.exit(1);
   }
-  const enumIds = defs.find((d) => d.name === 'agregar_servicio_afectado')
+  const enumIds = defs.find((d) => d.name === 'add_affected_service')
     ?.parameters?.properties?.id?.enum;
   if (enumIds?.length !== servicios.length) {
-    console.error('ERROR: enum de id no cubre el catálogo de servicios');
+    console.error('ERROR: id enum does not cover the service catalog');
     process.exit(1);
   }
-  console.log(`tools OK: ${names.join(', ')} (enum servicios: ${enumIds.length})`);
+  console.log(`tools OK: ${names.join(', ')} (service enum: ${enumIds.length})`);
 
   let failures = 0;
   for (const file of guionFiles) {
@@ -133,13 +133,13 @@ function summarize(artifact, gt) {
   const problems = [];
 
   if (artifact.schema_version !== 1) problems.push('schema_version != 1');
-  if (!ev.length) problems.push('events vacío');
-  if (toolCalls.length !== toolResults.length) problems.push('tool_call sin tool_result');
+  if (!ev.length) problems.push('events empty');
+  if (toolCalls.length !== toolResults.length) problems.push('tool_call without tool_result');
   if (f.estado !== 'sent') problems.push('estado != sent');
-  if (!f.servicios_afectados.every((s) => s.confirmado)) problems.push('servicios sin confirmar');
+  if (!f.servicios_afectados.every((s) => s.confirmado)) problems.push('servicios_afectados not all confirmed');
   if (artifact.audio_retained !== false) problems.push('audio_retained != false');
-  if (!f.que_paso) problems.push('que_paso vacío');
-  if (!f.resumen) problems.push('resumen vacío');
+  if (!f.que_paso) problems.push('que_paso empty');
+  if (!f.resumen) problems.push('resumen empty');
 
   const sims = { resumen: null, que_paso: null };
   if (gt?.expected_form) {
@@ -150,38 +150,38 @@ function summarize(artifact, gt) {
     const expIds = new Set(exp.servicios_afectados.map((s) => s.id));
     const sameServicios = predIds.size === expIds.size && [...expIds].every((x) => predIds.has(x));
     if (!sameServicios) {
-      problems.push(`servicios ≠ GT: [${[...predIds]}] vs [${[...expIds]}]`);
+      problems.push(`servicios_afectados ≠ GT: [${[...predIds]}] vs [${[...expIds]}]`);
     }
     // severidad exacta
     if (f.severidad !== exp.severidad) problems.push(`severidad ${f.severidad} ≠ GT ${exp.severidad}`);
     // timeline: misma multiset de horas + evento sim ≥ 0.6 (contrato §7)
     const predHoras = f.timeline.map((e) => e.hora).sort().join(',');
     const expHoras = exp.timeline.map((e) => e.hora).sort().join(',');
-    if (predHoras !== expHoras) problems.push(`horas ≠ GT: [${predHoras}] vs [${expHoras}]`);
+    if (predHoras !== expHoras) problems.push(`hours ≠ GT: [${predHoras}] vs [${expHoras}]`);
     else {
       for (const e of exp.timeline) {
         const pred = f.timeline.find((x) => x.hora === e.hora);
         const sim = similarity(pred?.evento ?? '', e.evento);
-        if (sim < SIM_EVENTO) problems.push(`evento de ${e.hora} sim ${sim.toFixed(2)} < ${SIM_EVENTO}`);
+        if (sim < SIM_EVENTO) problems.push(`event at ${e.hora} sim ${sim.toFixed(2)} < ${SIM_EVENTO}`);
       }
     }
     // action items: recall 100% (cada ítem GT cubierto por algún predicho, sim ≥ 0.6)
     const recallFails = exp.action_items.filter(
       (it) => !f.action_items.some((p) => similarity(p, it) >= SIM_ITEM),
     );
-    if (recallFails.length) problems.push(`action_items sin cobertura GT: ${recallFails.map((x) => `"${x}"`).join('; ')}`);
+    if (recallFails.length) problems.push(`action_items without GT coverage: ${recallFails.map((x) => `"${x}"`).join('; ')}`);
     // texto largo: reportado, no gateado (paráfrasis GT vs literal del operador)
     sims.resumen = similarity(f.resumen ?? '', exp.resumen ?? '');
     sims.que_paso = similarity(f.que_paso ?? '', exp.que_paso ?? '');
   }
 
-  const line = `✓ ${artifact.scenario_id}: turnos user=${userTurns.length} agente=${agentTurns.length}` +
-    ` | tools=${toolCalls.length} | read-backs=${confirmsReq.length} (ok=${confirmsOk.length}, corrección=${confirmsNo.length})` +
+  const line = `✓ ${artifact.scenario_id}: turns user=${userTurns.length} agent=${agentTurns.length}` +
+    ` | tools=${toolCalls.length} | read-backs=${confirmsReq.length} (ok=${confirmsOk.length}, corrections=${confirmsNo.length})` +
     ` | barge-ins=${bargeIns.length}` +
-    ` | ficha: ${f.servicios_afectados.map((s) => `${s.id}${s.confirmado ? '✓' : '?'}`).join(' · ')}` +
+    ` | form: ${f.servicios_afectados.map((s) => `${s.id}${s.confirmado ? '✓' : '?'}`).join(' · ')}` +
     ` | sev=${f.severidad ?? '?'} | timeline=${f.timeline.length} ev | items=${f.action_items.length}` +
     (sims.que_paso != null ? ` | sim que_paso=${sims.que_paso.toFixed(2)} resumen=${sims.resumen.toFixed(2)}` : '') +
-    ` | eventos=${ev.length}`;
+    ` | events=${ev.length}`;
   return { line, problems };
 }
 

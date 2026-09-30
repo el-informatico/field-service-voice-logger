@@ -8,73 +8,73 @@
       "n": 1,
       "role": "user",
       "text": "Can you hear me OK?... OK, I'm on my way out, in the van, just finished the network job at Kimsa... help me out with the incident report, alright?",
-      "expect": "tool:get_incidente",
+      "expect": "tool:get_incident",
       "note": "post-visit dictation in the van, engine off; quiet environment"
     },
     {
       "n": 2,
       "role": "agent",
-      "hint": "get_incidente(IC-2003); recap the report (office-wide network outage at the Kimsa courier offices) and ask the technician to walk through what happened from the beginning."
+      "hint": "get_incident(IC-2003); recap the report (office-wide network outage at the Kimsa courier offices) and ask the technician to walk through what happened from the beginning."
     },
     {
       "n": 3,
       "role": "user",
       "text": "Well, the outage started early... around eight fifty reception called me that there was no internet in the whole office, no IP phones either... I went in to check and the core switch wasn't responding, the status LED just stayed orange.",
-      "expect": "tool:set_que_paso",
+      "expect": "tool:set_what_happened",
       "note": "the operator's literal narrative; hour mentioned in passing, the timeline is asked for separately"
     },
     {
       "n": 4,
       "role": "agent",
-      "hint": "set_que_paso with the technician's literal text; ask for the times in order to build the timeline."
+      "hint": "set_what_happened with the technician's literal text; ask for the times in order to build the timeline."
     },
     {
       "n": 5,
       "role": "user",
       "text": "OK... the reception call was at eight fifty, log that one first.",
-      "expect": "tool:agregar_evento_timeline",
+      "expect": "tool:add_timeline_event",
       "note": "hour said in words, clear"
     },
     {
       "n": 6,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '08:50', evento 'Reception call reporting the office-wide network outage'); read the hour back out loud: 'eight fifty, confirm?'."
+      "hint": "add_timeline_event(hora '08:50', evento 'Reception call reporting the office-wide network outage'); read the hour back out loud: 'eight fifty, confirm?'."
     },
     {
       "n": 7,
       "role": "user",
       "text": "That's it... then around nine fifteen I had it pinned to the core switch, because I tested it with the diagnostic kit and it wouldn't answer.",
-      "expect": "tool:agregar_evento_timeline",
+      "expect": "tool:add_timeline_event",
       "note": "first-try confirmation and a new event"
     },
     {
       "n": 8,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '09:15', evento 'Core switch identified as the cause after a diagnostic test'); read the hour back; ask for what comes next."
+      "hint": "add_timeline_event(hora '09:15', evento 'Core switch identified as the cause after a diagnostic test'); read the hour back; ask for what comes next."
     },
     {
       "n": 9,
       "role": "user",
       "text": "At ten ten I put in the new spare switch I had with me... and by ten twenty I had the whole network back up, email and phones.",
-      "expect": "tool:agregar_evento_timeline",
+      "expect": "tool:add_timeline_event",
       "note": "two events in a single turn; hours in words"
     },
     {
       "n": 10,
       "role": "agent",
-      "hint": "agregar_evento_timeline(hora '10:10', evento 'Core switch swapped for a spare unit'); agregar_evento_timeline(hora '10:20', evento 'Network restored: email and IP telephony back up'); read both hours back together; ask about the affected services."
+      "hint": "add_timeline_event(hora '10:10', evento 'Core switch swapped for a spare unit'); add_timeline_event(hora '10:20', evento 'Network restored: email and IP telephony back up'); read both hours back together; ask about the affected services."
     },
     {
       "n": 11,
       "role": "user",
       "text": "Well, the internal DNS went down, that was the first one... and the VPN too, because the delivery crew couldn't get into the system from the street.",
-      "expect": "tool:buscar_servicio",
+      "expect": "tool:search_service",
       "note": "two services, neither confusable; clear speech"
     },
     {
       "n": 12,
       "role": "agent",
-      "hint": "buscar_servicio('internal dns') resolves SRV-DNS-INTERNO with no confusables; agregar_servicio_afectado(SRV-DNS-INTERNO); read-back: 'internal dns server, correct?'."
+      "hint": "search_service('internal dns') resolves SRV-DNS-INTERNO with no confusables; add_affected_service(SRV-DNS-INTERNO); read-back: 'internal dns server, correct?'."
     },
     {
       "n": 13,
@@ -86,43 +86,43 @@
     {
       "n": 14,
       "role": "agent",
-      "hint": "buscar_servicio('vpn') resolves SRV-VPN-REMOTO; agregar_servicio_afectado(SRV-VPN-REMOTO); read-back: 'remote access vpn, correct?'; ask for the severity."
+      "hint": "search_service('vpn') resolves SRV-VPN-REMOTO; add_affected_service(SRV-VPN-REMOTO); read-back: 'remote access vpn, correct?'; ask for the severity."
     },
     {
       "n": 15,
       "role": "user",
       "text": "Put it down as high... they went about an hour and a half without invoicing or shipping, that hurt.",
-      "expect": "tool:set_severidad",
+      "expect": "tool:set_severity",
       "note": "severity with a business justification"
     },
     {
       "n": 16,
       "role": "agent",
-      "hint": "set_severidad(high); ALWAYS read back: 'noting high severity, correct?'; once confirmed propose a one-line summary and ask for follow-ups."
+      "hint": "set_severity(high); ALWAYS read back: 'noting high severity, correct?'; once confirmed propose a one-line summary and ask for follow-ups."
     },
     {
       "n": 17,
       "role": "user",
       "text": "Yes, that's right... and leave two follow-ups: get me another spare switch to keep in the van, and tell the systems lead when they do the node maintenance.",
-      "expect": "tool:agregar_action_item",
+      "expect": "tool:add_action_item",
       "note": "confirms severity on the first try and dictates two action items"
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "agregar_action_item('Buy another spare switch to keep in the van'); agregar_action_item('Tell the systems lead when they do the node maintenance'); brief read-back of both; read the summary: 'Office-wide network outage from a failed core switch; network restored in an hour and a half with a spare switch.' and ask whether to send."
+      "hint": "add_action_item('Buy another spare switch to keep in the van'); add_action_item('Tell the systems lead when they do the node maintenance'); brief read-back of both; read the summary: 'Office-wide network outage from a failed core switch; network restored in an hour and a half with a spare switch.' and ask whether to send."
     },
     {
       "n": 19,
       "role": "user",
       "text": "That's fine... send it now, I've got another job waiting.",
-      "expect": "tool:enviar_reporte",
+      "expect": "tool:send_report",
       "note": "close"
     },
     {
       "n": 20,
       "role": "agent",
-      "hint": "enviar_reporte(); confirm out loud 'incident form sent' and close the session."
+      "hint": "send_report(); confirm out loud 'incident form sent' and close the session."
     }
   ]
 }

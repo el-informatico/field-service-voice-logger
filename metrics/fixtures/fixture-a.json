@@ -72,7 +72,7 @@
     { "t_ms": 46000, "type": "agent_turn_end", "text": "Perfecto." },
     { "t_ms": 46400, "type": "user_turn_start" },
     { "t_ms": 49500, "type": "user_turn_end", "text": "prueba el ventilador y cierra la orden" },
-    { "t_ms": 49930, "type": "tool_call", "call_id": "a9", "tool": "enviar_reporte", "args": {} },
+    { "t_ms": 49930, "type": "tool_call", "call_id": "a9", "tool": "send_report", "args": {} },
     { "t_ms": 49960, "type": "tool_result", "call_id": "a9", "ok": true, "result": { "estado": "enviada" } },
     { "t_ms": 50230, "type": "agent_turn_start" },
     { "t_ms": 51000, "type": "agent_turn_end", "text": "Reporte enviado." },

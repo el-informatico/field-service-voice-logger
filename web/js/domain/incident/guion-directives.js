@@ -9,10 +9,10 @@
  *     arreglo), add_servicios [{id}], correct_to (objeto {hora} o {id}, o
  *     arreglo de {id}).
  *  b) El `hint` en prosa con llamadas entre paréntesis y citas:
- *     get_incidente(IC-2003) · set_que_paso · buscar_servicio('consulta') ·
- *     agregar_servicio_afectado(SRV-X) · agregar_evento_timeline(hora '09:20',
- *     evento '…') y ('10:20', '…') · set_severidad(alta) ·
- *     agregar_action_item('…') y ('…') · enviar_reporte() ·
+ *     get_incident(IC-2003) · set_what_happened · search_service('consulta') ·
+ *     add_affected_service(SRV-X) · add_timeline_event(hora '09:20',
+ *     evento '…') y ('10:20', '…') · set_severity(alta) ·
+ *     add_action_item('…') y ('…') · send_report() ·
  *     resumen citado tras "lee el resumen:" / "propone el resumen:".
  *
  * El resultado SIEMPRE tiene todas las llaves (arreglos vacíos / null) para
@@ -68,32 +68,32 @@ export function parseAgentDirectives(agentTurn) {
   }
 
   /* ----------------------------- hint ------------------------------- */
-  let m = /get_incidente\s*\(\s*(IC-[\d]+)?\s*\)/.exec(hint);
+  let m = /get_incident\s*\(\s*(IC-[\d]+)?\s*\)/.exec(hint);
   if (m) d.getIncidente = m[1] ?? d.getIncidente;
-  if (/set_que_paso/.test(hint)) d.setQuePaso = true;
+  if (/set_what_happened/.test(hint)) d.setQuePaso = true;
 
   // eventos: forma nombrada y forma corta "y ('10:20', '…')" / "and ('10:20', '…')"
-  const evRe = /agregar_evento_timeline\s*\(\s*(?:hora\s*)?'(\d{1,2}:\d{2})'\s*,\s*(?:evento\s*)?'([^']+)'\s*\)/g;
+  const evRe = /add_timeline_event\s*\(\s*(?:hora\s*)?'(\d{1,2}:\d{2})'\s*,\s*(?:evento\s*)?'([^']+)'\s*\)/g;
   while ((m = evRe.exec(hint)) !== null) d.eventos.push({ hora: m[1], evento: m[2] });
   const evCorta = /\b(?:y|and)\s*\(\s*'(\d{1,2}:\d{2})'\s*,\s*'([^']+)'\s*\)/g;
   while ((m = evCorta.exec(hint)) !== null) d.eventos.push({ hora: m[1], evento: m[2] });
 
-  m = /buscar_servicio\s*\(\s*'([^']+)'\s*\)/.exec(hint);
+  m = /search_service\s*\(\s*'([^']+)'\s*\)/.exec(hint);
   if (m) d.buscar = m[1];
 
-  const addRe = /agregar_servicio_afectado\s*\(\s*(SRV-[A-Z0-9-]+)\s*\)/g;
+  const addRe = /add_affected_service\s*\(\s*(SRV-[A-Z0-9-]+)\s*\)/g;
   while ((m = addRe.exec(hint)) !== null) d.addServicios.push(m[1]);
 
-  m = /set_severidad\s*\(\s*(low|medium|high|critical)\s*\)/.exec(hint);
+  m = /set_severity\s*\(\s*(low|medium|high|critical)\s*\)/.exec(hint);
   if (m) d.setSeveridad = m[1];
 
   // action items: forma nombrada + formas cortas "y ('…')" / "and ('…')"
-  const aiRe = /agregar_action_item\s*\(\s*'([^']+)'\s*\)/g;
+  const aiRe = /add_action_item\s*\(\s*'([^']+)'\s*\)/g;
   while ((m = aiRe.exec(hint)) !== null) d.actionItems.push(m[1]);
   const aiCorto = /\b(?:y|and)\s*\(\s*'([^'\d][^']{5,})'\s*\)/g;
   while ((m = aiCorto.exec(hint)) !== null) d.actionItems.push(m[1]);
 
-  if (/enviar_reporte\s*\(/.test(hint)) d.enviar = true;
+  if (/send_report\s*\(/.test(hint)) d.enviar = true;
 
   // resumen citado (se excluye la lectura hablada "Te resumo: …" cortada)
   m = /(?:resumen|resumo|summary)[^:'\n]{0,60}:\s*'([^']{15,})'/.exec(hint);

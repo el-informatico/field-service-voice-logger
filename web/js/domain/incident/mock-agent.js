@@ -10,11 +10,11 @@
  *   stop() / clock                 simClock determinista (fuente de t_ms)
  *
  * Flujo del dominio incidente (contrato §1: dictado POST-VISITA, ambiente
- * tranquilo): get_incidente → pide qué pasó → set_que_paso → extrae eventos
- * con horas (agregar_evento_timeline + read-back de CADA hora) → servicios
- * mencionados (buscar_servicio → read-back de desambiguación nombrando AMBOS
- * si hay par confundible → agregar_servicio) → severidad (set_severidad +
- * read-back SIEMPRE) → action items → enviar_reporte.
+ * tranquilo): get_incident → pide qué pasó → set_what_happened → extrae eventos
+ * con horas (add_timeline_event + read-back de CADA hora) → servicios
+ * mencionados (search_service → read-back de desambiguación nombrando AMBOS
+ * si hay par confundible → add_affected_service) → severidad (set_severity +
+ * read-back SIEMPRE) → action items → send_report.
  *
  * Capa de DIRECTIVAS de guion: los turnos agent de data/guiones-incidente/
  * llevan en `hint` y en campos estructurados (add_evento, add_servicios,
@@ -406,7 +406,7 @@ export function createIncidentMockAgentChannel({
    */
   async function applySideQuests(d) {
     if (d.resumen && !st.resumenSet) {
-      const r = await callTool('set_resumen', { texto: d.resumen });
+      const r = await callTool('set_summary', { texto: d.resumen });
       if (r.ok !== false) st.resumenSet = true;
     }
     for (const item of d.actionItems) {
@@ -415,7 +415,7 @@ export function createIncidentMockAgentChannel({
       // UNA vez por texto.
       if (appliedDirectiveItems.has(item)) continue;
       appliedDirectiveItems.add(item);
-      await callTool('agregar_action_item', { descripcion: item });
+      await callTool('add_action_item', { descripcion: item });
     }
     return d.actionItems.length;
   }
@@ -465,7 +465,7 @@ export function createIncidentMockAgentChannel({
   /* --------------------------- flows --------------------------- */
 
   async function incidenteFlow(text, d, nextTurn) {
-    const r = await callTool('get_incidente', {
+    const r = await callTool('get_incident', {
       incidente_id: d.getIncidente ?? guion.incidente_id ?? text.match(/IC-\d+/)?.[0] ?? '',
     });
     if (r.ok !== false && r.incidente) {
@@ -484,7 +484,7 @@ export function createIncidentMockAgentChannel({
   }
 
   async function quePasoFlow(text, d, nextTurn) {
-    await callTool('set_que_paso', { texto: text });
+    await callTool('set_what_happened', { texto: text });
     st.quePasoSet = true;
     /* narrativa con horas EN el dictado (guion mixto): registrarlas aquí
      * mismo y leerlas agrupadas — el operador no las repite. Espejo del
@@ -518,7 +518,7 @@ export function createIncidentMockAgentChannel({
     if (d.eventos.length) {
       for (const ev of d.eventos) {
         if (addedHoras.has(ev.hora)) continue;
-        const r = await callTool('agregar_evento_timeline', { hora: ev.hora, evento: ev.evento });
+        const r = await callTool('add_timeline_event', { hora: ev.hora, evento: ev.evento });
         if (r.ok === false || r.error) continue;
         addedHoras.add(r.hora ?? ev.hora);
         nuevas.push(r.hora ?? ev.hora);
@@ -526,7 +526,7 @@ export function createIncidentMockAgentChannel({
     } else {
       for (const hora of horasNuevas(text)) {
         const evento = eventoDeClausula(hora, clausulas) || `Event at ${hora}`;
-        const r = await callTool('agregar_evento_timeline', { hora, evento });
+        const r = await callTool('add_timeline_event', { hora, evento });
         if (r.ok === false || r.error) continue;
         addedHoras.add(hora);
         nuevas.push(hora);
@@ -571,7 +571,7 @@ export function createIncidentMockAgentChannel({
 
   async function servicioFlow(text, d, nextTurn) {
     await pause(150 + rng() * 60); // fin-de-habla → tool call (métrica de latencia)
-    const r = await callTool('buscar_servicio', { consulta: d.buscar ?? text });
+    const r = await callTool('search_service', { consulta: d.buscar ?? text });
     let target = null;
     if (d.addServicios.length) {
       target = byId.get(d.addServicios[0]) ?? null;
@@ -585,7 +585,7 @@ export function createIncidentMockAgentChannel({
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
-    const added = await callTool('agregar_servicio_afectado', { id: target.id, afectados: parseAfectados(text) });
+    const added = await callTool('add_affected_service', { id: target.id, afectados: parseAfectados(text) });
     if (!added || added.ok === false) {
       await speakChunks("I couldn't add that service. Let me retry with the catalog id.",
         { interruptedBy: interruptOf(nextTurn) });
@@ -617,7 +617,7 @@ export function createIncidentMockAgentChannel({
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
-    await callTool('set_severidad', { severidad: sev });
+    await callTool('set_severity', { severidad: sev });
     st.severidadSet = true;
     await speakChunks(`Noting severity ${sev.toUpperCase()}. Correct?`, // SIEMPRE read-back
       { interruptedBy: interruptOf(nextTurn) });
@@ -626,7 +626,7 @@ export function createIncidentMockAgentChannel({
   }
 
   async function actionItemFlow(items, nextTurn) {
-    for (const item of items) await callTool('agregar_action_item', { descripcion: item });
+    for (const item of items) await callTool('add_action_item', { descripcion: item });
     await speakChunks(
       `Noted — ${items.length === 1 ? 'the follow-up is logged' : items.length === 2 ? 'both follow-ups are logged' : `all ${speakCount(items.length)} follow-ups are logged`}. Anything else?`,
       { interruptedBy: interruptOf(nextTurn) },
@@ -659,7 +659,7 @@ export function createIncidentMockAgentChannel({
     const conf = detectConfirm(text);
     if (conf === 'yes') return servicioOkFlow(pc, text, d, nextTurn);
     if (conf === 'no') {
-      const r = await callTool('buscar_servicio', { consulta: text });
+      const r = await callTool('search_service', { consulta: text });
       const nueva = r.best && r.best.id !== pc.captured.id ? byId.get(r.best.id) : null;
       if (nueva) return servicioCorrectionFlow(pc, nueva, text, nextTurn);
       return reaskFlow(pc, nextTurn);
@@ -717,7 +717,7 @@ export function createIncidentMockAgentChannel({
       const nueva = d.setSeveridad ?? parseSeveridad(text);
       if (nueva && nueva !== pc.severidad) {
         emit('confirm_result', { field: 'severidad', value: pc.severidad, confirmed: false });
-        await callTool('set_severidad', { severidad: nueva });
+        await callTool('set_severity', { severidad: nueva });
         const cola = d.actionItems.length
           ? ` And I logged ${speakCount(d.actionItems.length)} follow-up${d.actionItems.length === 1 ? '' : 's'}.`
           : '';
@@ -770,7 +770,7 @@ export function createIncidentMockAgentChannel({
     await callTool('quitar_servicio', { id: pc.captured.id });
     addedServicios.delete(pc.captured.id);
     const afectados = parseAfectados(text) ?? pc.captured.afectados;
-    await callTool('agregar_servicio_afectado', { id: nueva.id, afectados });
+    await callTool('add_affected_service', { id: nueva.id, afectados });
     addedServicios.add(nueva.id);
     pendingConfirm = {
       kind: 'servicio-plain',
@@ -802,9 +802,9 @@ export function createIncidentMockAgentChannel({
   async function cierreFlow(text, nextTurn) {
     if (!st.resumenSet) {
       const synth = synthResumen();
-      if (synth) { await callTool('set_resumen', { texto: synth }); st.resumenSet = true; }
+      if (synth) { await callTool('set_summary', { texto: synth }); st.resumenSet = true; }
     }
-    const r = await callTool('enviar_reporte', {});
+    const r = await callTool('send_report', {});
     st.enviado = true;
     emit('report_sent', {}); // síncrono: sin drift de t_ms entre instant/realtime
     const rs = r?.resumen;

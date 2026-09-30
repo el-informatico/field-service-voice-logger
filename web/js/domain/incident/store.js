@@ -82,30 +82,30 @@ export function createIncidentStore({ incidenteId, now } = {}) {
   function applyToolResult(tool, args, result) {
     let changed = [];
     switch (tool) {
-      case 'get_incidente':
+      case 'get_incident':
         logAudit('incidente_cargado', { incidente_id: result?.id ?? args?.incidente_id });
         break;
-      case 'set_resumen':
+      case 'set_summary':
         changed = updateForm({ resumen: args?.texto ?? '' }).changed;
-        logAudit('set_resumen', {});
+        logAudit('set_summary', {});
         break;
-      case 'set_que_paso':
+      case 'set_what_happened':
         changed = updateForm({ que_paso: args?.texto ?? '' }).changed;
-        logAudit('set_que_paso', {});
+        logAudit('set_what_happened', {});
         break;
-      case 'buscar_servicio':
+      case 'search_service':
         logAudit('busqueda_servicio', {
           consulta: args?.consulta ?? '',
           best: result?.best?.id ?? null,
           confundible: result?.confusable_warning?.id ?? null,
         });
         break;
-      case 'agregar_servicio_afectado':
+      case 'add_affected_service':
         if (result?.ok === false || result?.error) break;
         changed = mergeServicio(result.id, result.nombre, result.afectados);
         logAudit('servicio_agregado', { id: result.id, confirmado: false });
         break;
-      case 'agregar_evento_timeline': {
+      case 'add_timeline_event': {
         if (result?.ok === false || result?.error) break;
         const hora = result?.hora ?? args?.hora ?? '';
         const evento = result?.evento ?? args?.evento ?? '';
@@ -113,12 +113,12 @@ export function createIncidentStore({ incidenteId, now } = {}) {
         logAudit('evento_agregado', { hora, evento: String(evento).slice(0, 80) });
         break;
       }
-      case 'agregar_action_item':
+      case 'add_action_item':
         if (result?.ok === false || result?.error) break;
         changed = addActionItem(result.descripcion ?? args?.descripcion ?? '');
         logAudit('action_item_agregado', {});
         break;
-      case 'set_severidad':
+      case 'set_severity':
         if (result?.ok === false || result?.error) break;
         changed = updateForm({ severidad: args?.severidad ?? null }).changed;
         logAudit('severidad_fijada', { severidad: args?.severidad ?? null });
@@ -156,7 +156,7 @@ export function createIncidentStore({ incidenteId, now } = {}) {
         logAudit('hora_corregida', { de, a });
         break;
       }
-      case 'enviar_reporte':
+      case 'send_report':
         changed = updateForm({ estado: 'sent' }).changed;
         logAudit('reporte_enviado', {});
         break;
@@ -228,7 +228,7 @@ export function createIncidentStore({ incidenteId, now } = {}) {
    * Resultado del loop de confirmación hablada (servicios).
    * ok=true  → servicio confirmado.
    * ok=false → servicio RECHAZADO por el operador (se retira de la ficha; el
-   *            driver corrige con agregar_servicio_afectado del correcto).
+   *            driver corrige con add_affected_service del correcto).
    */
   function markConfirmada(id, ok) {
     const idx = final_form.servicios_afectados.findIndex((s) => s.id === id);
