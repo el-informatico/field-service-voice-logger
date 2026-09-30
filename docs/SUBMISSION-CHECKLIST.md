@@ -18,7 +18,7 @@ Referencias rápidas:
 
 | Qué | Evidencia / ruta | Owner |
 |---|---|---|
-| Video demo final, QA visión 9/9 | `<entregables>/demo-video-d6-v5.mp4` — **[ACTUALIZADO 2026-09-29]** master final = **re-grabación sobre mock EN (QA de visión aprobado)**, sha256 `705e8022bdfe7992…`, **3:40** (220.0 s), 43.7 MB, captions EN quemadas. Subtítulos: `demo-video-d6-v5.srt` (68 cues / 530 palabras), sha256 `343fc261df6c32b9…`. Clip real que lo acompaña: `real-session-clip-v4.mp4` (**1:06**, sha256 `b76677c6…`, sesión real sobre la build ES original — replay verbatim del JSON). **NO subir:** el v4 del 29-sep (`8adfea08…`, UI ES, 3:39) ni el del 23-sep (`d1f7bc04…`, 3:00).** Historia previa de iteraciones en git | REPO-YA |
+| Video demo final, QA visión 9/9 | `<entregables>/demo-video-d6-v5.mp4` — **[ACTUALIZADO 2026-09-29]** master final = **re-grabación sobre mock EN (QA de visión aprobado; re-render final 29-sep 18:08 con swap W7T3 + tabla EN N=10, QA lanes 9/9)**, sha256 `9a9b632e4e14bc42…`, **3:44** (223.6 s), 45.4 MB, captions EN quemadas. Subtítulos: `demo-video-d6-v5.srt` (70 cues / 540 palabras), sha256 `fcaec24b2bd2aac0…`. Clip real que lo acompaña: `real-session-clip-v5.mp4` (**1:06**, sha256 `6334d961…`, sesión real sobre la build ES original — replay verbatim del JSON; con `real-session-clip-v5.srt`; sustituye al v4 — no subir el v4). **NO subir:** el v4 del 29-sep (`8adfea08…`, UI ES, 3:39) ni el del 23-sep (`d1f7bc04…`, 3:00).** Historia previa de iteraciones en git | REPO-YA |
 | Tabla N=10 en README | ES: commits `75b8334` + `e68afed` (METRICS-N10), **públicos en `main` desde el push del 29-sep**. EN: swap L3 (`b3358ce`) — tabla EN N=10 primaria + ES → subsección "Development evidence" — en `en-migration`, **aún sin push** → ítem 3 | REPO-YA |
 | Deploy live verificado | curl 2026-09-16: `/` → **HTTP 200** (0.54 s); `/api/token` → **HTTP 200** con `"mode":"mock"` (esperado: el server no lleva key; el modo real se activa con key en `.env`) | REPO-YA |
 | Re-auditoría de galería pre-video | Hecha antes de grabar la línea de diferenciación (ver STATUS, bloque D6): wedge intacto | REPO-YA |
@@ -38,7 +38,7 @@ Referencias rápidas:
 | 3 | **Push del repo — CRÍTICO**: sin push, el link del submit muestra la tabla **ES** N=10 como primaria — el swap L3 (tabla **EN** primaria) vive en `en-migration` sin push | HUMANO (regla del proyecto: NINGÚN push sin "YES" explícito tuyo) | Antes de pegar cualquier link | PENDIENTE | Desde el checkout de `en-migration` (rama del repo; ver nota de paths del dueño): `git push origin en-migration:main` — fast-forward limpio, publica el swap L3 + fixes + la tabla EN de S-A + Fase B. **OJO: `git push origin main` NO publica nada** (esa rama local está atrás del remote). Guards history/sensitive sobre el rango: PASS. Verificar antes: `git status -sb` |
 | 4 | Verificación post-push en GitHub | HUMANO | 5 min tras el push | PENDIENTE | README §Metrics abre con la tabla **EN N=10** ("10 REAL voice sessions on the English build") y la subsección "Development evidence" (ES) debajo (refrescar sin caché); CI verde: pestaña Actions, job `selftest` (`npm run selftest` + `npm run smoke:mock`); `git status -sb` → "up to date" |
 | 5 | Verificación Vercel tras el push | HUMANO | Tras el ítem 4 | PENDIENTE | Integración Git → redeploy automático esperado. Verificar: `curl -s -o /dev/null -w "%{http_code}\n" https://field-service-voice-logger.vercel.app/` → 200, y `curl -s https://field-service-voice-logger.vercel.app/api/token` → 200 + `"mode":"mock"`. Si no redeploya o falla: dashboard Vercel → Deployments → Redeploy / logs |
-| 6 | Hosting del video: subir a YouTube unlisted (o Streamable) y subir el SRT como subtítulos; probar EN EL TELÉFONO antes de pegar el link | HUMANO | Cuanto antes (bloquea el submit) | PENDIENTE | `<entregables>/demo-video-d6-v5.mp4` + `demo-video-d6-v5.srt` (68 cues). Si la plataforma pide archivo directo: el mp4 (43.7 MB) cumple de sobra |
+| 6 | Hosting del video: subir a YouTube unlisted (o Streamable) y subir el SRT como subtítulos; probar EN EL TELÉFONO antes de pegar el link | HUMANO | Cuanto antes (bloquea el submit) | PENDIENTE | `<entregables>/demo-video-d6-v5.mp4` + `demo-video-d6-v5.srt` (70 cues). Si la plataforma pide archivo directo: el mp4 (45.4 MB) cumple de sobra |
 | 7 | Elegir portada/thumbnail (1 min) | HUMANO | Junto al ítem 6 | **RATIFICADA cover-a.png** (frame 01:52, tabla de métricas N=10 — decisión del owner 2026-09-23) | `cover-a.png` (tabla de métricas con 100% resaltado — legible en miniatura). Mismas rutas de entregables |
 | 8 | Rellenar los textos del formulario copiando de `docs/SUBMISSION.md` (mapeo en §3) | HUMANO (fuente: REPO) | Día del submit (o antes) | LISTO PARA COPIAR | `docs/SUBMISSION.md` del repo (7 secciones, tabla N=10 verificada contra README) |
 | 9 | Metadatos de equipo/perfil en la plataforma (foto, bio, miembros del equipo) | HUMANO | Día del submit (o antes) | PENDIENTE | Perfil de la plataforma; usar el mismo nombre/avatar que firma el repo |
@@ -65,11 +65,11 @@ nombres de campo.
 
 1. **La plataforma rechaza el video** (formato/peso): el camino primario ya es un
    link (YouTube unlisted / Streamable); el archivo directo `demo-video-d6-v5.mp4`
-   (43.7 MB) es el fallback si pide upload. Último recurso, solo si exigiera menos
+   (45.4 MB) es el fallback si pide upload. Último recurso, solo si exigiera menos
    peso:
    `ffmpeg -i demo-video-d6-v5.mp4 -c:v libx264 -crf 28 -preset slow -c:a aac -b:a 96k demo-video-d6-v5-small.mp4`
    — las captions están quemadas en el cuadro, sobreviven cualquier re-encode;
-   verificar duración 3:40 y audio audible antes de subir.
+   verificar duración 3:44 y audio audible antes de subir.
 2. **El deploy cae**: el repo corre local — `cp .env.example .env` (opcional; sin
    key = modo mock determinista), `npm run dev` → http://localhost:3000 (en WSL2,
    si 127.0.0.1 cuelga usar `[::1]`); demo guiada de un comando:

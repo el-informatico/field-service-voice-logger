@@ -107,6 +107,10 @@ re-encode. Ese orden (assemble → make-srt → assemble --final) es el verifica
 
 ## Caso 2 — Actualizar la escena de métricas a N=10 (A) — el más probable
 
+> **[Nota 29-sep noche:]** describe el estado pre-swap: el master vigente
+> (3:44, W7T3) ya habla y muestra la tabla **EN N=10**; regenerar el master
+> actual parte de la tabla EN primaria del README, no de la subsección ES.
+
 Ver DECISIÓN #1 en `docs/VIDEO-REVIEW-GUIDE.md`. Afecta a UN beat (`m-metrics`)
 pero toca escena + narración + lista de QA.
 

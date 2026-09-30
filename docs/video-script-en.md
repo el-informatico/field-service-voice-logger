@@ -90,9 +90,10 @@ reaches the browser; audio never persisted — transcript + tool events only.
 
 ## Production notes
 
-> **SUPERSEDED (números):** esta lista es de la era N=5. El master v5 (3:40)
-> habla los números de la tabla **ES N=10** — el check-off verbatim de lo que
-> aparece en pantalla vive en `docs/VIDEO-REVIEW-GUIDE.md` §"Check-off
+> **SUPERSEDED (números):** esta lista es de la era N=5. El master v5 (3:44,
+> re-render final del 29-sep con swap W7T3) habla los números de la tabla
+> **EN N=10** (el take pre-swap narraba la ES) — el check-off verbatim de lo
+> que aparece en pantalla vive en `docs/VIDEO-REVIEW-GUIDE.md` §"Check-off
 > visual". El README actual publica la tabla EN N=10 como primaria y la ES
 > como subsección "Development evidence".
 

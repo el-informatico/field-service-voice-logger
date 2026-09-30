@@ -69,6 +69,12 @@ Los cortes entre segmentos son fundidos de 0.4 s: los límites de la tabla tiene
 
 ## Check-off visual — los 15 valores de la escena de métricas (1:43–2:04)
 
+> **[DESFASADO — swap final 29-sep:]** el master vigente (3:44, re-render
+> W7T3) narra y muestra la tabla **EN N=10**, no la ES. La tabla de abajo y
+> la cita de narración del beat `m-metrics` aún describen el set ES
+> (pre-swap); realinear contra README §Metrics (tabla EN primaria) antes de
+> la revisión humana.
+
 Valores **tal como aparecen en pantalla** (tabla N=10 del build **ES**;
 validados verbatim por la QA determinista contra la escena fuente == README
 §Metrics → subsección "Development evidence" — el video habla el set ES por
