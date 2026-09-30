@@ -23,14 +23,15 @@ barge-in numbers. See [Metrics](#metrics).
 > recorded, submission pack in
 > [docs/SUBMISSION.md](docs/SUBMISSION.md). Live progress: [STATUS.md](STATUS.md).
 >
-> **Born in Spanish** with real Mexican field data; the live incident domain
-> rewritten end-to-end in English in the final 24 hours — and re-measured
-> there (N=10) — with the legacy work-order domain kept in its original
-> Spanish data as evidence of the shared engine.
+> **Born in Spanish** on seed data reflecting a Mexican field-service company
+> (authored incident and service catalogs, not field recordings); the live
+> incident domain rewritten end-to-end in English in the final 24 hours — and
+> re-measured there (N=10) — with the legacy work-order domain kept in its
+> original Spanish data as evidence of the shared engine.
 >
-> **Commit history kept as-is:** the project was born in Spanish with real
-> Mexican field data and rewritten to English in the final 24 hours — the
-> history is the honest record of that journey.
+> **Commit history kept as-is:** the project was born in Spanish — seed data
+> reflecting a Mexican field-service company — and rewritten to English in the
+> final 24 hours; the history is the honest record of that journey.
 
 ## Why (the 45-minute problem)
 
@@ -60,7 +61,7 @@ Technicians ask for exactly this ([r/FieldService](https://www.reddit.com/r/Fiel
    (service validated against the catalog via `enum`), `agregar_action_item`,
    `enviar_reporte`. The incident card (the "ficha") fills in live on screen,
    each field carrying its own audit trail (which tool set it, when, confirmed
-   by voice or edited by hand).
+   by voice or edited by hand). All nine are tabulated below.
 4. Critical values — services, severity, timeline hours — are **read back out
    loud** and confirmed. Confusable services are caught twice: by the schema
    `enum` and by the spoken loop.
@@ -70,6 +71,30 @@ Technicians ask for exactly this ([r/FieldService](https://www.reddit.com/r/Fiel
 The original work-order variant (same engine; tools for parts/SKUs and
 quantities) remains in the repo — ~70% of the code is shared, and its
 noise-gate evidence is what drove the post-visit pivot.
+
+### The nine incident tools (JSON-Schema function calling)
+
+Every operator statement lands as one of nine client-side function tools —
+source of truth: [web/js/domain/incident/tools.js](web/js/domain/incident/tools.js).
+Tool and field names keep their original Spanish (the domain was frozen when
+the English build re-measured it — the metrics rows carry the same literal
+names); severity values are English enums in the current build.
+
+| Tool | Parameters | Effect |
+|---|---|---|
+| `get_incidente` | `{incidente_id?}` | Loads the session's active incident (customer, site, equipment, initial report) |
+| `set_resumen` | `{texto}` | Sets the one-line summary that heads the report card |
+| `set_que_paso` | `{texto}` | Stores the operator's narrative verbatim — no paraphrase, jargon kept |
+| `buscar_servicio` | `{consulta}` | Tolerant catalog search (name, jargon, alias); returns best candidate + alternatives + `confusable_warning` |
+| `agregar_servicio_afectado` | `{id: enum(servicios), afectados?: int}` | Adds the service (enum-validated; enters unconfirmed) + spoken read-back |
+| `agregar_evento_timeline` | `{hora: "H:MM"\|"HH:MM", evento}` | Adds a timeline event; hour pattern-validated and read back out loud |
+| `agregar_action_item` | `{descripcion}` | Appends a pending item (one call per item) |
+| `set_severidad` | `{severidad: enum(low\|medium\|high\|critical)}` | Sets severity exactly as declared — **always** fires a confirmation read-back |
+| `enviar_reporte` | `{}` | Closes and sends the report (`estado: enviada`) |
+
+The catalog `enum` is the first catch — the agent cannot invent services; the
+spoken read-back is the second (the rescue this loop caught in a real session
+is in the metrics notes below).
 
 ## Metrics
 
@@ -222,14 +247,21 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 **Watch (3:44, EN, captions burned):** *link added at submission —
 hosted unlisted by the owner; the caption track `demo-video-d6-v5.srt`
 (70 cues) ships alongside it and doubles as the closed-captions
-upload.* Re-recorded on the English UI in the final 24 hours — the numbers
+upload.* It opens at 7 PM: **Raúl, technician at Uniformes Delta**, has just
+closed incident IC-2001 and the report is still unwritten — the demo is his
+evening, recovered. Re-recorded on the English UI in the final 24 hours — the numbers
 spoken in the video are the re-measured English-build table in the Metrics
 section; the development-evidence table above and the companion clip below
 are the original Spanish-language build. A 66-second
-companion clip of a **real live-API session** (silent by design, disclosure
-bands burned in: scripted wav, audio never stored) is submitted with it:
+companion clip of a **real live-API session** is submitted with it:
 `real-session-clip-v5.mp4` — the session replayed frame-by-frame from its own
-JSON artifact, recorded on the original Spanish-language build.
+JSON artifact, recorded on the original Spanish-language build. The operator
+side is **audible** — the scripted wav track, disclosed in the burned-in
+bands; the session itself stored no audio (`audio_retained: false`, and the
+server rejects any artifact claiming otherwise). That session (artifact
+[committed as evidence](docs/evidence/gate/artifact-i2-servicio-confundido-tranquilo-W7T3.json))
+logged **20 user turns, 17 tool calls, 194.8 s of microphone, and 148
+timeline events**.
 
 Script beat-by-beat with timestamps: [docs/video-script-en.md](docs/video-script-en.md) ·
 recording plan: [docs/video-recording-plan.md](docs/video-recording-plan.md) ·
@@ -314,6 +346,9 @@ Browser (static, no build)                 Serverless (Vercel)
 
 Details and schemas: [docs/architecture.md](docs/architecture.md) · API research notes:
 [docs/research/assemblyai-notes.md](docs/research/assemblyai-notes.md).
+
+**Zero npm runtime dependencies** — `package.json` ships no `dependencies`
+(Node 22, ESM; static browser app, no build step).
 
 ## Run locally
 
