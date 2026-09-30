@@ -38,20 +38,22 @@ const state = {
 };
 
 /* Mapping tool → campo que alimenta. La línea de auditoría de cada tarjeta se
- * deriva de engine.events (la misma lista que va al artefacto §6). */
+ * deriva de engine.events (la misma lista que va al artefacto §6).
+ * Claves duales ES+EN: las tools se renombraron ES→EN en ambos dominios; se
+ * mantienen las viejas por artefactos/sesiones previas al rename. */
 const TOOL_FIELD = {
-  set_problema: 'problema',
-  set_diagnostico: 'diagnostico',
-  set_solucion: 'solucion',
-  set_notas: 'notas',
-  get_tiempo_trabajo: 'tiempo_minutos',
-  agregar_pieza_a_reporte: 'piezas',
-  set_resumen: 'resumen',
-  set_que_paso: 'que_paso',
-  agregar_evento_timeline: 'timeline',
-  agregar_servicio_afectado: 'servicios_afectados',
-  agregar_action_item: 'action_items',
-  set_severidad: 'severidad',
+  set_problema: 'problema', set_problem: 'problema',
+  set_diagnostico: 'diagnostico', set_diagnosis: 'diagnostico',
+  set_solucion: 'solucion', set_solution: 'solucion',
+  set_notas: 'notas', set_notes: 'notas',
+  get_tiempo_trabajo: 'tiempo_minutos', get_work_time: 'tiempo_minutos',
+  agregar_pieza_a_reporte: 'piezas', add_part_to_report: 'piezas',
+  set_resumen: 'resumen', set_summary: 'resumen',
+  set_que_paso: 'que_paso', set_what_happened: 'que_paso',
+  agregar_evento_timeline: 'timeline', add_timeline_event: 'timeline',
+  agregar_servicio_afectado: 'servicios_afectados', add_affected_service: 'servicios_afectados',
+  agregar_action_item: 'action_items', add_action_item: 'action_items',
+  set_severidad: 'severidad', set_severity: 'severidad',
 };
 const FIELD_LABEL = {
   problema: 'Problem', diagnostico: 'Diagnosis', solucion: 'Solution',
@@ -60,6 +62,9 @@ const FIELD_LABEL = {
   servicios_afectados: 'Services', action_items: 'Follow-ups',
   severidad: 'Severity',
 };
+/* Etiquetas de auditoría. Claves duales para las tools renombradas ES→EN: los
+ * stores ahora loguean el nombre nuevo; las acciones de dominio no-tool
+ * (orden_cargada, pieza_agregada, reporte_enviado…) no cambian. */
 const AUDIT_LABEL = {
   form_update: 'form updated',
   edicion_manual: 'manual edit',
@@ -68,10 +73,10 @@ const AUDIT_LABEL = {
   pieza_rechazada: 'part rejected',
   orden_cargada: 'order loaded',
   busqueda_pieza: 'part search',
-  set_problema: 'problem (tool)',
-  set_diagnostico: 'diagnosis (tool)',
-  set_solucion: 'solution (tool)',
-  set_notas: 'notes (tool)',
+  set_problema: 'problem (tool)', set_problem: 'problem (tool)',
+  set_diagnostico: 'diagnosis (tool)', set_diagnosis: 'diagnosis (tool)',
+  set_solucion: 'solution (tool)', set_solution: 'solution (tool)',
+  set_notas: 'notes (tool)', set_notes: 'notes (tool)',
   inicio_trabajo: 'work started',
   tiempo_consultado: 'time queried',
   reporte_enviado: 'report sent',
@@ -84,9 +89,9 @@ const AUDIT_LABEL = {
   evento_agregado: 'event added',
   hora_corregida: 'time corrected',
   action_item_agregado: 'follow-up added',
-  set_resumen: 'summary (tool)',
-  set_que_paso: 'what happened (tool)',
-  severidad_fijada: 'severity (tool)',
+  set_resumen: 'summary (tool)', set_summary: 'summary (tool)',
+  set_que_paso: 'what happened (tool)', set_what_happened: 'what happened (tool)',
+  severidad_fijada: 'severity (tool)', set_severity: 'severity (tool)',
 };
 const PRIORIDAD_CLASE = { alta: 'chip-alta', media: 'chip-media', baja: 'chip-baja' };
 /* Keys duales ES+EN: el dominio orden (congelado) escribe 'abierta'/'en_proceso'/
@@ -101,6 +106,20 @@ const SEVERIDAD_CLASE = {
   media: 'chip-media', medium: 'chip-media',
   alta: 'chip-alta', high: 'chip-alta',
   critica: 'chip-alta', critical: 'chip-alta',
+};
+/* Etiquetas SOLO-DISPLAY (EN): las claves ES de data/ordenes.json y del dominio
+ * orden (congelado) NO cambian — solo el texto que se pinta en pantalla. Si un
+ * valor no está en el mapa se muestra crudo (fallback ?? valor). */
+const PRIORIDAD_LABELS = { alta: 'high', media: 'medium', baja: 'low' };
+const ESTADO_LABELS = { abierta: 'open', en_proceso: 'in_progress', enviada: 'sent' };
+const SCENARIO_LABELS = {
+  'i1-dictado-feliz': 'i1-happy-dictation',
+  'i2-servicio-confundido': 'i2-confused-service',
+  'i3-correccion-hora': 'i3-time-correction',
+  'i4-mixto': 'i4-mixed',
+  's1-happy-path': 's1-happy-path',
+  's2-pieza-mal-oida': 's2-misheard-part',
+  's3-barge-in': 's3-barge-in',
 };
 
 const orderButtons = new Map();    // id orden → botón del picker
@@ -231,8 +250,8 @@ function renderDashOrders() {
     b.className = 'dash-order';
     b.innerHTML =
       `<span class="dash-top"><span class="mono">${esc(o.id)}</span>` +
-      `<span class="chip ${PRIORIDAD_CLASE[o.prioridad] ?? ''}">${esc(o.prioridad ?? '—')}</span>` +
-      `<span class="chip ${ESTADO_CLASE[o.estado] ?? 'chip-open'}">${esc(o.estado ?? '—')}</span></span>` +
+      `<span class="chip ${PRIORIDAD_CLASE[o.prioridad] ?? ''}">${esc(PRIORIDAD_LABELS[o.prioridad] ?? o.prioridad ?? '—')}</span>` +
+      `<span class="chip ${ESTADO_CLASE[o.estado] ?? 'chip-open'}">${esc(ESTADO_LABELS[o.estado] ?? o.estado ?? '—')}</span></span>` +
       `<strong>${esc(o.cliente)}</strong><small>${esc(o.equipo)}</small>`;
     b.addEventListener('click', () => pickOrder(o));
     li.append(b);
@@ -271,7 +290,7 @@ async function loadSessions() {
     const li = document.createElement('li');
     li.className = 'dash-session';
     li.innerHTML =
-      `<span class="dash-top"><strong class="mono">${esc(s.scenario_id ?? 'no script')}</strong>` +
+      `<span class="dash-top"><strong class="mono">${esc(SCENARIO_LABELS[s.scenario_id] ?? s.scenario_id ?? 'no script')}</strong>` +
       `<span class="chip ${s.mode === 'real' ? 'chip-done' : 'chip-wip'}">${esc(s.mode ?? '—')}</span></span>` +
       `<small>${esc(s.order_id ?? '—')} · ${esc(fmtStarted(s.started_at))} · ${esc(fmtDuracion(s))}</small>`;
     ul.append(li);
@@ -381,7 +400,7 @@ function renderScenarios() {
     const li = document.createElement('li');
     const b = document.createElement('button');
     b.type = 'button';
-    b.innerHTML = `<strong>${esc(g.scenario_id)}</strong> · ${esc(caseIdOfGuion(g))}<small>${esc((g.description ?? '').slice(0, 90))}…</small>`;
+    b.innerHTML = `<strong>${esc(SCENARIO_LABELS[g.scenario_id] ?? g.scenario_id)}</strong> · ${esc(caseIdOfGuion(g))}<small>${esc((g.description ?? '').slice(0, 90))}…</small>`;
     b.setAttribute('aria-pressed', 'false');
     b.addEventListener('click', () => selectScenario(g));
     scenarioButtons.set(g.scenario_id, b);
@@ -405,7 +424,7 @@ function refreshStartBtn() {
   const err = $('setup-error');
   if (state.orderId && state.guion && !guionMatchesOrder) {
     const sustantivo = state.domain === 'orden' ? 'order' : 'incident';
-    err.textContent = `Script ${state.guion.scenario_id} belongs to ${sustantivo} ${casoId}; pick that one.`;
+    err.textContent = `Script ${SCENARIO_LABELS[state.guion.scenario_id] ?? state.guion.scenario_id} belongs to ${sustantivo} ${casoId}; pick that one.`;
     err.hidden = false;
   } else err.hidden = true;
   $('btn-start-session').disabled = !(state.orderId && state.guion && guionMatchesOrder);
@@ -663,7 +682,7 @@ function renderForm() {
 
   $('session-ot').textContent = f.order_id ?? f.incidente_id ?? '—';
   const est = $('session-estado');
-  est.textContent = f.estado;
+  est.textContent = ESTADO_LABELS[f.estado] ?? f.estado;
   est.className = `chip ${ESTADO_CLASE[f.estado] ?? 'chip-wip'}`;
 
   const fichaEl = incidente ? $('ficha-incidente') : $('ficha');
@@ -764,7 +783,7 @@ function piezaTrail(sku) {
   const evs = state.engine?.events ?? [];
   const parts = [];
   for (const e of evs) {
-    if (e.type === 'tool_result' && e.tool === 'agregar_pieza_a_reporte' && e.result?.sku === sku) {
+    if (e.type === 'tool_result' && ['agregar_pieza_a_reporte', 'add_part_to_report'].includes(e.tool) && e.result?.sku === sku) {
       parts.push(`added ${(e.t_ms / 1000).toFixed(1)} s`);
     } else if (e.type === 'confirm_result' && e.value?.sku === sku) {
       parts.push(`${e.confirmed ? 'confirmed' : 'corrected'} ${(e.t_ms / 1000).toFixed(1)} s`);
@@ -874,7 +893,7 @@ function servicioTrail(id) {
   const evs = state.engine?.events ?? [];
   const parts = [];
   for (const e of evs) {
-    if (e.type === 'tool_result' && e.tool === 'agregar_servicio_afectado' && e.result?.id === id) {
+    if (e.type === 'tool_result' && ['agregar_servicio_afectado', 'add_affected_service'].includes(e.tool) && e.result?.id === id) {
       parts.push(`added ${(e.t_ms / 1000).toFixed(1)} s`);
     } else if (e.type === 'confirm_result' && e.value?.id === id) {
       parts.push(`${e.confirmed ? 'confirmed' : 'corrected'} ${(e.t_ms / 1000).toFixed(1)} s`);
@@ -1151,7 +1170,7 @@ function renderEndScreen(artifact) {
   $('end-summary-incidente').hidden = !incidente;
 
   const est = $('end-estado');
-  est.textContent = f.estado;
+  est.textContent = ESTADO_LABELS[f.estado] ?? f.estado;
   est.className = `chip ${ESTADO_CLASE[f.estado] ?? 'chip-wip'}`;
 
   if (incidente) {
