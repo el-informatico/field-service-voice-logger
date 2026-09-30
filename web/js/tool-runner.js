@@ -8,10 +8,83 @@
  * ficha pasan TODAS por store.applyToolResult — nada escribe directo.
  *
  * Extras internos (solo los usa el mock-agent; NO van en buildToolDefinitions):
- *   set_diagnostico({texto}), set_notas({texto}) — la ficha §6 los tiene pero
+ *   set_diagnosis({texto}), set_notes({texto}) — la ficha §6 los tiene pero
  *   las 7 tools públicas del brief no los cubren todavía (decisión D1+).
  */
-import { tokenSet, normalizeText, parseQty } from './dialog-act.js';
+import { tokenSet, normalizeText, parseQty, stripAccents } from './dialog-act.js';
+
+/* ------------------------------------------------------------------ */
+/* esBridge — puente EN→ES para los decoders compartidos               */
+/* ------------------------------------------------------------------ */
+
+/**
+ * El técnico habla EN, pero el catálogo (data/piezas.json) y los decoders de
+ * dialog-act.js (PHRASE_MAP, palabras-número, sustantivos de qty) son ES y
+ * están congelados. esBridge adapta la frase EN al vocabulario ES que esos
+ * decoders entienden. Se usa SOLO para decisiones internas (scoring de la
+ * búsqueda, qty/minutos, tokens distintivos); el texto EN TAL CUAL queda
+ * preservado como evidencia en los args/result de las tools.
+ */
+const EN_ES_FRASES = [
+  // frases compuestas ANTES que las palabras sueltas (el orden importa)
+  [/\bthree quarters of an inch\b/g, 'tres cuartos de pulgada'],
+  [/\bthree eighths of an inch\b/g, 'tres octavos de pulgada'],
+  [/\bfive eighths of an inch\b/g, 'cinco octavos de pulgada'],
+  [/\bthree quarters\b/g, 'tres cuartos'],
+  [/\bthree eighths\b/g, 'tres octavos'],
+  [/\bfive eighths\b/g, 'cinco octavos'],
+  [/\bthree point eight\b/g, 'tres punto ocho'],
+  [/\bthree point four\b/g, 'tres punto cuatro'],
+  [/\bhalf an inch\b/g, 'media pulgada'],
+  [/\bhalf[- ]inch\b/g, 'media pulgada'],
+  [/\ba pair of\b/g, 'un par de'],
+  [/\ban hour\b/g, 'una hora'],
+  [/\btwenty[- ]four volts?\b/g, 'veinticuatro volts'],
+  [/\bnothing else\b/g, 'nada mas'],
+  [/\bplus\b/g, 'mas'],
+  // sustantivos del catálogo EN→ES
+  [/\bvalves?\b/g, 'valvula'],
+  [/\bhoses?\b/g, 'manguera'],
+  [/\bgaskets?\b/g, 'empaque'],
+  [/\bbelts?\b/g, 'banda'],
+  [/\bfuses?\b/g, 'fusible'],
+  [/\bbearings?\b/g, 'balero'],
+  [/\bthermostats?\b/g, 'termostato'],
+  [/\bpressure[- ]switch(es)?\b/g, 'presostato'],
+  [/\brelays?\b/g, 'relevador'],
+  [/\bwashers?\b/g, 'huacha'],
+  [/\bpieces?\b/g, 'pieza'],
+  [/\bpoles?\b/g, 'polos'],
+  [/\bball\b/g, 'bola'],
+  [/\bbrass\b/g, 'laton'],
+  [/\bneoprene\b/g, 'neopreno'],
+  [/\breinforced\b/g, 'reforzada'],
+  [/\bmeters?\b/g, 'metro'],
+  [/\bminutes?\b/g, 'minutos'],
+  [/\bhours?\b/g, 'hora'],
+];
+
+const EN_NUM = {
+  zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7,
+  eight: 8, nine: 9, ten: 10, eleven: 11, twelve: 12, thirteen: 13,
+  fourteen: 14, fifteen: 15, sixteen: 16, seventeen: 17, eighteen: 18,
+  nineteen: 19, twenty: 20, thirty: 30, forty: 40, fifty: 50, sixty: 60,
+  seventy: 70, eighty: 80, ninety: 90,
+};
+
+/** EN hablado → pseudo-ES que normalizeText (dialog-act.js) ya entiende. */
+export function esBridge(text) {
+  let t = stripAccents(String(text ?? '')).toLowerCase();
+  for (const [re, es] of EN_ES_FRASES) t = t.replace(re, es);
+  return t
+    .replace(/\ba hundred\b/g, '100')
+    .replace(/\b(two|three|four|five|six|seven|eight|nine)\s+hundred\b/g,
+      (_m, w) => String(EN_NUM[w] * 100))
+    .replace(/\b(twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)[\s-]+(one|two|three|four|five|six|seven|eight|nine)\b/g,
+      (_m, a, b) => String(EN_NUM[a] + EN_NUM[b]))
+    .replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety)\b/g,
+      (m) => String(EN_NUM[m]));
+}
 
 const W_SKU = 3;
 const W_NOMBRE = 2;
@@ -27,16 +100,16 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
   async function call(tool, args = {}) {
     try {
       switch (tool) {
-        case 'get_orden': return ok(getOrden(args));
-        case 'buscar_pieza': return ok(buscarPieza(args));
-        case 'agregar_pieza_a_reporte': return ok(agregarPieza(args));
-        case 'set_problema':
-        case 'set_diagnostico':
-        case 'set_solucion':
-        case 'set_notas':
+        case 'get_order': return ok(getOrden(args));
+        case 'search_part': return ok(buscarPieza(args));
+        case 'add_part_to_report': return ok(agregarPieza(args));
+        case 'set_problem':
+        case 'set_diagnosis':
+        case 'set_solution':
+        case 'set_notes':
           return ok(setTexto(tool, args));
-        case 'get_tiempo_trabajo': return ok(getTiempo(args));
-        case 'enviar_reporte': return ok(enviarReporte());
+        case 'get_work_time': return ok(getTiempo(args));
+        case 'send_report': return ok(enviarReporte());
         default:
           return { ok: false, result: { error: `tool_desconocida:${String(tool)}`, tool } };
       }
@@ -61,7 +134,7 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
       return { ok: false, error: 'orden_no_encontrada', orden_id: id,
         disponibles: ordenes.slice(0, 10).map((o) => o.id) };
     }
-    store.applyToolResult('get_orden', { orden_id: id }, orden);
+    store.applyToolResult('get_order', { orden_id: id }, orden);
     return { ok: true, orden };
   }
 
@@ -73,8 +146,10 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
    */
   function buscarPieza({ consulta } = {}) {
     const q = String(consulta ?? '');
-    const qTokens = tokenSet(q);
-    const qNorm = normalizeText(q);
+    // scoring/qty sobre el puente EN→ES; `consulta: q` conserva la evidencia EN
+    const qB = esBridge(q);
+    const qTokens = tokenSet(qB);
+    const qNorm = normalizeText(qB);
     const scored = [];
     piezas.forEach((p, idx) => {
       let score = 0;
@@ -100,7 +175,7 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
     let confusable_warning = null;
     if (bestScored) {
       const p = bestScored.pieza;
-      best = { sku: p.sku, nombre: p.nombre, qty_hint: parseQty(q).qty };
+      best = { sku: p.sku, nombre: p.nombre, qty_hint: parseQty(qB).qty };
       const sibs = (p.confundible_con ?? []).filter(Boolean);
       if (sibs.length) {
         const sibSku = sibs[0];
@@ -108,13 +183,13 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
         confusable_warning = {
           sku: sibSku,
           nombre: sib ? sib.nombre : null,
-          mensaje: `«${p.nombre}» se confunde fácilmente con «${sib ? sib.nombre : sibSku}». ` +
-            'Pregunta la desambiguación en voz alta antes de dar por buena la pieza.',
+          mensaje: `"${p.nombre}" is easily confused with "${sib ? sib.nombre : sibSku}". ` +
+            'Ask the disambiguation out loud before accepting the part.',
         };
       }
     }
     const result = { ok: true, consulta: q, found, best, confusable_warning };
-    store.applyToolResult('buscar_pieza', { consulta: q }, result);
+    store.applyToolResult('search_part', { consulta: q }, result);
     return result;
   }
 
@@ -122,7 +197,7 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
     const entry = skuIndex.get(String(sku ?? ''));
     if (!entry) {
       return { ok: false, error: 'sku_fuera_de_catalogo', sku: String(sku ?? ''),
-        pista: 'Llama buscar_pieza con las palabras del técnico y usa un SKU del resultado.' };
+        pista: "Call search_part with the technician's words and use a SKU from the result." };
     }
     const q = Number.isFinite(+qty) && +qty >= 1 ? Math.round(+qty) : 1;
     const result = {
@@ -130,15 +205,23 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
       unidad: entry.pieza.unidad ?? 'pza', confirmada: false,
       requiere_read_back: true,
     };
-    store.applyToolResult('agregar_pieza_a_reporte', { sku: entry.pieza.sku, qty: q }, result);
+    store.applyToolResult('add_part_to_report', { sku: entry.pieza.sku, qty: q }, result);
     return result;
   }
+
+  /** Tool renombrada → clave de schema ES de la ficha (las claves no se traducen). */
+  const CAMPO = {
+    set_problem: 'problema',
+    set_diagnosis: 'diagnostico',
+    set_solution: 'solucion',
+    set_notes: 'notas',
+  };
 
   function setTexto(tool, { texto } = {}) {
     const t = String(texto ?? '').trim();
     if (!t) return { ok: false, error: 'texto_vacio', campo: 'texto' };
     store.applyToolResult(tool, { texto: t }, { ok: true });
-    return { ok: true, campo: tool.replace('set_', ''), caracteres: t.length };
+    return { ok: true, campo: CAMPO[tool] ?? tool.replace('set_', ''), caracteres: t.length };
   }
 
   /**
@@ -155,8 +238,8 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
     }
     const elapsed = Math.max(0, Math.round((t - store.workStartedAt) / 60000));
     const result = { ok: true, minutos: elapsed,
-      fuente: minutos != null ? 'declarado_por_tecnico' : 'reloj' };
-    store.applyToolResult('get_tiempo_trabajo', {}, result);
+      fuente: minutos != null ? 'declared_by_technician' : 'clock' };
+    store.applyToolResult('get_work_time', {}, result);
     return result;
   }
 
@@ -179,7 +262,7 @@ export function createToolRunner({ ordenes = [], piezas = [], store, clock } = {
         advertencias: faltantes,
       },
     };
-    store.applyToolResult('enviar_reporte', {}, result);
+    store.applyToolResult('send_report', {}, result);
     return result;
   }
 

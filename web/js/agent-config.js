@@ -1,5 +1,5 @@
 /**
- * agent-config.js — configuración del agente entrevistador (ES, v1).
+ * agent-config.js — configuración del agente entrevistador (EN, v1).
  * ESM, sin dependencias, DOM-free.
  *
  * Cada parámetro cita la página de docs verificada en
@@ -25,24 +25,24 @@
  */
 
 export const AGENT_CONFIG = {
-  /** Prompt v1 del entrevistador de órdenes de trabajo (lo lee el LLM real). */
+  /** Prompt v1 del entrevistador de órdenes de trabajo (lo lee el LLM real). Traducción EN: solo cambian los nombres de tools. */
   system_prompt: [
-    'Eres el ENTREVISTADOR DE ÓRDENES DE TRABAJO de un sistema de bitácora por voz para técnicos de campo (HVAC y eléctrico) en México.',
-    'El técnico tiene las manos ocupadas: habla contigo mientras trabaja. Tu trabajo es llenar la ficha de la orden EN VIVO usando las tools, y confirmar en voz alta los datos críticos.',
+    'You are the WORK-ORDER INTERVIEWER of a voice logbook system for field technicians (HVAC and electrical) in Mexico.',
+    'The technician has their hands busy: they talk to you while they work. Your job is to fill the work-order card LIVE using the tools, and to confirm the critical data out loud.',
     '',
-    'REGLAS:',
-    '1. Usa las tools para CADA dato: get_orden al arrancar, buscar_pieza antes de cualquier pieza, agregar_pieza_a_reporte para registrarla, set_problema y set_solucion para el texto, get_tiempo_trabajo antes de cerrar, enviar_reporte solo cuando el técnico lo pida y la ficha esté completa.',
-    '2. En problema y solución guarda el texto DEL TÉCNICO, sin parafrasear, sin traducir su jerga ("cuateada", "choqueando", "brinca el breaker" se respetan). Es evidencia textual.',
-    '3. READ-BACK OBLIGATORIO de piezas y cantidades antes de dar por confirmada una pieza: di el nombre completo con la dimensión deletreada ("válvula de bola de TRES CUARTOS, DOS piezas") y pregunta "¿correcto?". Solo con el "sí" del técnico la pieza queda buena.',
-    '4. Si buscar_pieza devuelve confusable_warning, pregunta la DESAMBIGUACIÓN explícita nombrando AMBOS candidatos: "¿decías la válvula de TRES CUARTOS o la de TRES OCTAVOS?". Nunca elijas tú.',
-    '5. Una cosa a la vez: una pregunta corta por turno. Frases cortas. Si el técnico te interrumpe, CALLA de inmediato y atiéndelo.',
-    '6. No inventes datos, medidas, SKUs ni cantidades. Si no lo dijo el técnico, pregunta.',
-    '7. Antes de enviar_reporte verifica que problema, solución, piezas (todas confirmadas por read-back) y tiempo estén capturados; pregunta lo faltante.',
-    '8. Español mexicano natural, trato de tú, sin tecnicismos que el técnico no haya usado.',
+    'RULES:',
+    '1. Use the tools for EVERY datum: get_order at the start, search_part before any part, add_part_to_report to log it, set_problem and set_solution for the text, get_work_time before closing, send_report only when the technician asks for it and the card is complete.',
+    '2. In problem and solution store THE TECHNICIAN\'s text, without paraphrasing, without translating their jargon ("seized", "chattering", "the breaker trips" are kept as said). It is textual evidence.',
+    '3. MANDATORY READ-BACK of parts and quantities before considering a part confirmed: say the full name with the dimension spelled out ("brass ball valve THREE QUARTERS, TWO pieces") and ask "correct?". Only with the technician\'s "yes" is the part good.',
+    '4. If search_part returns confusable_warning, ask the explicit DISAMBIGUATION naming BOTH candidates: "did you mean the THREE QUARTERS valve, or the THREE EIGHTHS one?". Never choose yourself.',
+    '5. One thing at a time: one short question per turn. Short sentences. If the technician interrupts you, STOP immediately and attend to them.',
+    '6. Do not invent data, measurements, SKUs or quantities. If the technician did not say it, ask.',
+    '7. Before send_report verify that problem, solution, parts (all confirmed by read-back) and time are captured; ask for whatever is missing.',
+    '8. Natural, friendly spoken English; keep it plain, no technical terms the technician has not used.',
   ].join('\n'),
 
   greeting:
-    '¡Buen día! Soy tu asistente de bitácora. Dime el número de orden con el que estás trabajando y llenamos la ficha mientras trabajas.',
+    "Good day! I'm your work-log assistant. Tell me the order number you're working on and we'll fill the card while you work.",
 
   /** session.input — VAD/turn-taking (ver citas arriba). */
   turn_detection: {
@@ -55,10 +55,15 @@ export const AGENT_CONFIG = {
     format: { encoding: 'audio/pcm', sample_rate: 24000 },
     transcription_mode: 'balanced',
     keyterms: [
+      // vocabulario ES del catálogo (congelado) + equivalentes EN que ahora
+      // dice el técnico: keyterms son hints de transcripción (input), no TTS.
       'OT', 'válvula', 'tres cuartos', 'tres octavos', 'media pulgada',
       'cinco octavos', 'capacitor', 'microfaradios', 'contactor', 'breaker',
       'pastilla', 'amperios', 'manguera', 'neopreno', 'fusible', 'balero',
       'termostato', 'presostato', 'empaque', 'compresor', 'manómetro',
+      'valve', 'three quarters', 'three eighths', 'half inch', 'five eighths',
+      'microfarad', 'hose', 'gasket', 'contactor', 'amperes', 'coil',
+      'pressure switch', 'bearing', 'thermostat', 'compressor',
     ],
   },
 

@@ -364,7 +364,8 @@ export function createRealAgentChannel({ token, tools = [], config = AGENT_CONFI
   let pendingConfirmValue = null; // read-back en espera de respuesta
 
   function trackToolResult(data) {
-    if (data?.tool === 'agregar_pieza_a_reporte' && data.ok && data.result?.sku) {
+    // dual-accept: nombre nuevo (add_part_to_report) y legacy (agregar_pieza_a_reporte)
+    if ((data?.tool === 'add_part_to_report' || data?.tool === 'agregar_pieza_a_reporte') && data.ok && data.result?.sku) {
       lastAddedPieza = {
         sku: data.result.sku, nombre: data.result.nombre, qty: data.result.qty,
       };
@@ -373,8 +374,11 @@ export function createRealAgentChannel({ token, tools = [], config = AGENT_CONFI
 
   function maybeConfirmRequest(agentText) {
     if (!lastAddedPieza || !agentText) return;
-    const isReadBack = /dec[íi]as|correcto\?|confirmo|se cambian|una pieza|pieza/i.test(agentText)
-      && /[?¿]/.test(agentText);
+    // Vocabulario del read-back: ES original + capa EN del prompt v1 (ask
+    // "correct?", "did you mean …"), cantidades de speakQtyEn (piece/set/meter)
+    // y aperturas del mock ("noting", "shall I confirm").
+    const isReadBack = /dec[íi]as|correcto\?|confirmo|se cambian|una pieza|pieza|correct\?|did you mean|shall i confirm|noting|\bpieces?\b|\bsets?\b|\bmeters?\b/i
+      .test(agentText) && /[?¿]/.test(agentText);
     if (!isReadBack) return;
     pendingConfirmValue = { ...lastAddedPieza };
     lastAddedPieza = null;

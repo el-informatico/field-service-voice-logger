@@ -74,38 +74,38 @@ export function createStore({ orderId, now } = {}) {
   function applyToolResult(tool, args, result) {
     let changed = [];
     switch (tool) {
-      case 'get_orden':
+      case 'get_order': // (was get_orden)
         logAudit('orden_cargada', { orden_id: result?.id ?? args?.orden_id });
         break;
-      case 'buscar_pieza':
+      case 'search_part': // (was buscar_pieza)
         logAudit('busqueda_pieza', {
           consulta: args?.consulta ?? '',
           best: result?.best?.sku ?? null,
           confundible: result?.confusable_warning?.sku ?? null,
         });
         break;
-      case 'agregar_pieza_a_reporte':
+      case 'add_part_to_report': // (was agregar_pieza_a_reporte)
         if (result?.ok === false || result?.error) break;
         changed = mergePieza(result.sku, result.nombre, result.qty);
         logAudit('pieza_agregada', { sku: result.sku, qty: result.qty, confirmada: false });
         break;
-      case 'set_problema':
+      case 'set_problem': // (was set_problema)
         changed = updateForm({ problema: args?.texto ?? '' }).changed;
-        logAudit('set_problema', {});
+        logAudit('set_problem', {});
         break;
-      case 'set_diagnostico': // interna del mock (no está en las 7 públicas)
+      case 'set_diagnosis': // interna del mock (was set_diagnostico)
         changed = updateForm({ diagnostico: args?.texto ?? '' }).changed;
-        logAudit('set_diagnostico', {});
+        logAudit('set_diagnosis', {});
         break;
-      case 'set_solucion':
+      case 'set_solution': // (was set_solucion)
         changed = updateForm({ solucion: args?.texto ?? '' }).changed;
-        logAudit('set_solucion', {});
+        logAudit('set_solution', {});
         break;
-      case 'set_notas': // interna del mock
+      case 'set_notes': // interna del mock (was set_notas)
         changed = updateForm({ notas: args?.texto ?? '' }).changed;
-        logAudit('set_notas', {});
+        logAudit('set_notes', {});
         break;
-      case 'get_tiempo_trabajo': {
+      case 'get_work_time': { // (was get_tiempo_trabajo)
         const min = result?.minutos ?? null;
         if (min != null && final_form.tiempo_minutos !== min) {
           changed = updateForm({ tiempo_minutos: min }).changed;
@@ -113,7 +113,7 @@ export function createStore({ orderId, now } = {}) {
         logAudit('tiempo_consultado', { minutos: min });
         break;
       }
-      case 'enviar_reporte':
+      case 'send_report': // (was enviar_reporte)
         changed = updateForm({ estado: 'enviada' }).changed;
         logAudit('reporte_enviado', {});
         break;

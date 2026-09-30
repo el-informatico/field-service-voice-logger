@@ -25,8 +25,10 @@ import { simClock } from './clock.js';
 import { AGENT_CONFIG } from './agent-config.js';
 import {
   detectConfirmation, detectPartMention, detectSend, extractNotas, parseMinutes,
-  parseQty, distinguisherTokens, mentionsAny, speakNombre, speakQty, normalizeText,
+  parseQty, distinguisherTokens, mentionsAny, speakNombre, normalizeText,
+  stripAccents,
 } from './dialog-act.js';
+import { esBridge } from './tool-runner.js';
 
 export function createMockAgentChannel({
   ordenes = [], piezas = [], guion = { turns: [] }, speed = 1, seed,
@@ -276,9 +278,9 @@ export function createMockAgentChannel({
     }
   }
 
-  /** Botón "¡Espera!": interrumpe el habla en curso y procesa el texto. */
+  /** Botón "Wait!": interrumpe el habla en curso y procesa el texto. */
   function manualInterrupt(text) {
-    const userText = text || '¡Espera!';
+    const userText = text || 'Wait!';
     if (speechCtx && !speechCtx.cancelled) {
       const cut = cutText(speechCtx.spoken || '…');
       speechCtx.cancelled = true;
@@ -345,18 +347,19 @@ export function createMockAgentChannel({
   /* ------------------------------------------------------------ */
 
   async function decide(text, nextTurn) {
-    if (pendingConfirm) return confirmFlow(text, nextTurn);        // 1. read-back pendiente
+    const bt = esBridge(text); // decoders compartidos ES: decisiones sobre el puente EN→ES
+    if (pendingConfirm) return confirmFlow(text, bt, nextTurn);    // 1. read-back pendiente
     if (!st.ordenCargada) return ordenFlow(text, nextTurn);        // 2. orden
     if (!st.problemaSet) return problemaFlow(text, nextTurn);      // 3. problema
-    const min = parseMinutes(text);
+    const min = parseMinutes(bt);
     if (min != null && !st.enviado) return tiempoFlow(text, min, nextTurn); // 4. tiempo
-    if (solutionVerbs(text) && !st.solucionSet && !st.enviado) return solucionFlow(text, nextTurn); // 5. solución
-    const nota = extractNotas(text);                               // 6. nota (no excluyente)
-    if (nota) await callTool('set_notas', { texto: nota });
-    if (detectSend(text) && !st.enviado) return cierreFlow(text, nextTurn); // 7. envío
-    if (detectPartMention(text) && !st.enviado) return partFlow(text, nextTurn); // 8. pieza
+    if (solutionVerbsEn(text) && !st.solucionSet && !st.enviado) return solucionFlow(text, nextTurn); // 5. solución
+    const nota = extractNotasEn(text);                             // 6. nota (no excluyente)
+    if (nota) await callTool('set_notes', { texto: nota });
+    if (detectSendEn(text) && !st.enviado) return cierreFlow(text, nextTurn); // 7. envío
+    if (detectPartMention(bt) && !st.enviado) return partFlow(text, bt, nextTurn); // 8. pieza
     if (!st.diagnosticoSet) return diagnosticoFlow(text, nextTurn);// 9. diagnóstico
-    await speakChunks('Va, te escucho. ¿Qué más encuentro para la ficha?', // 10. fallback
+    await speakChunks("Got it, I'm listening. What else should I add to the form?", // 10. fallback
       { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: false };
   }
@@ -364,52 +367,52 @@ export function createMockAgentChannel({
   /* --------------------------- flows --------------------------- */
 
   async function ordenFlow(text, nextTurn) {
-    const r = await callTool('get_orden', { orden_id: guion.order_id ?? text.match(/OT-\d+/)?.[0] ?? '' });
+    const r = await callTool('get_order', { orden_id: guion.order_id ?? text.match(/OT-\d+/)?.[0] ?? '' });
     if (r.ok !== false && r.orden) {
       orden = r.orden; st.ordenCargada = true;
       await speakChunks(
-        `Va, ya tengo la orden ${orden.id} de ${orden.cliente}: ${orden.problema_reportado}. ` +
-        'Cuéntame qué encuentras ahorita.', { interruptedBy: interruptOf(nextTurn) },
+        `OK, I've got order ${orden.id} for ${orden.cliente}: ${orden.problema_reportado}. ` +
+        "Tell me what you're finding right now.", { interruptedBy: interruptOf(nextTurn) },
       );
     } else {
-      await speakChunks('No encontré esa orden. ¿Me repites el número? Es OT y cuatro dígitos.',
+      await speakChunks("I couldn't find that order. Can you repeat the number? It's OT plus four digits.",
         { interruptedBy: interruptOf(nextTurn) });
     }
     return { interrupted: false };
   }
 
   async function problemaFlow(text, nextTurn) {
-    await callTool('set_problema', { texto: text });
+    await callTool('set_problem', { texto: text });
     st.problemaSet = true;
-    await speakChunks('Anotado tal cual lo dijiste. ¿Qué encuentras al revisar el equipo?',
+    await speakChunks('Noted exactly as you said it. What are you finding when you check the equipment?',
       { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: false };
   }
 
   async function diagnosticoFlow(text, nextTurn) {
-    await callTool('set_diagnostico', { texto: text });
+    await callTool('set_diagnosis', { texto: text });
     st.diagnosticoSet = true;
-    await speakChunks('Va. ¿Qué piezas se cambian? Dímelas por su nombre y te las busco.',
+    await speakChunks("OK. Which parts are we changing? Name them and I'll look them up.",
       { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: false };
   }
 
-  async function partFlow(text, nextTurn) {
+  async function partFlow(text, bt, nextTurn) {
     if (!st.diagnosticoSet) {
-      await callTool('set_diagnostico', { texto: text });
+      await callTool('set_diagnosis', { texto: text });
       st.diagnosticoSet = true;
     }
     await pause(150 + rng() * 60); // fin-de-habla → tool call (métrica de latencia)
-    const r = await callTool('buscar_pieza', { consulta: text });
+    const r = await callTool('search_part', { consulta: text }); // evidencia EN cruda
     if (!r.best) {
-      await speakChunks('Esa no la encuentro en el catálogo. ¿Cómo la llama el proveedor, exactamente?',
+      await speakChunks("I can't find that one in the catalog. What does the supplier call it, exactly?",
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
-    const qty = r.best.qty_hint ?? parseQty(text).qty;
-    const added = await callTool('agregar_pieza_a_reporte', { sku: r.best.sku, qty });
+    const qty = r.best.qty_hint ?? parseQty(bt).qty;
+    const added = await callTool('add_part_to_report', { sku: r.best.sku, qty });
     if (!added || added.ok === false) {
-      await speakChunks('No pude agregar esa pieza. Déjame reintentar con el SKU del catálogo.',
+      await speakChunks("I couldn't add that part. Let me retry with the catalog SKU.",
         { interruptedBy: interruptOf(nextTurn) });
       return { interrupted: false };
     }
@@ -419,40 +422,40 @@ export function createMockAgentChannel({
     let speech;
     if (sibling) {
       pendingConfirm = { kind: 'disambiguation', captured: { pieza, qty }, sibling };
-      speech = `Ojo, aquí se confunden fácil. ¿Decías ${speakNombre(pieza.nombre)}, ` +
-        `o ${speakNombre(sibling.nombre)}?`;
+      speech = `Careful, these two get mixed up easily. Did you mean ${speakNombreEn(pieza.nombre)}, ` +
+        `or ${speakNombreEn(sibling.nombre)}?`;
     } else {
       pendingConfirm = { kind: 'plain', captured: { pieza, qty }, sibling: null };
-      speech = `Anoto ${speakNombre(pieza.nombre)}, ${speakQty(qty, pieza.unidad)}. ¿Correcto?`;
+      speech = `Noting ${speakNombreEn(pieza.nombre)}, ${speakQtyEn(qty, pieza.unidad)}. Correct?`;
     }
     const res = await speakChunks(speech, { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: res.interrupted };
   }
 
-  async function confirmFlow(text, nextTurn) {
+  async function confirmFlow(text, bt, nextTurn) {
     const pc = pendingConfirm;
-    const conf = detectConfirmation(text);
-    /* 1. "no, era la de 1/2": corrección hacia OTRA pieza del mismo tipo con
-          dimensión explícita en el texto (aunque no sea el par confundible). */
+    const conf = detectConfirm(text);
+    /* 1. "no, it was the half-inch one": corrección hacia OTRA pieza del mismo
+          tipo con dimensión explícita en el texto (aunque no sea el par). */
     if (conf === 'no') {
-      const cand = findSameTipoCorrection(text, pc);
-      if (cand) return correctionFlow(pc, cand, text, nextTurn);
+      const cand = findSameTipoCorrection(bt, pc);
+      if (cand) return correctionFlow(pc, cand, text, bt, nextTurn);
     }
     /* 2. desambiguación entre el par capturado/sibling */
     if (pc.kind === 'disambiguation' && pc.sibling) {
-      const selA = mentionsAny(text, distinguisherTokens(pc.captured.pieza, pc.sibling));
-      const selB = mentionsAny(text, distinguisherTokens(pc.sibling, pc.captured.pieza));
-      const lastA = selA ? lastMention(text, selA) : -1;
-      const lastB = selB ? lastMention(text, selB) : -1;
-      if (lastB > lastA) return correctionFlow(pc, pc.sibling, text, nextTurn);
+      const selA = mentionsAny(bt, distinguisherTokens(pc.captured.pieza, pc.sibling));
+      const selB = mentionsAny(bt, distinguisherTokens(pc.sibling, pc.captured.pieza));
+      const lastA = selA ? lastMention(bt, selA) : -1;
+      const lastB = selB ? lastMention(bt, selB) : -1;
+      if (lastB > lastA) return correctionFlow(pc, pc.sibling, text, bt, nextTurn);
       if (lastA >= 0 || conf === 'yes') return confirmOkFlow(pc, nextTurn);
       return reaskFlow(pc, nextTurn);
     }
     if (conf === 'yes') return confirmOkFlow(pc, nextTurn);
     if (conf === 'no') {
-      const r = await callTool('buscar_pieza', { consulta: text });
+      const r = await callTool('search_part', { consulta: text });
       const nueva = r.best && r.best.sku !== pc.captured.pieza.sku ? bySku.get(r.best.sku) : null;
-      if (nueva) return correctionFlow(pc, nueva, text, nextTurn);
+      if (nueva) return correctionFlow(pc, nueva, text, bt, nextTurn);
       return reaskFlow(pc, nextTurn);
     }
     return reaskFlow(pc, nextTurn);
@@ -484,26 +487,26 @@ export function createMockAgentChannel({
     confirmedSkus.add(pc.captured.pieza.sku);
     pendingConfirm = null;
     await speakChunks(
-      `Queda confirmada: ${speakNombre(pc.captured.pieza.nombre)}, ` +
-      `${speakQty(pc.captured.qty, pc.captured.pieza.unidad)}. ¿Qué más se cambia, o cómo quedó el trabajo?`,
+      `Confirmed: ${speakNombreEn(pc.captured.pieza.nombre)}, ` +
+      `${speakQtyEn(pc.captured.qty, pc.captured.pieza.unidad)}. What else are we changing, or how did the job turn out?`,
       { interruptedBy: interruptOf(nextTurn) },
     );
     return { interrupted: false };
   }
 
-  async function correctionFlow(pc, nueva, text, nextTurn) {
+  async function correctionFlow(pc, nueva, text, bt, nextTurn) {
     emit('confirm_result', {
       field: 'pieza',
       value: { sku: pc.captured.pieza.sku, qty: pc.captured.qty },
       confirmed: false,
     });
-    const q = parseQty(text);
+    const q = parseQty(bt);
     const qty = q.explicit ? q.qty : pc.captured.qty;
-    await callTool('agregar_pieza_a_reporte', { sku: nueva.sku, qty });
+    await callTool('add_part_to_report', { sku: nueva.sku, qty });
     addedSkus.set(nueva.sku, nueva);
     pendingConfirm = { kind: 'plain', captured: { pieza: nueva, qty }, sibling: null };
     await speakChunks(
-      `Corrijo: ${speakNombre(nueva.nombre)}, ${speakQty(qty, nueva.unidad)}. ¿Ahora sí confirmo?`,
+      `Fixed: ${speakNombreEn(nueva.nombre)}, ${speakQtyEn(qty, nueva.unidad)}. Shall I confirm now?`,
       { interruptedBy: interruptOf(nextTurn) },
     );
     return { interrupted: false };
@@ -511,33 +514,33 @@ export function createMockAgentChannel({
 
   async function reaskFlow(pc, nextTurn) {
     const speech = pc.kind === 'disambiguation' && pc.sibling
-      ? `No te entendí. ¿Es ${speakNombre(pc.captured.pieza.nombre)} o ${speakNombre(pc.sibling.nombre)}?`
-      : `¿Confirmo ${speakNombre(pc.captured.pieza.nombre)}, ` +
-        `${speakQty(pc.captured.qty, pc.captured.pieza.unidad)}?`;
+      ? `I didn't get that. Is it ${speakNombreEn(pc.captured.pieza.nombre)}, or ${speakNombreEn(pc.sibling.nombre)}?`
+      : `Shall I confirm ${speakNombreEn(pc.captured.pieza.nombre)}, ` +
+        `${speakQtyEn(pc.captured.qty, pc.captured.pieza.unidad)}?`;
     await speakChunks(speech, { interruptedBy: interruptOf(nextTurn) });
     pendingConfirm = { ...pc }; // nuevo objeto → nuevo confirm_request en el artefacto
     return { interrupted: false };
   }
 
   async function tiempoFlow(text, min, nextTurn) {
-    if (solutionVerbs(text) && !st.solucionSet) {
-      await callTool('set_solucion', { texto: text });
+    if (solutionVerbsEn(text) && !st.solucionSet) {
+      await callTool('set_solution', { texto: text });
       st.solucionSet = true;
     }
-    const r = await callTool('get_tiempo_trabajo', { minutos: min });
+    const r = await callTool('get_work_time', { minutos: min });
     st.tiempoSet = true;
     await speakChunks(
-      `Anoto ${r.minutos ?? min} minutos de trabajo. ` +
-      (st.solucionSet ? '¿Algo más que agregar a la ficha?' : '¿Cómo quedó el trabajo?'),
+      `Logging ${r.minutos ?? min} minutes of work. ` +
+      (st.solucionSet ? 'Anything else to add to the form?' : 'How did the job turn out?'),
       { interruptedBy: interruptOf(nextTurn) },
     );
     return { interrupted: false };
   }
 
   async function solucionFlow(text, nextTurn) {
-    await callTool('set_solucion', { texto: text });
+    await callTool('set_solution', { texto: text });
     st.solucionSet = true;
-    await speakChunks('Va, anotada la solución. ¿Cuánto tiempo llevas en este trabajo?',
+    await speakChunks('Noted, solution saved. How long have you been on this job?',
       { interruptedBy: interruptOf(nextTurn) });
     return { interrupted: false };
   }
@@ -545,21 +548,21 @@ export function createMockAgentChannel({
   async function cierreFlow(text, nextTurn) {
     if (!st.solucionSet) {
       const synth = synthSolution();
-      if (synth) { await callTool('set_solucion', { texto: synth }); st.solucionSet = true; }
+      if (synth) { await callTool('set_solution', { texto: synth }); st.solucionSet = true; }
     }
     if (!st.tiempoSet) {
-      const r = await callTool('get_tiempo_trabajo', {});
+      const r = await callTool('get_work_time', {});
       st.tiempoSet = true;
-      await speakChunks(`Te llevo ${r.minutos ?? 0} minutos anotados.`, { interruptedBy: null });
+      await speakChunks(`You're at ${r.minutos ?? 0} minutes logged.`, { interruptedBy: null });
     }
-    const r = await callTool('enviar_reporte', {});
+    const r = await callTool('send_report', {});
     st.enviado = true;
     emit('report_sent', {}); // síncrono: sin drift de t_ms entre instant/realtime
     await speakChunks(
       r?.resumen
-        ? `Ficha enviada: ${r.resumen.piezas} pieza${r.resumen.piezas === 1 ? '' : 's'}, ` +
-          `${r.resumen.tiempo_minutos ?? 0} minutos. Buen trabajo, cierra bien.`
-        : 'Ficha enviada. Buen trabajo.',
+        ? `Report sent: ${r.resumen.piezas} part${r.resumen.piezas === 1 ? '' : 's'}, ` +
+          `${r.resumen.tiempo_minutos ?? 0} minutes. Great work — close it out well.`
+        : 'Report sent. Great work.',
       { interruptedBy: interruptOf(nextTurn) },
     );
     schedule(400, async () => doStop());
@@ -570,7 +573,7 @@ export function createMockAgentChannel({
   function synthSolution() {
     const ok = [...addedSkus.values()].filter((p) => confirmedSkus.has(p.sku));
     if (!ok.length) return null;
-    return `Se cambiaron ${ok.map((p) => p.nombre.toLowerCase()).join(' y ')}. El equipo quedó funcionando.`;
+    return `Swapped in ${ok.map((p) => speakNombreEn(p.nombre).toLowerCase()).join(' and ')}. The equipment is running again.`;
   }
 
   function interruptOf(nextTurn) {
@@ -586,6 +589,133 @@ export function createMockAgentChannel({
   function solutionVerbs(text) {
     return /\b(cambie|cambiamos|quedo|arregle|repare|sustitu|saque|rellene|aprete|limpie|instale|puse)\b/
       .test(normalizeText(text));
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Capa EN: confirmaciones / envío / notas / verbos-solución /          */
+  /* read-back de nombres y cantidades. Evidencia EN TAL CUAL en tools.  */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Confirmación hablada POR CLÁUSULAS (dual-accept ES+EN, patrón del dominio
+   * incidente): la respuesta va en la PRIMERA cláusula y el resto del turno es
+   * dictado nuevo; un "no" cuenta solo cuando ABRE una cláusula. La base ES
+   * (detectConfirmation) sigue aceptando "sí"/"correcto" — p. ej. el botón ✅
+   * de la UI manda 'sí' — y la capa EN agrega yes/nope/that one. MISMO parser
+   * para la vía replay (guion) y la vía user_text del input: ambas pasan por
+   * decide() → confirmFlow.
+   */
+  function detectConfirm(text) {
+    const clauses = String(text ?? '')
+      .split(/(?:\.\.\.|[.,;!?])/)
+      .map((s) => s.trim())
+      .filter(Boolean);
+    const first = clauses[0] ?? '';
+    const base = detectConfirmation(first);
+    if (base) return base;
+    const f = stripAccents(first).toLowerCase();
+    if (/\b(esa|ese|eso|asi va|asi esta|asi queda|con eso|va)\b/.test(f)) return 'yes';
+    if (/\b(yes|yeah|yep|correct|right|exactly|sure|fine|perfect|affirmative)\b/.test(f)
+      || /\bthat'?s (?:it|right|fine|good|correct)\b/.test(f)
+      || /\bthat one\b/.test(f)) return 'yes';
+    for (const c of clauses) {
+      if (/^\s*(no|nope|negativo|negative|espera|alto|cambio|wrong|wait|hold on|hang on|change|incorrect|actually|never mind|not that one|equivocad\w*)\b/i.test(c)) return 'no';
+    }
+    return null;
+  }
+
+  /** Envío EN: "send it", "submit", "good to go", "done". Base ES primero. */
+  function detectSendEn(text) {
+    if (detectSend(text)) return true;
+    return /\b(?:send\w*|submit\w*|good to go|done)\b/.test(normalizeText(String(text ?? '')));
+  }
+
+  /**
+   * Nota final EN ("note that …"); base ES primero. La nota queda en EN tal
+   * cual (evidencia textual de la ficha).
+   */
+  function extractNotasEn(text) {
+    const es = extractNotas(text);
+    if (es) return es;
+    const m = String(text ?? '')
+      .match(/(?:\bnote|\bjot down|\bput down|\bwrite down)\s+that\s+(.+)$/is);
+    if (!m) return null;
+    let nota = m[1]
+      .replace(/\s*[.,;]*\s*(?:that'?s all|that is all|send it|done deal)[\s\S]*$/i, '');
+    nota = nota.replace(/\s*\.{2,}\s*$/, '').replace(/[.,;]\s*$/, '').trim();
+    return nota.length >= 3 ? nota : null;
+  }
+
+  /**
+   * Verbos de solución EN (cambio/reparación consumada). Sin 'put'/'repair' a
+   * secas: "log an hour" (s3) y "beyond repair" (s3) NO son solución; sí lo
+   * son "kicked on", "changed", "refilled", "bled" (s1/s2).
+   */
+  function solutionVerbsEn(text) {
+    if (solutionVerbs(text)) return true;
+    return /\b(?:chang\w+|replac\w+|swapped|fixed|repaired|cleaned|tightened|refilled|purg\w+|bled|install\w+|kick\w+)\b/
+      .test(normalizeText(esBridge(text)));
+  }
+
+  /** Frases del catálogo ES→EN para el read-back (nombres congelados en ES). */
+  const NOMBRE_EN = [
+    [/\bv[áa]lvula de bola lat[óo]n\b/gi, 'Brass ball valve'],
+    [/\bmanguera de neopreno reforzada\b/gi, 'Reinforced neoprene hose'],
+    [/\bcapacitor de arranque\b/gi, 'Start capacitor'],
+    [/\bcapacitor de marcha\b/gi, 'Run capacitor'],
+    [/\bbreaker termomagn[ée]tico\b/gi, 'Thermal-magnetic breaker'],
+    [/\btramo 1 m\b/gi, 'one-meter length'],
+    [/µf/gi, 'microfarad'], // µ no es \w: \b no aplica
+    [/\bpolos\b/gi, 'pole'],
+    [/\bbobina\b/gi, 'coil'],
+    [/\bv\b/gi, 'volt'],
+  ];
+
+  const FRACTION_SPEECH_EN = {
+    '3/4': 'THREE QUARTERS', '3/8': 'THREE EIGHTHS', '1/2': 'HALF INCH',
+    '5/8': 'FIVE EIGHTHS', '1/4': 'ONE QUARTER',
+    '45+5': 'FORTY-FIVE PLUS FIVE', '35+5': 'THIRTY-FIVE PLUS FIVE',
+  };
+  const NUM_SPEECH_EN = ['ZERO', 'ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN',
+    'EIGHT', 'NINE', 'TEN', 'ELEVEN', 'TWELVE', 'THIRTEEN', 'FOURTEEN', 'FIFTEEN',
+    'SIXTEEN', 'SEVENTEEN', 'EIGHTEEN', 'NINETEEN', 'TWENTY'];
+  const TENS_SPEECH_EN = {
+    2: 'TWENTY', 3: 'THIRTY', 4: 'FORTY', 5: 'FIFTY', 6: 'SIXTY',
+    7: 'SEVENTY', 8: 'EIGHTY', 9: 'NINETY',
+  };
+
+  /** Dígito/número del nombre → palabras para el read-back en voz alta. */
+  function speakDigitEn(nStr) {
+    const n = Number(nStr);
+    if (Number.isInteger(n) && n >= 0 && n <= 20) return NUM_SPEECH_EN[n];
+    if (Number.isInteger(n) && n >= 21 && n <= 99 && n % 10 === 0) return TENS_SPEECH_EN[n / 10];
+    if (Number.isInteger(n) && n >= 21 && n <= 99) return `${TENS_SPEECH_EN[Math.floor(n / 10)]}-${NUM_SPEECH_EN[n % 10]}`;
+    if (n === 125) return 'ONE TWENTY-FIVE';
+    if (n === 370) return 'THREE SEVENTY';
+    if (n === 440) return 'FOUR FORTY';
+    if (n === 450) return 'FOUR FIFTY';
+    if (n === 455) return 'FOUR FIFTY-FIVE';
+    return String(nStr); // fuera de tabla: tal cual (determinista)
+  }
+
+  /** Read-back EN del nombre de catálogo (ES congelado). Fallback: ES. */
+  function speakNombreEn(nombre) {
+    let out = String(nombre ?? '');
+    let hit = false;
+    for (const [re, en] of NOMBRE_EN) out = out.replace(re, () => { hit = true; return en; });
+    if (!hit) return speakNombre(out); // fuera de tabla: read-back ES del compartido
+    return out
+      .replace(/(\d+\+\d+|\d+\/\d+|\d+\.\d+|\b\d+\b)/g, (m) => FRACTION_SPEECH_EN[m] ?? speakDigitEn(m))
+      .replace(/\s*"\s*$/, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  }
+
+  /** Read-back EN de la cantidad ("two pieces", "one set", "one meter"). */
+  function speakQtyEn(qty, unidad = 'pza') {
+    const noun = unidad === 'jgo' ? 'set' : unidad === 'm' ? 'meter' : 'piece';
+    const n = speakDigitEn(qty).toLowerCase();
+    return `${n} ${noun}${qty > 1 ? 's' : ''}`;
   }
 
   async function playUserTurn(turn, nextTurn) {

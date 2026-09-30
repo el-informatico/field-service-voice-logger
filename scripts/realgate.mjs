@@ -225,27 +225,27 @@ is the read-back.`;
   const order = casos.find((o) => o.id === guion.order_id);
   systemPrompt = `${AGENT_CONFIG.system_prompt}
 
-CONTEXTO DE SESIÓN: la orden activa YA está asignada por la app: ${guion.order_id} — cliente ${order?.cliente ?? '?'}, equipo: ${order?.equipo ?? '?'}. Llama get_orden SIN argumentos al inicio para cargarla. NUNCA preguntes el número de orden: ya lo tienes.
+CONTEXTO DE SESIÓN: la orden activa YA está asignada por la app: ${guion.order_id} — cliente ${order?.cliente ?? '?'}, equipo: ${order?.equipo ?? '?'}. Llama get_order SIN argumentos al inicio para cargarla. NUNCA preguntes el número de orden: ya lo tienes.
 
 FLUJO OBLIGATORIO — una cosa por turno, sin excepciones:
-1. Inicio: get_orden() y confirma en UNA frase de qué va la orden.
-2. El usuario describa el síntoma → set_problema con su texto LITERAL (sin parafrasear).
+1. Inicio: get_order() y confirma en UNA frase de qué va la orden.
+2. El usuario describa el síntoma → set_problem con su texto LITERAL (sin parafrasear).
 3. Cada VEZ que el usuario MENCIONE una pieza —aunque sea de pasada o a medias—:
-   buscar_pieza({"consulta": "<lo que dijo, tal cual>"}) INMEDIATAMENTE. NUNCA pidas
+   search_part({"consulta": "<lo que dijo, tal cual>"}) INMEDIATAMENTE. NUNCA pidas
    "el nombre" de una pieza que ya te dijo: BÚSCALA tú. Si el resultado trae
    confusable_warning, pregunta la desambiguación nombrando ambos candidatos.
-   Si no trae warning: agregar_pieza_a_reporte(sku, qty) y el read-back en voz alta
+   Si no trae warning: add_part_to_report(sku, qty) y el read-back en voz alta
    ("X, N piezas, ¿correcto?"). Con su "sí" la pieza queda confirmada.
-4. El usuario diga la solución → set_solucion. El usuario diga el tiempo ("como
-   cincuenta minutos") → get_tiempo_trabajo({"minutos": 50}) con el NÚMERO que
+4. El usuario diga la solución → set_solution. El usuario diga el tiempo ("como
+   cincuenta minutos") → get_work_time({"minutos": 50}) con el NÚMERO que
    declaró. NUNCA inventes ni adivines tiempos.
 5. El usuario pida enviar ("mándalo", "listo", "eso es todo") → send_report()
    INMEDIATAMENTE, sin pedir nada más, y despídete en una frase.
 CONFIRMACIONES: cuando el usuario responda "sí/correcto/ese mismo" a tu read-back,
 la pieza YA ESTÁ registrada — NO la vuelvas a agregar, solo agradece y continúa.
 EJEMPLO: usuario: "el capacitor de cuarenta y cinco más cinco se hinchó" → tú llamas
-buscar_pieza({"consulta":"capacitor de cuarenta y cinco más cinco"}) → (llega sku
-CAP-ARR-455) → agregar_pieza_a_reporte({"sku":"CAP-ARR-455","qty":1}) → dices:
+search_part({"consulta":"capacitor de cuarenta y cinco más cinco"}) → (llega sku
+CAP-ARR-455) → add_part_to_report({"sku":"CAP-ARR-455","qty":1}) → dices:
 "Capacitor de arranque cuarenta y cinco más cinco, UNA pieza, ¿correcto?" →
 usuario: "correcto, una pieza" → tú: "Anotado" y SIGUES (sin re-agregar).
 Regla de oro: cada dato que te den ES un tool call; tu única libertad es el read-back.`;

@@ -5,7 +5,7 @@
  *
  * DERIVACIÓN DATADRIVEN (preferida): el ground-truth declara ambos fenómenos:
  *  - gt.seeded_errors[{field:'pieza', captured, truth}] → en el turno user con
- *    expect 'tool:buscar_pieza' que menciona la dimensión de la pieza VERDADERA,
+ *    expect 'tool:search_part' (was 'tool:buscar_pieza') que menciona la dimensión de la pieza VERDADERA,
  *    se sustituye la frase hablada por su forma mal oída ("tres cuartos" →
  *    "tres punto ocho", cómo la transcribiría un ASR que oyó un decimal).
  *  - gt.provoked_interruptions[{during_turn: n}] (turno AGENTE n) → el turno
@@ -15,28 +15,28 @@
  * hardcodeados) — data/guiones/*.json no lleva as_heard/interrupt hoy.
  */
 
-/** Cómo mal-oye el ASR una dimensión (forma hablada → forma mal oída). */
+/** Cómo mal-oye el ASR una dimensión (forma hablada EN → forma mal oída). */
 const MISHEARD_FORM = {
-  '3/4': 'tres punto ocho',   // "tres cuartos" oído como decimal 3.8 (caso s2)
-  '3/8': 'tres punto cuatro',
-  '1/2': 'tres cuartos',
-  '5/8': 'media pulgada',
-  '45+5': 'treinta y cinco más cinco',
-  '35+5': 'cuarenta y cinco más cinco',
+  '3/4': 'three point eight',   // "three quarters" oído como decimal 3.8 (caso s2)
+  '3/8': 'three point four',
+  '1/2': 'three quarters',
+  '5/8': 'half inch',
+  '45+5': 'thirty five plus five',
+  '35+5': 'forty five plus five',
 };
 
 /** Cómo se dice en voz alta cada dimensión (para encontrarla en el guion). */
 const SPOKEN_FORM = {
-  '3/4': ['tres cuartos', '3/4', 'tres cuartos de pulgada'],
-  '3/8': ['tres octavos', '3/8'],
-  '1/2': ['media pulgada', 'medio pulgada', '1/2'],
-  '5/8': ['cinco octavos', '5/8'],
-  '45+5': ['cuarenta y cinco más cinco', '45+5'],
-  '35+5': ['treinta y cinco más cinco', '35+5'],
+  '3/4': ['three quarters', '3/4', 'three quarters of an inch'],
+  '3/8': ['three eighths', '3/8'],
+  '1/2': ['half inch', 'half an inch', '1/2'],
+  '5/8': ['five eighths', '5/8'],
+  '45+5': ['forty five plus five', '45+5'],
+  '35+5': ['thirty five plus five', '35+5'],
 };
 
 const FALLBACK_SIM = {
-  's2-pieza-mal-oida': { misheard: { turn: 5, from: 'tres cuartos', to: 'tres punto ocho' } },
+  's2-pieza-mal-oida': { misheard: { turn: 5, from: 'three quarters', to: 'three point eight' } },
   's3-barge-in': { interrupts: [7, 15, 17] },
 };
 
@@ -55,10 +55,10 @@ export function prepareGuion(guion, gt = null) {
   if (rules.misheard) {
     let { turn, from, to } = rules.misheard;
     if (!turn) {
-      // localizar el turno del error: primer user con expect tool:buscar_pieza
+      // localizar el turno del error: primer user con expect tool:search_part
       // que mencione la forma hablada de la pieza VERDADERA
       const re = new RegExp(escapeRe(from), 'i');
-      const t0 = turns.find((x) => x.role === 'user' && x.expect === 'tool:buscar_pieza' && re.test(x.text ?? ''));
+      const t0 = turns.find((x) => x.role === 'user' && x.expect === 'tool:search_part' && re.test(x.text ?? ''));
       turn = t0?.n ?? null;
     }
     const t = turns.find((x) => x.n === turn);

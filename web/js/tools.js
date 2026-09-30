@@ -9,15 +9,20 @@
  * result como string JSON (enviado cuando el último evento recibido es
  * `reply.done`).
  *
- * El `enum` del parámetro `sku` de agregar_pieza_a_reporte se construye EN
+ * El `enum` del parámetro `sku` de add_part_to_report se construye EN
  * TIEMPO DE SESIÓN desde data/piezas.json: es la guarda a nivel schema contra
  * piezas confundibles (el LLM no puede inventar un SKU fuera de catálogo).
+ *
+ * Nombres de tools renombrados ES→EN (mapa canónico; ver git log): las
+ * descripciones quedaron en EN imitando el estilo del dominio incidente
+ * (web/js/domain/incident/tools.js). Los NOMBRES de parámetros (orden_id,
+ * consulta, sku, qty, texto, minutos) no se traducen.
  */
 
 /**
  * @param {string[]} catalogSkus SKUs válidos del catálogo (data/piezas.json).
- *   Si viene vacío se omite el `enum` (y agregar_pieza quedará sin guarda —
- *   tool-runner rechazará el SKU igualmente).
+ *   Si viene vacío se omite el `enum` (y add_part_to_report quedará sin
+ *   guarda — tool-runner rechazará el SKU igualmente).
  * @returns {Array<object>} definiciones listas para `session.update.session.tools`
  */
 export function buildToolDefinitions(catalogSkus = []) {
@@ -26,23 +31,24 @@ export function buildToolDefinitions(catalogSkus = []) {
     ? {
       type: 'string',
       enum: skus,
-      description: 'SKU exacto del catálogo (respetado por el enum: no inventes SKUs).',
+      description: 'Exact catalog ID (enforced by the enum: do not invent ids). Format AAA-000-X.',
     }
-    : { type: 'string', description: 'SKU exacto del catálogo.' };
+    : { type: 'string', description: 'Exact catalog ID.' };
 
   return [
     {
       type: 'function',
-      name: 'get_orden',
+      name: 'get_order',
       description:
-        'Carga la orden de trabajo activa y devuelve todos sus datos (cliente, sitio, equipo, problema reportado). ' +
-        'Llámala UNA vez al inicio de la sesión, cuando el técnico diga con qué orden trabaja, para conocer el contexto antes de entrevistar.',
+        'Loads the active work order and returns all of its data (customer, site, equipment, reported problem). ' +
+        'Call it ONCE at the start of the session, when the technician says which order they are working on, ' +
+        'to know the context before interviewing.',
       parameters: {
         type: 'object',
         properties: {
           orden_id: {
             type: 'string',
-            description: 'OPCIONAL — si se omite (o el técnico no dice el número), devuelve la orden ACTIVA de la sesión, que la app ya asignó. Formato OT-1xxx.',
+            description: 'OPTIONAL — if omitted (or the technician does not say the number), returns the ACTIVE order of the session, already assigned by the app. Format OT-1xxx.',
           },
         },
         required: [],
@@ -51,19 +57,19 @@ export function buildToolDefinitions(catalogSkus = []) {
     },
     {
       type: 'function',
-      name: 'buscar_pieza',
+      name: 'search_part',
       description:
-        'Busca una pieza en el catálogo por nombre hablado, jerga o alias (búsqueda tolerante: minúsculas, sin acentos, sin plurales). ' +
-        'Llámala SIEMPRE que el técnico mencione una pieza o repuesto ANTES de agregarla al reporte. ' +
-        'La respuesta incluye el mejor candidato (best), hasta 3 alternativas (found) y una advertencia (confusable_warning) ' +
-        'si la mejor candidata tiene un par confundible en catálogo (p. ej. válvula 3/4" vs 3/8"): en ese caso debes preguntar la ' +
-        'desambiguación en voz alta antes de dar por buena la pieza.',
+        'Searches a catalog part by spoken name, jargon or alias (tolerant search: lowercase, accent-free, no plurals). ' +
+        'Call it EVERY time the technician mentions a part or component BEFORE adding it to the report. ' +
+        'The response includes the best candidate (best), up to 3 alternatives (found) and a warning (confusable_warning) ' +
+        'if the best candidate has a confusable pair in the catalog (e.g. valve 3/4" vs 3/8"): in that case you must ' +
+        'ask the disambiguation out loud naming BOTH candidates before accepting the part.',
       parameters: {
         type: 'object',
         properties: {
           consulta: {
             type: 'string',
-            description: 'Lo que dijo el técnico, tal cual (p. ej. "la válvula de tres cuartos que gotea"). No limpies ni traduzcas.',
+            description: 'What the technician said, verbatim (e.g. "the three-quarters valve that drips"). Do not clean up or translate it.',
           },
         },
         required: ['consulta'],
@@ -72,11 +78,11 @@ export function buildToolDefinitions(catalogSkus = []) {
     },
     {
       type: 'function',
-      name: 'agregar_pieza_a_reporte',
+      name: 'add_part_to_report',
       description:
-        'Agrega (o acumula) una pieza con su cantidad a la ficha. Solo acepta SKUs del enum (los devueltos por buscar_pieza). ' +
-        'La pieza queda SIN confirmar (confirmada=false): la confirmación llega únicamente del read-back hablado — ' +
-        'debes leer en voz alta pieza Y cantidad y esperar el "sí" del técnico antes de considerar el dato bueno.',
+        'Adds (or accumulates) a part with its quantity to the report card. Only accepts ids from the enum (those returned by search_part). ' +
+        'The part stays UNCONFIRMED (confirmada=false): confirmation comes only from the spoken read-back — ' +
+        'you must read part AND quantity out loud and wait for the technician\'s "yes" before considering the data good.',
       parameters: {
         type: 'object',
         properties: {
@@ -84,7 +90,7 @@ export function buildToolDefinitions(catalogSkus = []) {
           qty: {
             type: 'integer',
             minimum: 1,
-            description: 'Cantidad de piezas que dijo el técnico (por defecto 1). Confírmala también en el read-back.',
+            description: 'Quantity of parts as stated by the technician (default 1). Confirm it in the read-back too.',
           },
         },
         required: ['sku', 'qty'],
@@ -93,16 +99,16 @@ export function buildToolDefinitions(catalogSkus = []) {
     },
     {
       type: 'function',
-      name: 'set_problema',
+      name: 'set_problem',
       description:
-        'Fija el campo "problema" de la ficha con las palabras DEL TÉCNICO (qué falla reporta el equipo ahora). ' +
-        'NO parafrasees, NO resumas, NO uses vocabulario técnico que el técnico no haya usado: es evidencia textual.',
+        'Sets the "problem" field of the report card with THE TECHNICIAN\'s words (what failure the equipment reports now). ' +
+        'Do NOT paraphrase, do NOT summarize, do NOT use technical vocabulary the technician did not use: it is textual evidence.',
       parameters: {
         type: 'object',
         properties: {
           texto: {
             type: 'string',
-            description: 'Texto del técnico describiendo el problema (primera persona del técnico, verbatim o casi).',
+            description: 'The technician\'s text describing the problem (first person, verbatim or close).',
           },
         },
         required: ['texto'],
@@ -111,16 +117,16 @@ export function buildToolDefinitions(catalogSkus = []) {
     },
     {
       type: 'function',
-      name: 'set_solucion',
+      name: 'set_solution',
       description:
-        'Fija el campo "solución" de la ficha con la narración DEL TÉCNICO (qué hizo para resolverlo y cómo quedó el equipo). ' +
-        'No parafrasees ni agregues pasos que no mencionó.',
+        'Sets the "solution" field of the report card with THE TECHNICIAN\'s narration (what they did to fix it and how the equipment ended up). ' +
+        'Do not paraphrase or add steps they did not mention.',
       parameters: {
         type: 'object',
         properties: {
           texto: {
             type: 'string',
-            description: 'Texto del técnico narrando la solución y el resultado final.',
+            description: 'The technician\'s text narrating the solution and the final outcome.',
           },
         },
         required: ['texto'],
@@ -129,17 +135,17 @@ export function buildToolDefinitions(catalogSkus = []) {
     },
     {
       type: 'function',
-      name: 'get_tiempo_trabajo',
+      name: 'get_work_time',
       description:
-        'Registra/consulta el tiempo del trabajo. Pásale {minutos: N} con los minutos que DECLARÓ el técnico ' +
-        '(p. ej. "como cincuenta minutos" → 50) — así queda el tiempo real del trabajo, no el de esta llamada. ' +
-        'Sin argumentos devuelve los minutos transcurridos en la sesión. Llámala antes de enviar_reporte.',
+        'Registers/queries the work time. Pass {minutos: N} with the minutes the technician DECLARED ' +
+        '(e.g. "about fifty minutes" → 50) — that way the real job time is recorded, not the time of this call. ' +
+        'Without arguments it returns the minutes elapsed in the session. Call it before send_report.',
       parameters: {
         type: 'object',
         properties: {
           minutos: {
             type: 'integer',
-            description: 'Minutos declarados por el técnico (solo el número, p. ej. 50). Omitir = consultar el transcurrido.',
+            description: 'Minutes as declared by the technician (just the number, e.g. 50). Omit = query the elapsed time.',
           },
         },
         required: [],
@@ -148,10 +154,10 @@ export function buildToolDefinitions(catalogSkus = []) {
     },
     {
       type: 'function',
-      name: 'enviar_reporte',
+      name: 'send_report',
       description:
-        'CIERRA y envía la ficha de la orden (estado=enviada). Llámala solo cuando el técnico lo pida (\"mándalo\", \"ya está\") ' +
-        'Y cuando problema, solución, piezas (todas confirmadas) y tiempo estén capturados; si falta algo, pregúntalo antes de enviar.',
+        'CLOSES and sends the work-order report card (state=sent). Call it only when the technician asks for it ("send it", "that\'s all") ' +
+        'AND when problem, solution, parts (all confirmed) and time are captured; if anything is missing, ask before sending.',
       parameters: { type: 'object', properties: {} },
       execution_mode: 'interactive',
     },
@@ -160,6 +166,6 @@ export function buildToolDefinitions(catalogSkus = []) {
 
 /** Nombres de las 7 tools públicas (para validación en tool-runner/engine). */
 export const TOOL_NAMES = [
-  'get_orden', 'buscar_pieza', 'agregar_pieza_a_reporte', 'set_problema',
-  'set_solucion', 'get_tiempo_trabajo', 'enviar_reporte',
+  'get_order', 'search_part', 'add_part_to_report', 'set_problem',
+  'set_solution', 'get_work_time', 'send_report',
 ];

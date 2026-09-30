@@ -1,56 +1,56 @@
 {
   "scenario_id": "s1-happy-path",
   "order_id": "OT-1004",
-  "description": "Camino feliz: minisplit de escuela que no arranca (breaker brinca). Diagnóstico capacitor de arranque hinchado + contactor traqueteando. Todas las confirmaciones por read-back salen correctas a la primera; sin errores sembrados, sin interrupciones.",
+  "description": "Happy path: school minisplit that won't start (breaker tripping). Diagnosis: swollen start capacitor + chattering contactor. Every read-back confirmation comes back correct on the first try; no seeded errors, no interruptions.",
   "noise_condition": "clean",
   "turns": [
     {
       "n": 1,
       "role": "user",
-      "text": "Buenas... sí, ya llegué a la escuela, el intendente me abrió el taller de cómputo... inicio con la orden del minisplit que no arranca, ¿verdad?",
-      "expect": "tool:get_orden",
-      "note": "saludo corto; el técnico acomoda herramientas mientras habla"
+      "text": "Morning... yeah, I made it to the school, the caretaker opened the computer lab for me... starting with the order for the minisplit that won't start, right?",
+      "expect": "tool:get_order",
+      "note": "short greeting; the technician sets out tools while talking"
     },
     {
       "n": 2,
       "role": "agent",
-      "hint": "get_orden(OT-1004); saluda brevemente, resume el problema reportado y el equipo (minisplit paquete 5 toneladas, HVAC-MCS-5T) y pide que narre qué encuentra."
+      "hint": "get_order(OT-1004); brief greeting, summarize the reported problem and the equipment (5-ton package minisplit, HVAC-MCS-5T) and ask them to narrate what they're finding."
     },
     {
       "n": 3,
       "role": "user",
-      "text": "Pos te comento... le doy encendido y nada, o sea, se oye como un clic en el gabinete de afuera pero el ventilador no se mueve... y el compresor ni arranca... ayer sí se fue el breaker como tres veces, los muchachos lo volvieron a subir y a los diez minutos otra vez se fue.",
-      "expect": "tool:set_problema",
-      "note": "ruido leve de llaves al fondo; discurso lento con muletillas"
+      "text": "So here's the thing... I hit power and nothing, I mean, you hear a click in the outdoor cabinet but the fan doesn't move... and the compressor won't start either... yesterday the breaker tripped like three times, the guys kept resetting it and ten minutes later it went again.",
+      "expect": "tool:set_problem",
+      "note": "light key-rattle in the background; slow speech with filler words"
     },
     {
       "n": 4,
       "role": "agent",
-      "hint": "set_problema con el texto del técnico (no parafrasear); pide que abra la unidad y describa lo que ve."
+      "hint": "set_problem with the technician's text (no paraphrasing); ask them to open the unit and describe what they see."
     },
     {
       "n": 5,
       "role": "user",
-      "text": "Espera, déjame quitar la tapa lateral... va... ok, aquí está... el capacitor de arranque está hinchado, bien gordito, y se le salió un poquito el aceite por la terminal... este... y el contactor, cuando le doy corriente, traquetea feo.",
+      "text": "Hold on, let me take off the side panel... there... ok, here it is... the start capacitor is swollen, real fat, and a little oil has seeped out around the terminal... uh... and the contactor, when I power it up, chatters bad.",
       "expect": "none",
-      "note": "pausa media mientras desatornilla; destornillador audible"
+      "note": "medium pause while unscrewing; screwdriver audible"
     },
     {
       "n": 6,
       "role": "agent",
-      "hint": "Pregunta por el microfaradiaje del capacitor antes de buscar (hay candidatos 35+5 y 45+5 µF en catálogo); no agrega nada todavía."
+      "hint": "Ask for the capacitor's microfarad rating before searching (catalog has 35+5 and 45+5 µF candidates); do not add anything yet."
     },
     {
       "n": 7,
       "role": "user",
-      "text": "Pues el de fábrica... aquí en la etiqueta dice cuarenta y cinco más cinco, a trescientos setenta volts... el de cuarenta y cinco más cinco es.",
-      "expect": "tool:buscar_pieza",
-      "note": "lee la etiqueta del capacitor en voz alta"
+      "text": "The factory one, I guess... here on the label it says forty five plus five, at three hundred seventy volts... it's the forty five plus five one.",
+      "expect": "tool:search_part",
+      "note": "reads the capacitor label out loud"
     },
     {
       "n": 8,
       "role": "agent",
-      "hint": "buscar_pieza('capacitor de arranque 45+5'); agregar_pieza CAP-ARR-455 qty 1 y read-back explícito en voz alta: 'capacitor de arranque de cuarenta y cinco más cinco microfaradios, una pieza, ¿correcto?'.",
+      "hint": "search_part('start capacitor 45+5'); add_part_to_report CAP-ARR-455 qty 1 and explicit out-loud read-back: 'Start capacitor FORTY-FIVE PLUS FIVE microfarad, ONE piece, correct?'.",
       "add_parts": [
         {
           "sku": "CAP-ARR-455",
@@ -61,26 +61,26 @@
     {
       "n": 9,
       "role": "user",
-      "text": "Correcto, una pieza... va.",
+      "text": "Correct, one piece... go ahead.",
       "expect": "readback",
-      "note": "confirmación corta, correcta a la primera"
+      "note": "short confirmation, right on the first try"
     },
     {
       "n": 10,
       "role": "agent",
-      "hint": "Registra confirm_result ok; pregunta si el contactor también se cambia o solo se aprietan terminales."
+      "hint": "Log confirm_result ok; ask whether the contactor is being changed too or if terminals just get tightened."
     },
     {
       "n": 11,
       "role": "user",
-      "text": "El contactor mejor cámbialo también, anda choqueando... es el de dos polos, de treinta amperios, con bobina de veinticuatro volts... uno nada más.",
-      "expect": "tool:buscar_pieza",
-      "note": "ruido de multímetro al fondo"
+      "text": "The contactor is getting a new one too, it's hammering... it's the two pole one, thirty amps, with a twenty four volt coil... just one.",
+      "expect": "tool:search_part",
+      "note": "multimeter beeps in the background"
     },
     {
       "n": 12,
       "role": "agent",
-      "hint": "buscar_pieza('contactor 2 polos 30A 24V'); agregar_pieza CNT-030-24 qty 1; read-back: 'contactor de dos polos de treinta amperios, una pieza, ¿confirmo?'.",
+      "hint": "search_part('contactor 2 pole 30A 24V'); add_part_to_report CNT-030-24 qty 1; read-back: 'Contactor TWO pole THIRTY amps, ONE piece, shall I confirm?'.",
       "add_parts": [
         {
           "sku": "CNT-030-24",
@@ -91,50 +91,50 @@
     {
       "n": 13,
       "role": "user",
-      "text": "Sí, ese mismo... uno nada más.",
+      "text": "Yes, that one... just one.",
       "expect": "readback",
-      "note": "ruido de llave inglesa mientras sujeta una terminal"
+      "note": "wrench noise while holding a terminal"
     },
     {
       "n": 14,
       "role": "agent",
-      "hint": "Confirmación registrada; pide que reinstale y encienda el equipo para verificar antes de cerrar la ficha."
+      "hint": "Confirmation logged; ask them to reassemble and power the unit to verify before closing the card."
     },
     {
       "n": 15,
       "role": "user",
-      "text": "Ya le puse la tapa... va... ya le doy corriente... ahí va... ya arrancó el compresor, el ventilador girando bien, ya está saliendo aire frío... quedó lista la máquina.",
+      "text": "Panel's back on... there... powering it up... there it goes... the compressor kicked on, fan spinning fine, cold air coming out now... the machine is good.",
       "expect": "none",
-      "note": "arranque del equipo audible al fondo; habla mientras la unidad enciende"
+      "note": "unit startup audible in the background; talks while the equipment comes on"
     },
     {
       "n": 16,
       "role": "agent",
-      "hint": "Pide que narre la solución completa y el tiempo que llevó el trabajo."
+      "hint": "Ask them to narrate the full solution and how long the job took."
     },
     {
       "n": 17,
       "role": "user",
-      "text": "Pues... cambié el capacitor de arranque y el contactor, le di una limpiada al drenaje porque traía lama... apreté todas las terminales... y pues en total estuve... va... como cincuenta minutos.",
-      "expect": "tool:set_solucion | tool:get_tiempo_trabajo",
-      "note": "pausa larga antes de dar el tiempo; está guardando la herramienta"
+      "text": "So... I changed the start capacitor and the contactor, gave the drain a quick clean because it had slime... tightened every terminal... and all in all it took me... let's see... about fifty minutes.",
+      "expect": "tool:set_solution | tool:get_work_time",
+      "note": "long pause before giving the time; putting tools away"
     },
     {
       "n": 18,
       "role": "agent",
-      "hint": "set_solucion con la narración del técnico; get_tiempo_trabajo (~50 min); confirma el tiempo en voz alta y pide una nota final si hay."
+      "hint": "set_solution with the technician's narration; get_work_time (~50 min); confirm the time out loud and ask for a final note if there is one."
     },
     {
       "n": 19,
       "role": "user",
-      "text": "Sí... ponle que el breaker está bien, que le digan a intendencia que no lo anden subiendo tantas veces... eso es todo, mándalo.",
-      "expect": "tool:enviar_reporte",
-      "note": "cierre; el técnico ya está recogiéndose"
+      "text": "Yeah... note that the breaker is fine, and that they should tell the school staff not to keep resetting it so much... that's all, send it.",
+      "expect": "tool:send_report",
+      "note": "closing; the technician is already packing up"
     },
     {
       "n": 20,
       "role": "agent",
-      "hint": "Resumen de la ficha en una frase, confirmación de envío, cerrar sesión. Ningún dato quedó sin confirmar."
+      "hint": "One-sentence card summary, send confirmation, close the session. Nothing left unconfirmed."
     }
   ]
 }

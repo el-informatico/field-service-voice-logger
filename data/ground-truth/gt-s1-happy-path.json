@@ -3,27 +3,27 @@
   "order_id": "OT-1004",
   "noise_condition": "clean",
   "expected_form": {
-    "problema": "El minisplit del taller no arranca: se escucha un clic en el gabinete de la unidad condensadora pero el ventilador no gira y el compresor no arranca; el breaker brincó varias veces el día anterior.",
-    "diagnostico": "Capacitor de arranque hinchado con fuga de aceite por la terminal; contactor de dos polos traqueteando al energizar.",
-    "solucion": "Se sustituyeron el capacitor de arranque de 45+5 µF 370 V y el contactor de dos polos de 30 A con bobina de 24 V; se apretaron terminales y se limpió el drenaje. El equipo arrancó y enfrió con normalidad.",
+    "problema": "The lab minisplit won't start: a click is heard in the outdoor cabinet but the fan doesn't spin and the compressor won't start; the breaker tripped several times the day before and kept being reset.",
+    "diagnostico": "Swollen start capacitor with oil seepage around the terminal; the contactor chatters when energized.",
+    "solucion": "Replaced the 45+5 µF 370 V start capacitor and the two-pole 30 A contactor with 24 V coil; cleaned the drain and tightened every terminal. The unit started and cooled normally.",
     "piezas": [
       { "sku": "CAP-ARR-455", "qty": 1 },
       { "sku": "CNT-030-24", "qty": 1 }
     ],
     "tiempo_minutos": 50,
-    "notas": "El breaker está en buen estado; pedir a intendencia de la escuela que no lo rearme repetidamente."
+    "notas": "The breaker is fine; ask the school staff not to keep resetting it so much."
   },
   "user_utterances": [
-    { "n": 1, "text": "Buenas... sí, ya llegué a la escuela, el intendente me abrió el taller de cómputo... inicio con la orden del minisplit que no arranca, ¿verdad?" },
-    { "n": 3, "text": "Pos te comento... le doy encendido y nada, o sea, se oye como un clic en el gabinete de afuera pero el ventilador no se mueve... y el compresor ni arranca... ayer sí se fue el breaker como tres veces, los muchachos lo volvieron a subir y a los diez minutos otra vez se fue." },
-    { "n": 5, "text": "Espera, déjame quitar la tapa lateral... va... ok, aquí está... el capacitor de arranque está hinchado, bien gordito, y se le salió un poquito el aceite por la terminal... este... y el contactor, cuando le doy corriente, traquetea feo." },
-    { "n": 7, "text": "Pues el de fábrica... aquí en la etiqueta dice cuarenta y cinco más cinco, a trescientos setenta volts... el de cuarenta y cinco más cinco es." },
-    { "n": 9, "text": "Correcto, una pieza... va." },
-    { "n": 11, "text": "El contactor mejor cámbialo también, anda choqueando... es el de dos polos, de treinta amperios, con bobina de veinticuatro volts... uno nada más." },
-    { "n": 13, "text": "Sí, ese mismo... uno nada más." },
-    { "n": 15, "text": "Ya le puse la tapa... va... ya le doy corriente... ahí va... ya arrancó el compresor, el ventilador girando bien, ya está saliendo aire frío... quedó lista la máquina." },
-    { "n": 17, "text": "Pues... cambié el capacitor de arranque y el contactor, le di una limpiada al drenaje porque traía lama... apreté todas las terminales... y pues en total estuve... va... como cincuenta minutos." },
-    { "n": 19, "text": "Sí... ponle que el breaker está bien, que le digan a intendencia que no lo anden subiendo tantas veces... eso es todo, mándalo." }
+    { "n": 1, "text": "Morning... yeah, I made it to the school, the caretaker opened the computer lab for me... starting with the order for the minisplit that won't start, right?" },
+    { "n": 3, "text": "So here's the thing... I hit power and nothing, I mean, you hear a click in the outdoor cabinet but the fan doesn't move... and the compressor won't start either... yesterday the breaker tripped like three times, the guys kept resetting it and ten minutes later it went again." },
+    { "n": 5, "text": "Hold on, let me take off the side panel... there... ok, here it is... the start capacitor is swollen, real fat, and a little oil has seeped out around the terminal... uh... and the contactor, when I power it up, chatters bad." },
+    { "n": 7, "text": "The factory one, I guess... here on the label it says forty five plus five, at three hundred seventy volts... it's the forty five plus five one." },
+    { "n": 9, "text": "Correct, one piece... go ahead." },
+    { "n": 11, "text": "The contactor is getting a new one too, it's hammering... it's the two pole one, thirty amps, with a twenty four volt coil... just one." },
+    { "n": 13, "text": "Yes, that one... just one." },
+    { "n": 15, "text": "Panel's back on... there... powering it up... there it goes... the compressor kicked on, fan spinning fine, cold air coming out now... the machine is good." },
+    { "n": 17, "text": "So... I changed the start capacitor and the contactor, gave the drain a quick clean because it had slime... tightened every terminal... and all in all it took me... let's see... about fifty minutes." },
+    { "n": 19, "text": "Yeah... note that the breaker is fine, and that they should tell the school staff not to keep resetting it so much... that's all, send it." }
   ],
   "seeded_errors": [],
   "provoked_interruptions": []

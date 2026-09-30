@@ -37,11 +37,11 @@ async function main() {
   try {
     guionFiles = (await readdir(join(DATA, 'guiones'))).filter((f) => f.endsWith('.json')).sort();
   } catch {
-    console.error('ERROR: no existe data/guiones/ — corre el bloque de datos primero.');
+    console.error('ERROR: data/guiones/ does not exist — run the data block first.');
     process.exit(1);
   }
   if (!ordenes?.length || !piezas?.length) {
-    console.error('ERROR: data/ordenes.json o data/piezas.json vacíos/ausentes.');
+    console.error('ERROR: data/ordenes.json or data/piezas.json empty/missing.');
     process.exit(1);
   }
 
@@ -53,13 +53,13 @@ async function main() {
   const names = defs.map((d) => d.name).sort();
   const expected = [...TOOL_NAMES].sort();
   if (JSON.stringify(names) !== JSON.stringify(expected)) {
-    console.error('ERROR: buildToolDefinitions no coincide con TOOL_NAMES:', names);
+    console.error('ERROR: buildToolDefinitions does not match TOOL_NAMES:', names);
     process.exit(1);
   }
-  const enumSkus = defs.find((d) => d.name === 'agregar_pieza_a_reporte')
+  const enumSkus = defs.find((d) => d.name === 'add_part_to_report')
     ?.parameters?.properties?.sku?.enum;
   if (enumSkus?.length !== piezas.length) {
-    console.error('ERROR: enum de sku no cubre el catálogo');
+    console.error('ERROR: sku enum does not cover the catalog');
     process.exit(1);
   }
   console.log(`tools OK: ${names.join(', ')} (enum sku: ${enumSkus.length})`);
@@ -119,25 +119,25 @@ function summarize(artifact, gt) {
   const problems = [];
 
   if (artifact.schema_version !== 1) problems.push('schema_version != 1');
-  if (!ev.length) problems.push('events vacío');
-  if (toolCalls.length !== toolResults.length) problems.push('tool_call sin tool_result');
-  if (!artifact.final_form.piezas.every((p) => p.confirmada)) problems.push('piezas sin confirmar');
+  if (!ev.length) problems.push('events empty');
+  if (toolCalls.length !== toolResults.length) problems.push('tool_call without tool_result');
+  if (!artifact.final_form.piezas.every((p) => p.confirmada)) problems.push('unconfirmed parts');
   if (artifact.final_form.estado !== 'enviada') problems.push('estado != enviada');
   if (artifact.audio_retained !== false) problems.push('audio_retained != false');
   if (gt?.expected_form) {
     const pred = artifact.final_form.piezas.map((p) => `${p.sku}x${p.qty}`).sort().join(',');
     const exp = gt.expected_form.piezas.map((p) => `${p.sku}x${p.qty}`).sort().join(',');
-    if (pred !== exp) problems.push(`piezas ≠ GT: [${pred}] vs [${exp}]`);
+    if (pred !== exp) problems.push(`parts != GT: [${pred}] vs [${exp}]`);
     const tp = artifact.final_form.tiempo_minutos;
     if (Math.abs((tp ?? -999) - gt.expected_form.tiempo_minutos) > 5) {
-      problems.push(`tiempo ${tp} vs GT ${gt.expected_form.tiempo_minutos}`);
+      problems.push(`time ${tp} vs GT ${gt.expected_form.tiempo_minutos}`);
     }
   }
 
-  const line = `✓ ${artifact.scenario_id}: turnos user=${userTurns.length} agente=${agentTurns.length}` +
-    ` | tools=${toolCalls.length} | read-backs=${confirmsReq.length} (ok=${confirmsOk.length}, corrección=${confirmsNo.length})` +
-    ` | barge-ins=${bargeIns.length} | ficha: ${artifact.final_form.piezas.map((p) => `${p.sku} x${p.qty}${p.confirmada ? '✓' : '?'}`).join(' · ')}` +
-    ` | tiempo=${artifact.final_form.tiempo_minutos}min | eventos=${ev.length}`;
+  const line = `✓ ${artifact.scenario_id}: user turns=${userTurns.length} agent=${agentTurns.length}` +
+    ` | tools=${toolCalls.length} | read-backs=${confirmsReq.length} (ok=${confirmsOk.length}, corrected=${confirmsNo.length})` +
+    ` | barge-ins=${bargeIns.length} | card: ${artifact.final_form.piezas.map((p) => `${p.sku} x${p.qty}${p.confirmada ? '✓' : '?'}`).join(' · ')}` +
+    ` | time=${artifact.final_form.tiempo_minutos}min | events=${ev.length}`;
   return { line, problems };
 }
 
