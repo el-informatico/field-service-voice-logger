@@ -251,8 +251,8 @@ pivot to post-visit quiet dictation, which designs the failure mode out.
 
 ## Demo video (D6)
 
-**Watch (3:44, EN, captions burned):** *link added at submission —
-hosted unlisted by the owner; the caption track `demo-video-d6-v5.srt`
+**Watch (3:42, EN, captions burned):** *link added at submission —
+hosted unlisted by the owner; the caption track `demo-video-d6-v6.srt`
 (70 cues) ships alongside it and doubles as the closed-captions
 upload.* It opens at 7 PM: **Raúl, technician at Uniformes Delta**, has just
 closed incident IC-2001 and the report is still unwritten — the demo is his
@@ -267,8 +267,8 @@ side is **audible** — the scripted wav track, disclosed in the burned-in
 bands; the session itself stored no audio (`audio_retained: false`, and the
 server rejects any artifact claiming otherwise). That session (artifact
 [committed as evidence](docs/evidence/gate/artifact-i2-servicio-confundido-tranquilo-W7T3.json))
-logged **20 user turns, 17 tool calls, 194.8 s of microphone, and 148
-timeline events**.
+logged **20 user turns, 17 tool calls, a 194.8 s session, and 148
+events in the session log**.
 
 Script beat-by-beat with timestamps: [docs/video-script-en.md](docs/video-script-en.md) ·
 recording plan: [docs/video-recording-plan.md](docs/video-recording-plan.md) ·
