@@ -19,7 +19,7 @@ import { dirname, join, resolve } from 'node:path';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const paths = process.argv.slice(2).filter((a) => !a.startsWith('-'));
-if (!paths.length) { console.error('uso: node scripts/n10-table.mjs <artifact.json...>'); process.exit(2); }
+if (!paths.length) { console.error('usage: node scripts/n10-table.mjs <artifact.json...>'); process.exit(2); }
 
 const norm = (s) => (s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9\s/]/g, ' ').replace(/\s+/g, ' ').trim();
 const tokens = (s) => new Set(norm(s).split(' ').filter((w) => w.length > 2));
@@ -47,7 +47,7 @@ let tlHoraTP = 0, tlHoraFN = 0; // timeline por HORA exacta (pool)
 for (const p of paths) {
   const art = JSON.parse(readFileSync(p.startsWith('/') ? p : join(ROOT, p), 'utf8'));
   const sid = art.scenario_id ?? art.meta?.scenario_id;
-  if (!sid) { console.error(`  ⚠ ${p}: sin scenario_id — excluido`); continue; }
+  if (!sid) { console.error(`  ⚠ ${p}: no scenario_id — excluded`); continue; }
   const guion = JSON.parse(readFileSync(join(ROOT, 'data/guiones-incidente', `${sid}.json`), 'utf8'));
   const gt = JSON.parse(readFileSync(join(ROOT, 'data/ground-truth-incidente', `gt-${sid}.json`), 'utf8'));
   gtPaths.set(sid, join(ROOT, 'data/ground-truth-incidente', `gt-${sid}.json`));
@@ -93,20 +93,20 @@ const compl = perSession.map((x) => x.completed);
 const refsN = perSession.map((x) => x.refs);
 const werPer = perSession.filter((x) => x.refW > 0).map((x) => x.errW / x.refW);
 
-console.log(`# sesiones: ${perSession.length}`);
-console.log('\n## Por sesión (matcher)');
+console.log(`# sessions: ${perSession.length}`);
+console.log('\n## Per session (matcher)');
 for (const s of perSession) {
-  console.log(`${s.label.padEnd(4)} ${s.sid.padEnd(22)} turnos ${s.completed}/${s.refs} · tools=${s.tools} · matchedWER=${s.refW ? (s.errW / s.refW).toFixed(3) : '—'} (${s.refW}w)`);
+  console.log(`${s.label.padEnd(4)} ${s.sid.padEnd(22)} turns ${s.completed}/${s.refs} · tools=${s.tools} · matchedWER=${s.refW ? (s.errW / s.refW).toFixed(3) : '—'} (${s.refW}w)`);
 }
-console.log('\n## Tabla README (agregados N=' + perSession.length + ')');
+console.log('\n## README table (aggregates N=' + perSession.length + ')');
 console.log(`| Turn completion | ${Math.min(...compl)}–${Math.max(...compl)} of ${Math.min(...refsN)}–${Math.max(...refsN)} per session | ${perSession.length} sessions |`);
 console.log(`| WER matched (pooled) | ${totRef ? (totErr / totRef).toFixed(3) : '—'} (${(totRef / perSession.length).toFixed(0)}w/session avg) | ${totRef} ref words |`);
-console.log(`| WER matched rango/sesión | ${Math.min(...werPer).toFixed(3)}–${Math.max(...werPer).toFixed(3)} | ${perSession.length} |`);
+console.log(`| WER matched range/session | ${Math.min(...werPer).toFixed(3)}–${Math.max(...werPer).toFixed(3)} | ${perSession.length} |`);
 console.log(`| EOS→tool p50/p95 | ${agg.latency?.tool?.p50} / ${Math.round(agg.latency?.tool?.p95)} ms | ${agg.latency?.tool?.n} tool turns |`);
-console.log(`| Severidad exacta | ${ext.per_field?.severidad ? ext.per_field.severidad.correct + '/' + ext.per_field.severidad.n : '—'} | aggregate |`);
-console.log(`| Servicios P / R | ${pct(ext.servicios_afectados?.precision)} (TP ${ext.servicios_afectados?.tp}/FP ${ext.servicios_afectados?.fp}) / ${pct(ext.servicios_afectados?.recall)} (FN ${ext.servicios_afectados?.fn}) | aggregate |`);
-console.log(`| Timeline hora exacta | ${tlHoraTP} TP / ${tlHoraFN} FN (${pct(tlHoraTP / Math.max(1, tlHoraTP + tlHoraFN))}) | pool de eventos GT |`);
-console.log(`| Timeline hora+evento (estricto, sim≥0.6) | ${ext.timeline?.tp} TP / ${ext.timeline?.fp} FP / ${ext.timeline?.fn} FN | aggregate |`);
+console.log(`| Exact severity | ${ext.per_field?.severidad ? ext.per_field.severidad.correct + '/' + ext.per_field.severidad.n : '—'} | aggregate |`);
+console.log(`| Services P / R | ${pct(ext.servicios_afectados?.precision)} (TP ${ext.servicios_afectados?.tp}/FP ${ext.servicios_afectados?.fp}) / ${pct(ext.servicios_afectados?.recall)} (FN ${ext.servicios_afectados?.fn}) | aggregate |`);
+console.log(`| Timeline exact hour | ${tlHoraTP} TP / ${tlHoraFN} FN (${pct(tlHoraTP / Math.max(1, tlHoraTP + tlHoraFN))}) | GT event pool |`);
+console.log(`| Timeline hour+event (strict, sim≥0.6) | ${ext.timeline?.tp} TP / ${ext.timeline?.fp} FP / ${ext.timeline?.fn} FN | aggregate |`);
 console.log(`| Action items recall | ${pct(ext.action_items ? ext.action_items.covered / Math.max(1, ext.action_items.n_gt) : null)} (${ext.action_items?.covered}/${ext.action_items?.n_gt}) | aggregate |`);
 const conf = agg.confirmation ?? agg.confirmation_loop;
 if (conf) console.log(`| Confirm precision | ${pct(conf.precision)} | ${JSON.stringify(Object.fromEntries(Object.entries(conf).filter(([k]) => k.startsWith('n_'))))} |`);

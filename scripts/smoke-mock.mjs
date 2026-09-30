@@ -22,7 +22,7 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const run = (cmd, args) => {
   const r = spawnSync(cmd, args, { cwd: ROOT, stdio: 'inherit' });
   if (r.status !== 0) {
-    console.error(`\nsmoke-mock: FALLÓ: ${cmd} ${args.join(' ')} (exit ${r.status})`);
+    console.error(`\nsmoke-mock: FAILED: ${cmd} ${args.join(' ')} (exit ${r.status})`);
     process.exit(r.status ?? 1);
   }
 };
@@ -35,7 +35,7 @@ const artifacts = ['s1-happy-path', 's2-pieza-mal-oida', 's3-barge-in']
   .map((s) => join('.data', 'smoke', `artifact-${s}.json`));
 const missing = artifacts.filter((a) => !existsSync(join(ROOT, a)));
 if (missing.length) {
-  console.error(`smoke-mock: artefactos no generados: ${missing.join(', ')}`);
+  console.error(`smoke-mock: artifacts not generated: ${missing.join(', ')}`);
   process.exit(1);
 }
 const gts = ['s1-happy-path', 's2-pieza-mal-oida', 's3-barge-in']
@@ -50,11 +50,11 @@ for (const a of artifacts) {
   const pred = new Set(art.final_form.piezas.map((p) => `${p.sku}x${p.qty}`));
   const truth = new Set(gt.expected_form.piezas.map((p) => `${p.sku}x${p.qty}`));
   const same = pred.size === truth.size && [...truth].every((x) => pred.has(x));
-  console.log(`  ficha ${art.scenario_id}: ${same ? 'OK' : 'DIFIERE'} (${[...pred].join(', ')}) vs GT (${[...truth].join(', ')})`);
+  console.log(`  form ${art.scenario_id}: ${same ? 'OK' : 'DIFFERS'} (${[...pred].join(', ')}) vs GT (${[...truth].join(', ')})`);
   if (!same) formsOk = false;
 }
 if (!formsOk) {
-  console.error('smoke-mock: una ficha mock no calza con el ground truth — revisar pipeline.');
+  console.error('smoke-mock: a mock form does not match the ground truth — check pipeline.');
   process.exit(1);
 }
-console.log('\nSMOKE-MOCK OK — pipeline tools→ficha→artefacto→métricas íntegro en modo mock.');
+console.log('\nSMOKE-MOCK OK — tools→form→artifact→metrics pipeline intact in mock mode.');

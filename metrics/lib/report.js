@@ -173,13 +173,14 @@ export function markdownTable(report) {
     ['Latency user_turn_end → agent_turn_start, p50 / p95', `${ms(a.latency.agent.p50)} / ${ms(a.latency.agent.p95)}`, num(a.latency.agent.n), `answered turns; modes: ${modes}`],
     ['Extraction accuracy (all fields)', pct(a.extraction.overall), num(a.extraction.evaluated_fields), 'fields evaluated vs ground truth'],
   ];
-  for (const [f, label] of [['problema', 'problema'], ['diagnostico', 'diagnóstico'], ['solucion', 'solución'], ['tiempo_minutos', 'tiempo_minutos (±5 min)']]) {
+  // Field rows: keys stay ES (final_form schema); only the label is EN.
+  for (const [f, label] of [['problema', 'problem'], ['diagnostico', 'diagnosis'], ['solucion', 'solution'], ['tiempo_minutos', 'work_time_min (±5 min)']]) {
     const pf = a.extraction.per_field[f];
     if (!pf?.n) continue; // orden rows only when orden data present
     const extra = f === 'tiempo_minutos' ? ' ±5 min' : ' sim ≥ 0.8';
     rows.push([`  of which: ${label}`, pct(pf?.pct), num(pf?.n), `field-level${extra}`]);
   }
-  for (const [f, label] of [['resumen', 'resumen'], ['que_paso', 'que_paso'], ['severidad', 'severidad (exacta)']]) {
+  for (const [f, label] of [['resumen', 'summary'], ['que_paso', 'what_happened'], ['severidad', 'severity (exact)']]) {
     const pf = a.extraction.per_field[f];
     if (!pf?.n) continue; // incidente rows only when incident data present
     const extra = f === 'severidad' ? ' exact match' : ' sim ≥ 0.8';
@@ -191,18 +192,18 @@ export function markdownTable(report) {
   const ai = a.extraction.action_items;
   if (pz.n_sessions_with_piezas_gt > 0) {
     rows.push(
-      ['Piezas precision / recall / F1', `${pct(pz.precision)} / ${pct(pz.recall)} / ${pct(pz.f1)}`, `${pz.tp} TP / ${pz.fp} FP / ${pz.fn} FN`, 'exact (sku, qty) pairs vs GT'],
-      ['Orders with exact piezas set', pct(pz.exact_set_pct), num(pz.n_sessions_with_piezas_gt), 'orders where GT includes piezas'],
+      ['Parts precision / recall / F1', `${pct(pz.precision)} / ${pct(pz.recall)} / ${pct(pz.f1)}`, `${pz.tp} TP / ${pz.fp} FP / ${pz.fn} FN`, 'exact (sku, qty) pairs vs GT'],
+      ['Orders with exact parts set', pct(pz.exact_set_pct), num(pz.n_sessions_with_piezas_gt), 'orders where GT includes parts'],
     );
   }
   if (srv.n_sessions_with_gt > 0) {
-    rows.push(['Servicios afectados precision / recall / F1', `${pct(srv.precision)} / ${pct(srv.recall)} / ${pct(srv.f1)}`, `${srv.tp} TP / ${srv.fp} FP / ${srv.fn} FN`, 'exact service ids vs GT (read-back de desambiguación)']);
+    rows.push(['Affected services precision / recall / F1', `${pct(srv.precision)} / ${pct(srv.recall)} / ${pct(srv.f1)}`, `${srv.tp} TP / ${srv.fp} FP / ${srv.fn} FN`, 'exact service ids vs GT (disambiguation read-back)']);
   }
   if (tl.n_sessions_with_gt > 0) {
-    rows.push(['Timeline precision / recall / F1', `${pct(tl.precision)} / ${pct(tl.recall)} / ${pct(tl.f1)}`, `${tl.tp} TP / ${tl.fp} FP / ${tl.fn} FN`, 'hora exacta Y evento sim ≥ 0.6 vs GT']);
+    rows.push(['Timeline precision / recall / F1', `${pct(tl.precision)} / ${pct(tl.recall)} / ${pct(tl.f1)}`, `${tl.tp} TP / ${tl.fp} FP / ${tl.fn} FN`, 'exact hour AND event sim ≥ 0.6 vs GT']);
   }
   if (ai.n_sessions_with_gt > 0) {
-    rows.push(['Action items recall (cobrimiento)', pct(ai.recall), num(ai.n_gt), 'ítems GT cubiertos por un predicho con sim ≥ 0.6']);
+    rows.push(['Action items recall (coverage)', pct(ai.recall), num(ai.n_gt), 'GT items covered by a predicted one with sim ≥ 0.6']);
   }
   rows.push(
     ['Confirmation-loop recall (seeded errors rescued)', pct(a.confirmation.recall), num(a.confirmation.n_seeded), 'seeded capture errors'],

@@ -20,7 +20,7 @@ import { dirname, join, resolve } from 'node:path';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const artPath = process.argv[2];
-if (!artPath) { console.error('uso: node scripts/gate-eval.mjs <artifact.json>'); process.exit(2); }
+if (!artPath) { console.error('usage: node scripts/gate-eval.mjs <artifact.json>'); process.exit(2); }
 const art = JSON.parse(readFileSync(artPath.startsWith('/') ? artPath : join(ROOT, artPath), 'utf8'));
 const guion = JSON.parse(readFileSync(join(ROOT, 'data/guiones', `${art.scenario_id}.json`), 'utf8'));
 

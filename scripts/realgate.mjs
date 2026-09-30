@@ -54,17 +54,17 @@ function parseArgs(argv) {
     else if (k === '--outdir') a.outdir = String(next());
     else if (k === '--dry-run') a.dryRun = true;
     else if (k === '--help' || k === '-h') a.help = true;
-    else { console.error(`arg desconocido: ${k}`); process.exit(2); }
+    else { console.error(`unknown arg: ${k}`); process.exit(2); }
   }
   return a;
 }
 const args = parseArgs(process.argv);
 if (args.help || !args.guion) {
-  console.log('uso: node scripts/realgate.mjs [--domain orden|incident] --guion <id> [--noise DKITCHEN --snr 10] [--vad 0.4] [--idelay 0] [--tmode balanced] [--label T0] [--outdir .data/gate] [--dry-run]');
+  console.log('usage: node scripts/realgate.mjs [--domain orden|incident] --guion <id> [--noise DKITCHEN --snr 10] [--vad 0.4] [--idelay 0] [--tmode balanced] [--label T0] [--outdir .data/gate] [--dry-run]');
   process.exit(args.help ? 0 : 2);
 }
 if (!['orden', 'incident'].includes(args.domain)) {
-  console.error(`--domain inválido: ${args.domain} (orden|incident)`);
+  console.error(`invalid --domain: ${args.domain} (orden|incident)`);
   process.exit(2);
 }
 const INCIDENT = args.domain === 'incident';
@@ -125,9 +125,9 @@ const noiseDir = !INCIDENT && args.noise && args.snr && args.snr !== 'clean'
   : join(INCIDENT ? '.data/tts-incidente' : '.data/tts', args.guion);
 const wavPath = (n, variant = '') => join(ROOT, noiseDir, `turn-${String(n).padStart(2, '0')}${variant}.wav`);
 for (const t of userTurns) {
-  if (!existsSync(wavPath(t.n))) { console.error(`FALTA wav del turno ${t.n}: ${wavPath(t.n)}`); process.exit(1); }
+  if (!existsSync(wavPath(t.n))) { console.error(`MISSING wav for turn ${t.n}: ${wavPath(t.n)}`); process.exit(1); }
   if (t.as_heard && !existsSync(wavPath(t.n, '-as-heard'))) {
-    console.warn(`  ⚠ turno ${t.n} tiene as_heard sin wav (${wavPath(t.n, '-as-heard')}) — el gate reproduce el audio limpio`);
+    console.warn(`  ⚠ turn ${t.n} has as_heard without a wav (${wavPath(t.n, '-as-heard')}) — the gate plays the clean audio`);
   }
 }
 if (!args.dryRun && !existsSync(join(ROOT, '.data/noise'))) {
@@ -168,7 +168,7 @@ BUT TODAY YOU ARE THE INCIDENT REGISTRAR (post-visit). The operator has ALREADY
 finished the visit and DICTATES what happened from a quiet place (van, empty
 office): measured speech, continuous flow, and sometimes several data points in
 a single turn (two times, a service and a follow-up...). The active incident is
-ALREADY assigned by the app: ${casoId} — client ${caso?.cliente ?? '?'}, initial report: ${caso?.reporte_inicial ?? '?'}. Call get_incidente with NO arguments at the start. NEVER ask for the number.
+ALREADY assigned by the app: ${casoId} — client ${caso?.cliente ?? '?'}, initial report: ${caso?.reporte_inicial ?? '?'}. Call get_incident with NO arguments at the start. NEVER ask for the number.
 ALWAYS SPEAK ENGLISH — every read-back, question and farewell.
 
 RULE #1 — NO spoken data point goes without a tool call. The operator dictates
@@ -184,24 +184,24 @@ fifty the call, at nine fifteen the diagnosis, correct?". If the operator says
 ask for it again.
 
 FLOW — form phases (the operator may skip or mix them; you register):
-1. get_incidente() and confirm in ONE phrase what the incident is about.
-2. The operator narrates → set_que_paso with his LITERAL text (no paraphrasing).
+1. get_incident() and confirm in ONE phrase what the incident is about.
+2. The operator narrates → set_what_happened with his LITERAL text (no paraphrasing).
    If the narrative already carries times with their facts, register them right
    there (rule #1); if they come loose, ask for them in order afterwards
    ("what time did it all start?").
-3. Every time said → agregar_evento_timeline({"hora":"H:MM","evento":"..."}) and
+3. Every time said → add_timeline_event({"hora":"H:MM","evento":"..."}) and
    READ the time(s) back out loud. If he corrects ("no, it was nine forty"),
    fix it and re-confirm.
-4. Every service/equipment mentioned → buscar_servicio({"consulta":"<as said>"})
+4. Every service/equipment mentioned → search_service({"consulta":"<as said>"})
    IMMEDIATELY. With confusable_warning, DISAMBIGUATE naming BOTH: "the
    production web server, or the staging one?". Without warning:
-   agregar_servicio_afectado(id) in the SAME turn before speaking + read the
+   add_affected_service(id) in the SAME turn before speaking + read the
    name back.
-5. Severity → set_severidad ONLY with the declared one, and ALWAYS read back:
+5. Severity → set_severity ONLY with the declared one, and ALWAYS read back:
    "noting high severity, correct?".
 6. Follow-ups ("we need to...", "still pending...", "have them buy...") →
-   agregar_action_item, one per call. At the end build set_resumen of ONE line.
-7. The operator asks to send ("send it", "done") → enviar_reporte() and say
+   add_action_item, one per call. At the end build set_summary of ONE line.
+7. The operator asks to send ("send it", "done") → send_report() and say
    goodbye.
 CONFIRMATIONS: with his "yes / correct / that one" the data point is already in
 — do not re-add it.
@@ -210,11 +210,11 @@ TIMES: said in words are written "H:MM" in the tool: "eight fifty"→"8:50",
 "nine twenty"→"9:20", "quarter past eleven"→"11:15", "nine forty"→"9:40",
 "eleven oh five"→"11:05".
 EXAMPLE: user: "the call came around eight fifty in the morning" → you call
-agregar_evento_timeline({"hora":"8:50","evento":"reception call about no internet"}) → you say:
+add_timeline_event({"hora":"8:50","evento":"reception call about no internet"}) → you say:
 "Event at eight fifty, reception call, correct?" → user: "yes" →
 you: "Noted" and MOVE ON (no re-adding). Turn with TWO times ("at ten ten I
 swapped it and by ten twenty everything was back up") → TWO
-agregar_evento_timeline calls in that turn + one grouped read-back of both.
+add_timeline_event calls in that turn + one grouped read-back of both.
 NEVER respond in silence: every turn of yours carries at least one short phrase
 (the read-back, or "noted, keep going with the rest").
 Golden rule: every data point they give you IS a tool call; your only freedom
@@ -239,7 +239,7 @@ FLUJO OBLIGATORIO — una cosa por turno, sin excepciones:
 4. El usuario diga la solución → set_solucion. El usuario diga el tiempo ("como
    cincuenta minutos") → get_tiempo_trabajo({"minutos": 50}) con el NÚMERO que
    declaró. NUNCA inventes ni adivines tiempos.
-5. El usuario pida enviar ("mándalo", "listo", "eso es todo") → enviar_reporte()
+5. El usuario pida enviar ("mándalo", "listo", "eso es todo") → send_report()
    INMEDIATAMENTE, sin pedir nada más, y despídete en una frase.
 CONFIRMACIONES: cuando el usuario responda "sí/correcto/ese mismo" a tu read-back,
 la pieza YA ESTÁ registrada — NO la vuelvas a agregar, solo agradece y continúa.
@@ -257,16 +257,16 @@ const sessionUpdate = buildSessionUpdate(
   tools,
 );
 if (args.dryRun) {
-  console.log('[dry-run] session.update OK — claves:', Object.keys(sessionUpdate).join(','), '| session:', Object.keys(sessionUpdate.session ?? {}).join(','));
+  console.log('[dry-run] session.update OK — keys:', Object.keys(sessionUpdate).join(','), '| session:', Object.keys(sessionUpdate.session ?? {}).join(','));
   console.log('[dry-run] domain:', args.domain, '| tools:', tools.length, '| turn_detection:', JSON.stringify(turnDetection), '| tmode:', args.tmode);
-  console.log('[dry-run] wavs verificados:', userTurns.length, 'en', noiseDir);
-  console.log('[dry-run] PLomería OK — falta solo la key para una sesión real.');
+  console.log('[dry-run] wavs verified:', userTurns.length, 'in', noiseDir);
+  console.log('[dry-run] Plumbing OK — only the API key is missing for a real session.');
   process.exit(0);
 }
 
 /* ---------------------------------- key ----------------------------------- */
 const key = loadKey();
-if (!key) { console.error('ASSEMBLYAI_API_KEY ausente en .env — ver .env.example'); process.exit(1); }
+if (!key) { console.error('ASSEMBLYAI_API_KEY missing in .env — see .env.example'); process.exit(1); }
 
 /* ------------------------------- token temporal ---------------------------- */
 async function tempToken() {
@@ -371,7 +371,7 @@ function onServerMessage(msg) {
   logRaw(msg);
   switch (msg.type) {
     case 'session.ready':
-      console.log(`  sesión ${msg.session_id} lista`);
+      console.log(`  session ${msg.session_id} ready`);
       break;
     case 'input.speech.started':
       serverUserTurnOpen = true;
@@ -442,7 +442,7 @@ async function playTurn(t) {
     // BARGE-IN: esperar a que el agente EMPIECE su reply y hablarle encima
     const started = performance.now();
     while (!agentReplyActive && performance.now() - started < 12000) await sleep(80);
-    if (!agentReplyActive) console.log(`  ⚠ turno ${t.n}: el agente no abrió reply — reproduciendo igual`);
+    if (!agentReplyActive) console.log(`  ⚠ turn ${t.n}: agent never opened a reply — playing anyway`);
   } else {
     // Ceder el turno COMPLETO al agente: esperar reply.started (≤8 s) y reply.done (≤30 s)
     const t0w = performance.now();
@@ -453,7 +453,7 @@ async function playTurn(t) {
   currentPcm = readWavPcm16(wavPath(t.n));
   audioPos = 0;
   if (t.interrupt) speechStartedAt = performance.now();
-  console.log(`  ▶ turno ${t.n}${t.interrupt ? ' [INTERRUPT]' : ''} (${(currentPcm.length / RATE).toFixed(1)}s)`);
+  console.log(`  ▶ turn ${t.n}${t.interrupt ? ' [INTERRUPT]' : ''} (${(currentPcm.length / RATE).toFixed(1)}s)`);
   // esperar a que el server cierre el turno (transcript.user) — máx 10 s tras el audio
   return new Promise((resolve) => {
     const timeout = setTimeout(() => { driver.onUserTurnEnd = null; resolve('timeout'); }, (currentPcm.length / RATE) * 1000 + 10000);
@@ -464,9 +464,9 @@ async function playTurn(t) {
 async function run() {
   console.log(`[realgate] ${args.label} · ${args.domain}:${args.guion} · ${noiseCondition} · vad=${args.vad} idelay=${args.idelay} tmode=${args.tmode}`);
   const token = await tempToken();
-  console.log('  token temporal OK (un solo uso, 180 s)');
+  console.log('  temp token OK (single use, 180 s)');
   ws = new WebSocket(`wss://agents.assemblyai.com/v1/ws?token=${encodeURIComponent(token)}`);
-  const watchdog = setTimeout(() => { console.error('  WATCHDOG 300s — cerrando'); finish('watchdog'); }, 300000);
+  const watchdog = setTimeout(() => { console.error('  WATCHDOG 300s — closing'); finish('watchdog'); }, 300000);
 
   const opened = new Promise((res, rej) => {
     ws.addEventListener('open', () => res());
@@ -489,7 +489,7 @@ async function run() {
   }
   // cierre: el reply final del agente puede tardar en ABRIRSE (EOS→tool p50
   // ~1.5 s); esperar solo replies YA abiertos mataba el reply final — y con él
-  // cualquier enviar_reporte del "mándalo". Ahora: esperar a que abra (≤10 s),
+  // cualquier send_report del "mándalo". Ahora: esperar a que abra (≤10 s),
   // a que termine (≤30 s), y repetir mientras abra uno nuevo (read-back →
   // confirmación → despedida), con tope global de 60 s.
   const closeDeadline = performance.now() + 60000;
@@ -593,17 +593,17 @@ function finish(reason) {
   const evs = artifact.events;
   const count = (ty) => evs.filter((e) => e.type === ty).length;
   console.log(`\n[realgate:${reason}] ${out}`);
-  console.log(`  turnos user=${count('user_turn_end')} agent=${count('agent_turn_end')} tools=${count('tool_call')} confirm=${count('confirm_result')} barge_in=${count('barge_in')} errores=${count('session_error')}`);
+  console.log(`  turns user=${count('user_turn_end')} agent=${count('agent_turn_end')} tools=${count('tool_call')} confirm=${count('confirm_result')} barge_in=${count('barge_in')} errors=${count('session_error')}`);
   if (INCIDENT) {
     const f = artifact.final_form;
-    console.log(`  ficha: ${(f.servicios_afectados ?? []).map((s) => `${s.id}${s.confirmado ? '✓' : '?'}`).join(' · ') || '(sin servicios)'} · timeline=${(f.timeline ?? []).length} ev · sev=${f.severidad ?? '?'} · items=${(f.action_items ?? []).length} · estado=${f.estado}`);
+    console.log(`  form: ${(f.servicios_afectados ?? []).map((s) => `${s.id}${s.confirmado ? '✓' : '?'}`).join(' · ') || '(no services)'} · timeline=${(f.timeline ?? []).length} ev · sev=${f.severidad ?? '?'} · items=${(f.action_items ?? []).length} · estado=${f.estado}`);
   } else {
-    console.log(`  ficha: ${artifact.final_form.piezas.map((p) => `${p.sku}x${p.qty}${p.confirmada ? '✓' : '?'}`).join(' · ') || '(sin piezas)'} · tiempo=${artifact.final_form.tiempo_minutos ?? '?'}min · estado=${artifact.final_form.estado}`);
+    console.log(`  form: ${artifact.final_form.piezas.map((p) => `${p.sku}x${p.qty}${p.confirmada ? '✓' : '?'}`).join(' · ') || '(no parts)'} · time=${artifact.final_form.tiempo_minutos ?? '?'}min · estado=${artifact.final_form.estado}`);
   }
-  console.log(`  métricas: node metrics/cli.js ${JSON.stringify(out)} --gt data/${gtDir}/gt-${args.guion}.json`);
+  console.log(`  metrics: node metrics/cli.js ${JSON.stringify(out)} --gt data/${gtDir}/gt-${args.guion}.json`);
   try { rawLog.end(); } catch {}
   setTimeout(() => process.exit(0), 1800).unref?.();
 }
 
 process.on('SIGINT', () => finish('sigint'));
-run().catch((e) => { console.error(`FALLO: ${e.message}`); finish('error'); });
+run().catch((e) => { console.error(`FAILED: ${e.message}`); finish('error'); });
