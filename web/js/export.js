@@ -4,7 +4,7 @@
 //   initExportPanel({ artifact, statusEl })
 //     artifact : artefacto completo §6 (docs/architecture.md) — se lee EN CADA
 //                acción, así que re-llamar init con un artefacto nuevo basta.
-//     statusEl : HTMLElement donde se agregan líneas de estado legibles (ES).
+//     statusEl : HTMLElement donde se agregan líneas de estado legibles.
 //   Cablea los 4 botones del cierre: #btn-export-csv, #btn-export-pdf,
 //   #btn-download-artifact, #btn-send-fsm. Si un botón todavía no existe en el
 //   DOM, un listener delegado en document (fase captura) lo cablea en el
@@ -29,6 +29,52 @@ const FICHA_COLUMNS = [
 // Bloque 2 del CSV: columnas del detalle de piezas.
 const PIEZA_COLUMNS = ['sku', 'nombre', 'qty', 'confirmada'];
 
+// Headers EN del CSV: las llaves ES de arriba siguen siendo las llaves de
+// lectura de final_form; solo el encabezado visible se traduce. 'nombre' es
+// ambiguo entre bloques (pieza=part / servicio=service) y se resuelve con el
+// override local de cada csvHeader, no aquí.
+const HEADER_LABELS = {
+  cliente: 'client',
+  problema: 'problem',
+  diagnostico: 'diagnosis',
+  solucion: 'solution',
+  tiempo_minutos: 'work_time_min',
+  notas: 'notes',
+  estado: 'status',
+  confirmada: 'confirmed',
+  confirmado: 'confirmed',
+  incidente_id: 'incident_id',
+  resumen: 'summary',
+  que_paso: 'what_happened',
+  severidad: 'severity',
+  hora: 'time',
+  evento: 'event',
+  afectados: 'affected',
+  descripcion: 'description',
+  sitio: 'site',
+  equipo: 'equipment',
+  tecnico: 'technician',
+};
+
+// Vocabulario cerrado de la columna estado (mismo vocabulario que el dominio
+// incidente); los valores fuera del mapa pasan tal cual (números/booleanos no
+// se tocan).
+const ESTADO_LABELS = { abierta: 'open', en_proceso: 'in_progress', enviada: 'sent' };
+
+// Severidad ES en artefactos viejos (alta/media/baja); los ya EN
+// (high/medium/low) pasan tal cual.
+const SEVERIDAD_LABELS = { alta: 'high', media: 'medium', baja: 'low' };
+
+// scenario_id de los guiones ES → etiqueta EN para los footers de markdown
+// (s1-happy-path y s3-barge-in ya son EN; fallback al id crudo).
+const SCENARIO_LABELS = {
+  'i1-dictado-feliz': 'i1-happy-dictation',
+  'i2-servicio-confundido': 'i2-confused-service',
+  'i3-correccion-hora': 'i3-time-correction',
+  'i4-mixto': 'i4-mixed',
+  's2-pieza-mal-oida': 's2-misheard-part',
+};
+
 /** Celda RFC 4180: siempre entrecomillada, comillas escapadas como "". */
 function csvCell(value) {
   const s = value === null || value === undefined ? '' : String(value);
@@ -37,6 +83,22 @@ function csvCell(value) {
 
 function csvRow(cells) {
   return cells.map(csvCell).join(',');
+}
+
+/** Fila de encabezado de un bloque: cada llave ES sale con su header EN
+ *  (overrides locales para llaves ambiguas, p. ej. nombre pieza vs servicio). */
+function csvHeader(columns, overrides) {
+  const labels = overrides ? { ...HEADER_LABELS, ...overrides } : HEADER_LABELS;
+  return csvRow(columns.map((c) => labels[c] || c));
+}
+
+/** Valor de celda: estado/severidad traducen su vocabulario cerrado; el resto
+ *  (texto libre, números, booleanos) sale tal cual. */
+function displayValue(col, v) {
+  if (v === null || v === undefined) return '';
+  if (col === 'estado' && ESTADO_LABELS[v]) return ESTADO_LABELS[v];
+  if (col === 'severidad' && SEVERIDAD_LABELS[v]) return SEVERIDAD_LABELS[v];
+  return v;
 }
 
 /**
@@ -56,7 +118,8 @@ export function ordenInfoDe(artifact) {
   for (let i = events.length - 1; i >= 0; i--) {
     const ev = events[i] || {};
     const orden = ev.result && ev.result.orden;
-    const incidente = ev.tool === 'get_incidente' && ev.result && ev.result.incidente;
+    const incidente = (ev.tool === 'get_incident' || ev.tool === 'get_incidente')
+      && ev.result && ev.result.incidente;
     const ent = orden && typeof orden === 'object' ? orden
       : incidente && typeof incidente === 'object' ? incidente : null;
     if (ev.type === 'tool_result' && ent) {
@@ -88,7 +151,10 @@ function extraFichaFields(ff) {
  * CSV de dos bloques (formato documentado en web/README.md):
  *   1) una fila de encabezado + UNA fila de valores con los campos de la ficha;
  *   2) línea vacía, encabezado de piezas y una fila por pieza.
- * Siempre BOM UTF-8 (Excel) y finales de línea CRLF, salvo opts.bom === false.
+ * Los encabezados salen en EN (HEADER_LABELS) pero los valores se leen por
+ * llave ES de final_form; el vocabulario de estado/severidad se traduce
+ * (ESTADO_LABELS/SEVERIDAD_LABELS). Siempre BOM UTF-8 (Excel) y finales de
+ * línea CRLF, salvo opts.bom === false.
  */
 export function buildOrdenCsv(artifact, opts) {
   const ff = (artifact && artifact.final_form) || {};
@@ -98,15 +164,12 @@ export function buildOrdenCsv(artifact, opts) {
 
   const values = columns.map((col) => {
     if (col === 'cliente') return info.cliente;
-    if (Object.prototype.hasOwnProperty.call(ff, col)) {
-      const v = ff[col];
-      return v === null || v === undefined ? '' : v;
-    }
+    if (Object.prototype.hasOwnProperty.call(ff, col)) return displayValue(col, ff[col]);
     return '';
   });
 
   const piezas = Array.isArray(ff.piezas) ? ff.piezas : [];
-  const lines = [csvRow(columns), csvRow(values), '', csvRow(PIEZA_COLUMNS)];
+  const lines = [csvHeader(columns), csvRow(values), '', csvHeader(PIEZA_COLUMNS, { nombre: 'part' })];
   for (const p of piezas) {
     lines.push(csvRow(PIEZA_COLUMNS.map((c) => (p && typeof p === 'object' ? p[c] : ''))));
   }
@@ -166,10 +229,7 @@ export function buildIncidentCsv(artifact, opts) {
   const info = ordenInfoDe(artifact); // cliente/sitio/equipo/tecnico (mismas llaves)
   const values = INCIDENTE_COLUMNS.map((col) => {
     if (col === 'cliente') return info.cliente;
-    if (Object.prototype.hasOwnProperty.call(ff, col)) {
-      const v = ff[col];
-      return v === null || v === undefined ? '' : v;
-    }
+    if (Object.prototype.hasOwnProperty.call(ff, col)) return displayValue(col, ff[col]);
     return '';
   });
 
@@ -177,16 +237,16 @@ export function buildIncidentCsv(artifact, opts) {
   const servicios = Array.isArray(ff.servicios_afectados) ? ff.servicios_afectados : [];
   const items = Array.isArray(ff.action_items) ? ff.action_items : [];
 
-  const lines = [csvRow(INCIDENTE_COLUMNS), csvRow(values)];
-  lines.push('', csvRow(TIMELINE_COLUMNS));
+  const lines = [csvHeader(INCIDENTE_COLUMNS), csvRow(values)];
+  lines.push('', csvHeader(TIMELINE_COLUMNS));
   for (const ev of timeline) {
     lines.push(csvRow(TIMELINE_COLUMNS.map((c) => (ev && typeof ev === 'object' ? ev[c] : ''))));
   }
-  lines.push('', csvRow(SERVICIO_COLUMNS));
+  lines.push('', csvHeader(SERVICIO_COLUMNS, { nombre: 'service' }));
   for (const s of servicios) {
     lines.push(csvRow(SERVICIO_COLUMNS.map((c) => (s && typeof s === 'object' ? s[c] : ''))));
   }
-  lines.push('', csvRow(ITEM_COLUMNS));
+  lines.push('', csvHeader(ITEM_COLUMNS));
   for (const it of items) {
     lines.push(csvRow([typeof it === 'string' ? it : '']));
   }
@@ -216,7 +276,7 @@ export function buildOrdenMarkdown(artifact, opts) {
   if (info.sitio) out.push(`**Site:** ${mdCell(info.sitio)}`, '');
   if (info.equipo) out.push(`**Equipment:** ${mdCell(info.equipo)}`, '');
   if (info.tecnico) out.push(`**Technician:** ${mdCell(info.tecnico)}`, '');
-  out.push(`**Status:** ${mdCell(ff.estado)} · **Work time:** ${
+  out.push(`**Status:** ${mdCell(displayValue('estado', ff.estado))} · **Work time:** ${
     ff.tiempo_minutos === null || ff.tiempo_minutos === undefined ? '—' : `${ff.tiempo_minutos} min`
   }`, '');
 
@@ -240,7 +300,9 @@ export function buildOrdenMarkdown(artifact, opts) {
 
   out.push('---', '',
     '*Generated by voice session — audio was not retained.*', '',
-    `Session \`${a.session_id || 'no-id'}\` · scenario \`${a.scenario_id || '-'}\` · exported ${cuando}`, '');
+    `Session \`${a.session_id || 'no-id'}\` · scenario \`${
+      SCENARIO_LABELS[a.scenario_id] ?? (a.scenario_id || '-')
+    }\` · exported ${cuando}`, '');
   return out.join('\n');
 }
 
@@ -258,7 +320,7 @@ export function buildIncidenteMarkdown(artifact, opts) {
   if (info.cliente) out.push(`**Customer:** ${mdCell(info.cliente)}`, '');
   if (info.sitio) out.push(`**Site:** ${mdCell(info.sitio)}`, '');
   if (info.equipo) out.push(`**Equipment:** ${mdCell(info.equipo)}`, '');
-  out.push(`**Status:** ${mdCell(ff.estado)} · **Severity:** ${mdCell(ff.severidad)}`, '');
+  out.push(`**Status:** ${mdCell(displayValue('estado', ff.estado))} · **Severity:** ${mdCell(displayValue('severidad', ff.severidad))}`, '');
 
   out.push('## Summary', '', mdCell(ff.resumen), '');
   out.push('## What happened', '', mdCell(ff.que_paso), '');
@@ -280,7 +342,9 @@ export function buildIncidenteMarkdown(artifact, opts) {
 
   out.push('---', '',
     '*Generated by voice session — audio was not retained.*', '',
-    `Session \`${a.session_id || 'no-id'}\` · scenario \`${a.scenario_id || '-'}\` · exported ${cuando}`, '');
+    `Session \`${a.session_id || 'no-id'}\` · scenario \`${
+      SCENARIO_LABELS[a.scenario_id] ?? (a.scenario_id || '-')
+    }\` · exported ${cuando}`, '');
   return out.join('\n');
 }
 
@@ -296,7 +360,7 @@ function errMsg(err) {
   return (err && err.message) ? err.message : String(err);
 }
 
-/** Agrega una línea de estado en español; recorta a las últimas N. */
+/** Agrega una línea de estado; recorta a las últimas N. */
 function line(kind, text) {
   const el = state.statusEl;
   if (!el || typeof document === 'undefined') {
@@ -368,7 +432,7 @@ function buildPrintView() {
     ['Site', info.sitio],
     ['Equipment', info.equipo],
     ['Technician', info.tecnico],
-    ['Status', ff.estado],
+    ['Status', displayValue('estado', ff.estado)],
     ['Work time', ff.tiempo_minutos === null || ff.tiempo_minutos === undefined ? '' : `${ff.tiempo_minutos} min`],
   ];
   for (const [k, v] of metaRows) {
@@ -441,8 +505,8 @@ function buildIncidentePrintView(pv, a) {
     ['Site', info.sitio],
     ['Equipment', info.equipo],
     ['Technician', info.tecnico],
-    ['Status', ff.estado],
-    ['Severity', ff.severidad ?? ''],
+    ['Status', displayValue('estado', ff.estado)],
+    ['Severity', displayValue('severidad', ff.severidad)],
   ];
   for (const [k, v] of metaRows) {
     if (!v) continue;
