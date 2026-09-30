@@ -11,7 +11,7 @@
 | `js/tools.js` | DEFINICIONES para `session.update` (7 tools, `enum` sku = guard anticonfusión) |
 | `js/mock-agent.js` | Canal mock determinista (PRNG mulberry32; replay de guiones con pacing plausible) |
 | `js/ws-agent.js` | Canal REAL: WS crudo a AssemblyAI (mic AudioWorklet, playback, tool.result drain) |
-| `js/agent-config.js` | Prompt v1 del entrevistador ES + turn_detection (vad 0.4, sin min_silence) |
+| `js/agent-config.js` | Prompt v1 del entrevistador EN (keyterms del catálogo ES + EN) + turn_detection (vad 0.4, sin min_silence) |
 | `js/dialog-act.js` | Utilidades de texto ES: normalización, dígitos hablados, sí/no, qty, minutos |
 | `js/guion-sim.js` | Enriquece guiones desde el GT: `as_heard` (mal oída) e `interrupt` |
 | `js/clock.js` | realClock / simClock (t_ms deterministas en replay) |
@@ -31,8 +31,8 @@ El engine (única fuente del artefacto) es agnóstico: mismo vocabulario para am
 ## Cómo funciona el replay mock
 - Cada turno `user` del guion se "habla" con duración simulada 3–6 s, respuesta del
   agente a 300–900 ms, tool call ~150 ms después → muestras de latencia plausibles.
-- `as_heard`: si el turno lo lleva, ES lo que "oyó" el ASR (s2: "tres cuartos" →
-  "tres punto ocho" → buscar_pieza resuelve VLV-038) y es lo que va al transcript.
+- `as_heard`: si el turno lo lleva, ES lo que "oyó" el ASR (s2: "three quarters" →
+  "three point eight" → search_part resuelve VLV-038) y es lo que va al transcript.
 - `interrupt:true`: el turno interrumpe al agente a mitad de frase (~55 %): emite
   `barge_in` con `agent_text_cut` ("…de tres cuar—") y latencia 250–400 ms.
 - Ambos flags los deriva `guion-sim.js` del ground-truth (`seeded_errors`,
@@ -62,7 +62,7 @@ En browser: `npm run dev` (o cualquier server estático en la raíz del repo).
 2. `app.js` ya cablea `createRealAgentChannel` solo en modo real (mic solo ahí).
 3. Ajustar prompt/tools según comportamiento real del LLM; el confirm_request del
    canal real se deriva del read-back hablado (clasificador compartido `dialog-act`).
-4. Las tools internas `set_diagnostico`/`set_notas` (solo mock hoy) pueden
+4. Las tools internas `set_diagnosis`/`set_notes` (was `set_diagnostico`/`set_notas`; solo mock hoy) pueden
    promoverse a definiciones públicas si el LLM las necesita.
 
 ## Export del cierre (D4): `js/export.js` + `css/print.css`

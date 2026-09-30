@@ -138,7 +138,7 @@ fuente de verdad para el harness de métricas. `t_ms` = ms transcurridos desde
     { "t_ms": 2100,  "type": "user_turn_start" },
     { "t_ms": 6100,  "type": "user_turn_end", "text": "…transcripción final del turno…" },
     { "t_ms": 6250,  "type": "agent_turn_start" },
-    { "t_ms": 6480,  "type": "tool_call",   "call_id": "c1", "tool": "buscar_pieza", "args": { "consulta": "válvula 3/4" } },
+    { "t_ms": 6480,  "type": "tool_call",   "call_id": "c1", "tool": "search_part", "args": { "consulta": "válvula 3/4" } },
     { "t_ms": 6510,  "type": "tool_result", "call_id": "c1", "ok": true, "result": { "sku": "VLV-034-BR" } },
     { "t_ms": 7900,  "type": "agent_turn_end", "text": "¿Decías la válvula de bola de 3/4 pulgada?" },
     { "t_ms": 8050,  "type": "confirm_request", "field": "pieza", "value": { "sku": "VLV-034-BR", "qty": 1 } },
@@ -175,19 +175,24 @@ Reglas del timeline:
 
 ## 7. Tools (definidas en web/js/tools.js, implementadas en tool-runner.js)
 
-> 2026-09-30: rename post-medición — `enviar_reporte` pasa a `send_report`
-> (nombre compartido con el dominio incidente); las demás tools legacy del
-> dominio orden conservan por ahora sus nombres.
+> 2026-09-30: rename post-medición — TODAS las tools pasan a nombres EN:
+> `get_orden`→`get_order`, `buscar_pieza`→`search_part`,
+> `agregar_pieza_a_reporte`→`add_part_to_report`, `set_problema`→`set_problem`,
+> `set_solucion`→`set_solution`, `get_tiempo_trabajo`→`get_work_time`,
+> `enviar_reporte`→`send_report` (nombre compartido con el dominio incidente).
+> La evidencia de docs/evidence/gate/ conserva los nombres pre-rename con que
+> se midió; los NOMBRES DE PARÁMETROS (`orden_id`, `consulta`, `sku`, `qty`,
+> `minutos`, `texto`) no cambian.
 
 | Tool | Props (JSON Schema) | Efecto |
 |---|---|---|
-| `get_orden` | `{ orden_id: string }` | Devuelve la orden (de data/ordenes.json) |
-| `buscar_pieza` | `{ consulta: string }` | Búsqueda tolerante (alias/jerga) en el catálogo; devuelve candidatos con sku/nombre |
-| `agregar_pieza_a_reporte` | `{ sku: enum(catalogo), qty: integer ≥1 }` | Agrega pieza a final_form.piezas; dispara read-back de confirmación |
-| `set_problema` | `{ texto: string }` | Fija problema (texto del técnico, no del LLM) |
-| `set_solucion` | `{ texto: string }` | Fija solución |
-| `get_tiempo_trabajo` | `{}` | Minutos transcurridos desde inicio del trabajo |
-| `send_report` | `{}` | Cierra la ficha, marca estado=enviada, emite artefacto |
+| `get_order` (was `get_orden`) | `{ orden_id: string }` | Devuelve la orden (de data/ordenes.json) |
+| `search_part` (was `buscar_pieza`) | `{ consulta: string }` | Búsqueda tolerante (alias/jerga) en el catálogo; devuelve candidatos con sku/nombre |
+| `add_part_to_report` (was `agregar_pieza_a_reporte`) | `{ sku: enum(catalogo), qty: integer ≥1 }` | Agrega pieza a final_form.piezas; dispara read-back de confirmación |
+| `set_problem` (was `set_problema`) | `{ texto: string }` | Fija problema (texto del técnico, no del LLM) |
+| `set_solution` (was `set_solucion`) | `{ texto: string }` | Fija solución |
+| `get_work_time` (was `get_tiempo_trabajo`) | `{}` | Minutos transcurridos desde inicio del trabajo |
+| `send_report` (was `enviar_reporte`) | `{}` | Cierra la ficha, marca estado=enviada, emite artefacto |
 
 El `enum` de `sku` se genera EN TIEMPO DE BUILD-DE-SESIÓN desde `data/piezas.json`
 (esto es lo que atrapa "3/4" vs "3.8" a nivel de schema). Las definiciones son
@@ -198,7 +203,8 @@ responde `tool.result` con el result como **string JSON**, enviado cuando el
 
 Nota de implementación (15-sep): `final_form.diagnostico` y `notas` no tienen
 tool pública en el contrato de 7; el tool-runner las cubre con pseudo-tools
-INTERNAS (`set_diagnostico`/`set_notas`) que fluyen por el mismo pipeline
+INTERNAS (`set_diagnosis`/`set_notes`, was `set_diagnostico`/`set_notas`) que
+fluyen por el mismo pipeline
 `tool_call`→`tool_result`. Si el LLM real las necesita explícitas (D1), se
 promueven a definiciones públicas — cambio de una línea en tools.js.
 
