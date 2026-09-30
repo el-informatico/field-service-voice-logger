@@ -90,8 +90,9 @@ reaches the browser; audio never persisted — transcript + tool events only.
 
 ## Production notes
 
-> **SUPERSEDED (números):** esta lista es de la era N=5. El master v5 (3:44,
-> re-render final del 29-sep con swap W7T3) habla los números de la tabla
+> **SUPERSEDED (números):** esta lista es de la era N=5. El master v6 (3:42,
+> re-render del 29-sep noche: v5 con la narración de m-metrics sin el claim
+> "real Mexican field data") habla los números de la tabla
 > **EN N=10** (el take pre-swap narraba la ES) — el check-off verbatim de lo
 > que aparece en pantalla vive en `docs/VIDEO-REVIEW-GUIDE.md` §"Check-off
 > visual". El README actual publica la tabla EN N=10 como primaria y la ES

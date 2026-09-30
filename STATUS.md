@@ -1,6 +1,6 @@
 # STATUS — Field Service Voice Logger
 
-Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — **nivel L3** en `en-migration` — swap aplicado: tabla EN N=10 primaria, ES → "development evidence" — aún sin push; master de video vigente = **v5 EN 3:44** (sha `9a9b632e…`, QA visual aprobado; el v4 `8adfea08…` queda descartado — no subir); corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + subida de videos + submit).
+Bitácora por bloque. Última actualización: **2026-09-29** (rewrite EN de las últimas 24 h: build mergeada a `main` y desplegada, docs de submit a EN — **nivel L3** en `en-migration` — swap aplicado: tabla EN N=10 primaria, ES → "development evidence" — aún sin push; master de video vigente = **v6 EN 3:42** (sha `6e04741e…`, QA lanes 9/9 — re-render del v5 sin el claim "real Mexican field data"; el v5 `9a9b632e…` y el v4 `8adfea08…` quedan descartados — no subir); corrección 33→25 self-checks — ver bloque EN-REWRITE al final; gates restantes: push de docs + subida de videos + submit).
 Sprint real: 24–25 sep → `docs/plan.md`. Hackathon cierra **30-sep-2026 15:00 UTC**.
 
 ## Estado global — pre-sprint terminado ✅
@@ -510,11 +510,14 @@ auditoría+fixes de STATUS · C4 este bloque. Verde final verificado:
   gates G-A..G-E, el swap se ejecutó (`b3358ce`, más fixes post-swap
   `71b680e`/`691d660`): la tabla publicada en README y SUBMISSION es ahora
   la **EN N=10**; la del build ES pasó a subsección "Development evidence".
-- **Video**: **[Actualizado 29-sep noche:]** master vigente = **v5 EN 3:44
-  (sha `9a9b632e…`)** — re-render final 29-sep 18:08 (swap W7T3 + tabla EN
-  N=10; QA de visión lanes 9/9) —; el take EN (QA 7/7) se
-  construyó como master v5 en la Fase B de S-B (`cb6442a`). El v4 3:39
-  (sha `8adfea08…`, UI ES) queda descartado — no subir.
+- **Video**: **[Actualizado 29-sep noche:]** master vigente = **v6 EN 3:42
+  (sha `6e04741e…`)** — re-render del v5 con un único cambio de narración:
+  fuera el claim "real Mexican field data" de m-metrics (orden del owner;
+  cues 1-44 sin mover, 45-53 re-flowed ±0.5 s, 54-70 corridos −1.9 s; QA
+  lanes 9/9) —. El v5 3:44 (re-render 18:08, swap W7T3 + tabla EN N=10;
+  take EN QA 7/7, Fase B de S-B `cb6442a`) queda **archivado — no subir:
+  su narración aún dice el claim**. El v4 3:39 (sha `8adfea08…`, UI ES)
+  queda descartado — no subir.
 - **Barrido de verificación (29-sep noche)**: revisión de números en 3
   familias (métricas N=10 / video / conteos) — único hallazgo E2: este
   archivo decía "33" self-checks cuando el real es 25 (corregido arriba, en

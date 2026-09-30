@@ -1,9 +1,12 @@
 # Guía de revisión — demo video D6 (≤10 minutos)
 
-> **⭐ MASTER FINAL (re-render 29-sep 18:08, swap W7T3):** `demo-video-d6-v5.mp4`
-> — 223.6 s (3:44) · 45.4 MB · sha256 `9a9b632e4e14bc42` · SRT
-> `demo-video-d6-v5.srt` (70 cues / 540 palabras, sha `fcaec24b2bd2aac0`) ·
-> UI EN re-grabada; la escena de métricas muestra **y narra** la tabla
+> **⭐ MASTER FINAL (re-render 29-sep noche, v6):** `demo-video-d6-v6.mp4`
+> — 221.7 s (3:42) · 45.1 MB · sha256 `6e04741ef6990fd7` · SRT
+> `demo-video-d6-v6.srt` (70 cues / 534 palabras, sha `f0fc7fc156b04dbf`) ·
+> idéntico al v5 salvo un cambio: la narración de m-metrics ya no dice
+> "real Mexican field data" (orden del owner; cues 1-44 intactos, 45-53
+> re-flowed ±0.5 s, 54-70 corridos −1.9 s) · UI EN re-grabada; la escena
+> de métricas muestra **y narra** la tabla
 > **EN N=10** (severity 9/10 · services 100/100 · timeline 80% · WER 0.685
 > como artefacto de segmentación). El header histórico de abajo (3:00 /
 > 56 cues) describe la era 2026-09-16 — es registro, no estado; revisa
