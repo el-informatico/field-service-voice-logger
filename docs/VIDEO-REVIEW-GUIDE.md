@@ -1,5 +1,14 @@
 # Guía de revisión — demo video D6 (≤10 minutos)
 
+> **⭐ MASTER FINAL (re-render 29-sep 18:08, swap W7T3):** `demo-video-d6-v5.mp4`
+> — 223.6 s (3:44) · 45.4 MB · sha256 `9a9b632e4e14bc42` · SRT
+> `demo-video-d6-v5.srt` (70 cues / 540 palabras, sha `fcaec24b2bd2aac0`) ·
+> UI EN re-grabada; la escena de métricas muestra **y narra** la tabla
+> **EN N=10** (severity 9/10 · services 100/100 · timeline 80% · WER 0.685
+> como artefacto de segmentación). El header histórico de abajo (3:00 /
+> 56 cues) describe la era 2026-09-16 — es registro, no estado; revisa
+> contra el master final.
+
 **Video:** `demo-video-d6.mp4` — 180.3 s (3:00) · 1920×1080 @30 fps · H264+AAC ·
 captions EN quemadas · loudness −14 LUFS (−14.1 medido) · 12 segmentos =
 4 escenas estáticas + 8 cortes del take de la app.
@@ -67,47 +76,57 @@ Los cortes entre segmentos son fundidos de 0.4 s: los límites de la tabla tiene
 
 ---
 
-## Check-off visual — los 15 valores de la escena de métricas (1:43–2:04)
+## Check-off visual — los 15 valores de la escena de métricas (2:19–2:50)
 
-> **[DESFASADO — swap final 29-sep:]** el master vigente (3:44, re-render
-> W7T3) narra y muestra la tabla **EN N=10**, no la ES. La tabla de abajo y
-> la cita de narración del beat `m-metrics` aún describen el set ES
-> (pre-swap); realinear contra README §Metrics (tabla EN primaria) antes de
-> la revisión humana.
+> **[REALINEADO 29-sep noche (S-D):]** tabla y narración ahora describen el
+> set **EN N=10** (el pendiente del banner DESFASADO). Fuente: `README.md`
+> §Metrics, tabla EN primaria. La versión ES pre-swap queda en el historial
+> git de este archivo.
 
-Valores **tal como aparecen en pantalla** (tabla N=10 del build **ES**;
-validados verbatim por la QA determinista contra la escena fuente == README
-§Metrics → subsección "Development evidence" — el video habla el set ES por
+Valores **tal como aparecen en pantalla** (tabla N=10 del build **EN**;
+fuente == README §Metrics, tabla EN primaria — el video habla el set EN por
 diseño).
 
-| # | Valor en pantalla (= README → Development evidence, tabla ES N=10) |
+| # | Valor en pantalla (= README §Metrics, tabla EN N=10) |
 |---|---|
-| 1 | `10 REAL voice sessions` (kicker/sub-línea) |
-| 2 | `7–10 of 9–11 per session` (turn completion, `10 sessions`) |
-| 3 | `0.231` (WER, matched pairs) |
-| 4 | `0.164–0.382/session` (rango por sesión) |
-| 5 | `2,134 ref words` |
-| 6 | `1,554 ms / 4,810 ms` (EOS→tool p50/p95) |
-| 7 | `53 tool turns` |
-| 8 | `100% (12 TP / 0 FP)` (precisión servicios, fila verde) |
-| 9 | `70.6% (5 FN)` (recall servicios) |
-| 10 | `6/10 sessions` (severidad exacta) |
-| 11 | `19/35 GT events (54.3%)` (timeline) |
-| 12 | `62.1%` (precisión del loop de confirmación) |
-| 13 | `29 read-backs` |
-| 14 | `1,139 ms` (EOS→tool p50 v4-alone, en la nota honesta) |
-| 15 | Nota honesta: *"two of ten sessions hit the 300 s driver watchdog"* |
+| 1 | `10 REAL voice sessions on the English build, measured in the final 24 hours` (kicker/sub-línea) |
+| 2 | `9–11 of 9–11 per session (100%)` (turn completion, `10 sessions`) |
+| 3 | `0.685` (WER, matched pairs pooled) |
+| 4 | `0.440–0.845/session` (rango por sesión) |
+| 5 | `2,443 ref words` |
+| 6 | `3,031 ms / 3,479 ms` (EOS→tool p50/p95) |
+| 7 | `73 tool turns` |
+| 8 | `100% (18 TP / 0 FP)` (precisión servicios, fila verde) |
+| 9 | `100% (0 FN)` (recall servicios) |
+| 10 | `9/10 sessions` (severidad exacta) |
+| 11 | `28/35 GT events (80.0%)` (timeline) |
+| 12 | `71.0%` (precisión del loop de confirmación) |
+| 13 | `31 read-backs` |
+| 14 | `60.0% (12/20)` (action items recall) |
+| 15 | Nota barge-in: *"not measured on the English set — the row is omitted rather than inherited"* |
+
+**Narración del beat `m-metrics` (SRT cues 44–53, texto unido — verbatim):**
+
+> "We measured this instead of promising it. Born in Spanish, with real
+> Mexican field data — rewritten end to end in English in the final twenty
+> four hours, and measured again: ten real sessions on the English build.
+> Severity exact in nine of ten. Services: one hundred percent precision and
+> recall. Timeline hours: eighty percent. And the ugly number is published
+> too — word error rate zero point six eight five, a segmentation artifact,
+> not hearing. Failures included, in the README."
 
 ---
 
 ## Qué dice el video sobre el fix narrativo (prompt v4)
 
-**Ya lo dice.** Desde el re-render: la sub-línea de la escena de métricas
-muestra *"10 REAL voice sessions — 5 on interview prompt v3 + 5 on prompt v4
-(the narrative-capture fix)"* y la nota honesta cierra con los números v4
-(*"Prompt-v4 sessions alone: 100%/100% service set, 13/18 timeline hours,
-EOS→tool p50 1,139 ms"*). La historia completa vive en `README.md` §Metrics,
-`STATUS.md` (bloque METRICS-N10) y `docs/SUBMISSION.md`.
+**En el master final (EN):** la sub-línea de la escena de métricas muestra
+*"all 10 on interview prompt v4-en — the English edition of the prompt
+selected by the Spanish set's v3→v4 comparison — frozen with zero prompt
+iterations"*. La narración nueva no dice v3/v4: dice *"rewritten end to end
+in English in the final twenty four hours, and measured again"* (cues 46–47).
+La historia v3→v4 completa (con los números v4-alone del set ES) vive en la
+subsección "Development evidence" del `README.md` §Metrics, en `STATUS.md`
+(bloque METRICS-N10) y en `docs/SUBMISSION.md`.
 
 ---
 
