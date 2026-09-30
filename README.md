@@ -114,6 +114,7 @@ driver, same seeded ground truth translated with the domain, same oracle):
 |---|---|---|---|
 | Turn completion (scripted turns transcribed) | 9–11 of 9–11 per session (100%) | 10 sessions | quiet dictation |
 | WER, matched pairs (pooled) | **0.685** (0.440–0.845/session) | 2,443 ref words | quiet dictation |
+| WER, turn-level (VAD items merged per turn) | **0.137** (0.088–0.197/session) | 2,443 ref words | quiet dictation |
 | End-of-speech → tool call, p50 / p95 | 3,031 ms / 3,479 ms | 73 tool turns | real API |
 | Severidad exacta | 9/10 sessions | 10 | read-back loop |
 | Servicios afectados set precision | 100% (18 TP / 0 FP) | 10 | catalog enum |
@@ -141,9 +142,11 @@ hearing — word coverage is 0.85–0.96× of ground truth per session with clea
 transcripts; the English wavs' intra-turn pauses split each turn into ~2
 transcript hypotheses (17–23 items per session for 9–11 scripted turns, vs
 ≈1:1 for the Spanish control artifacts), and the greedy matcher pairs one
-item per turn, counting the unpaired half as deletions. The split is decided
-by the server VAD (threshold 0.4, identical to the Spanish baseline) before
-any prompt acts on it; raising the threshold would improve the number and
+item per turn, counting the unpaired half as deletions. Turn-level WER —
+concatenating the turn's VAD fragments before scoring (monotone assignment,
+sclite/cpWER-style) — is 0.137; both granularities are published. The
+split is decided by the server VAD (threshold 0.4, identical to the Spanish
+baseline) before any prompt acts on it; raising the threshold would improve the number and
 break protocol identity — declined as metric-gaming. (2) Prompt v4-en was
 frozen with zero iterations: every prompt-controlled metric was green at
 freeze — turn completion 100%, severity 9/10, services 100/100, timeline

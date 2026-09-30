@@ -386,6 +386,7 @@ en `docs/evidence/gate/` (los 12 JSON son parseables y reproducen la tabla con
 |---|---|---|
 | Turn completion | 9–11 de 9–11 por sesión (100%, 10/10 sesiones) | 7–10 de 9–11 |
 | WER emparejado (pooled) | **0.685** (rango 0.440–0.845, 2443 palabras) | 0.231 (0.164–0.382) |
+| WER turno-nivel (ítems VAD fusionados por turno) | **0.137** (rango 0.088–0.197, 2443 palabras) | 0.292 (control 3 artefactos ES: empeora) |
 | EOS→tool p50/p95 | 3031 / 3479 ms (73 turnos) | 1554 / 4810 ms |
 | Severidad exacta | **9/10** | 6/10 |
 | Servicios P / R | **100% (18 TP/0 FP) / 100% (0 FN)** | 100% (12 TP/0 FP) / 70.6% (5 FN) |
@@ -413,9 +414,17 @@ no mata el reply final, fix del 28-sep).
    antes de que el prompt intervenga. Ninguna iteración de prompt lo mueve
    (lección v3→v4 ES: el WER no se movió de 0.231 cuando el fix fue
    disciplina de tool calls).
+4. **WER turno-nivel (añadido 2026-09-30)**: concatenar los fragmentos VAD de
+   cada turno antes de medir (partición monotona óptima por overlap léxico,
+   desempate pinneado; estilo sclite/cpWER) da **0.137** (335/2443;
+   0.088–0.197 por sesión) — fila adicional en la tabla pública, el 0.685
+   queda intacto. El control ES con la misma métrica EMPEORA (0.244→0.292 en
+   los 3 artefactos usables): la corrección ataca el artefacto documentado,
+   no una perilla que baja números.
 Subir `--vad` mejoraría el número Y rompería la identidad de protocolo con el
 baseline ES — descartado como metric-gaming. El 0.685 se publica con este
-caveat; la métrica de escucha honesta aquí es la cobertura de palabras.
+caveat; la métrica de escucha honesta aquí es la cobertura de palabras y el
+WER turno-nivel publicado junto al 0.685.
 
 ### Congelado del prompt (criterio de parada R1, plan l.249)
 Precisión de servicios 100% ≥ 80% ✓ (criterio verde); WER 0.685 > 0.40 pero

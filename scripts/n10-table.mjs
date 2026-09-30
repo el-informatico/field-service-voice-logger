@@ -40,6 +40,52 @@ const ed = (a, b) => { // Levenshtein por palabras
 };
 const pct = (x) => (x == null ? '—' : `${(100 * x).toFixed(1)}%`);
 
+/* ------- turno-nivel: partición monotona óptima (DP que maximiza Σoverlap) -------
+   Cada ref recibe un bloque contiguo de ítems: un "ancla" + los ítems hasta la
+   siguiente ancla (un fragmento tras el ancla es continuación de ese turno).
+   WER-blind (solo overlap léxico); desempate determinista: ancla más temprana. */
+function groupDpOverlap(refTexts, hyps) {
+  const I = hyps.length, R = refTexts.length;
+  if (I < R || I === 0 || R === 0) return null; // sub-segmentado: no hay partición 1:1
+  const ov = hyps.map((h) => refTexts.map((r) => overlap(r, h)));
+  const suf = Array.from({ length: I + 1 }, () => Array(R).fill(0));
+  for (let i = I - 1; i >= 0; i--) for (let r = 0; r < R; r++) suf[i][r] = suf[i + 1][r] + ov[i][r];
+  const memo = new Map();
+  const best = (i, k) => { // refs 0..k-1 anclados; quedan items[i:]
+    const key = i + ':' + k;
+    if (memo.has(key)) return memo.get(key);
+    let out;
+    if (k === R) out = [suf[i][R - 1], []];
+    else {
+      let bv = -Infinity, ba = null;
+      for (let a = i; a < I; a++) {
+        const tailPrev = k > 0 ? suf[i][k - 1] - suf[a][k - 1] : 0;
+        const [sub, anc] = best(a + 1, k + 1);
+        const v = tailPrev + ov[a][k] + sub;
+        if (v > bv) { bv = v; ba = [[a, k], ...anc]; }
+      }
+      out = [bv, ba];
+    }
+    memo.set(key, out);
+    return out;
+  };
+  let bv = -Infinity, anchors = null;
+  for (let a = 0; a < I; a++) {
+    const head = suf[0][0] - suf[a + 1][0]; // ítems antes del 1er ancla -> ref 0
+    const [sub, anc] = best(a + 1, 1);
+    const v = head + ov[a][0] + sub;
+    if (v > bv) { bv = v; anchors = [[a, 0], ...anc]; }
+  }
+  const grp = Array.from({ length: R }, () => []);
+  const sorted = anchors.slice().sort((x, y) => x[0] - y[0]);
+  for (let j = 0; j < I; j++) {
+    let own = sorted[0][1];
+    for (const [a, k] of sorted) { if (a <= j) own = k; else break; }
+    grp[own].push(j);
+  }
+  return grp;
+}
+
 /* ------- por sesión: turn completion + matched-WER (receta gate-eval) ------- */
 const perSession = [];
 const gtPaths = new Map(); // scenario_id -> path GT (para el CLI, dedup)
@@ -75,8 +121,12 @@ for (const p of paths) {
       if (best >= cursor) cursor = best + 1;
     }
   }
+  let tErrW = 0;
+  const grp = groupDpOverlap(refs.map((t) => t.text), hyps);
+  if (grp) for (let ri = 0; ri < refs.length; ri++)
+    tErrW += ed(words(refs[ri].text), words(grp[ri].map((j) => hyps[j]).join(' ')));
   const label = art.turn_detection?.label ?? p.match(/-([A-Za-z0-9]+)\.json$/)?.[1] ?? '?';
-  perSession.push({ file: p.split('/').pop(), label, sid, completed, refs: refs.length, errW, refW,
+  perSession.push({ file: p.split('/').pop(), label, sid, completed, refs: refs.length, errW, refW, tErrW,
     tools: art.events.filter((e) => e.type === 'tool_call').length });
 }
 
@@ -88,6 +138,7 @@ const ext = agg.extraction ?? {};
 
 /* ------- salida ------- */
 const totErr = perSession.reduce((s, x) => s + x.errW, 0);
+const totTErr = perSession.reduce((s, x) => s + x.tErrW, 0);
 const totRef = perSession.reduce((s, x) => s + x.refW, 0);
 const compl = perSession.map((x) => x.completed);
 const refsN = perSession.map((x) => x.refs);
@@ -102,6 +153,7 @@ console.log('\n## README table (aggregates N=' + perSession.length + ')');
 console.log(`| Turn completion | ${Math.min(...compl)}–${Math.max(...compl)} of ${Math.min(...refsN)}–${Math.max(...refsN)} per session | ${perSession.length} sessions |`);
 console.log(`| WER matched (pooled) | ${totRef ? (totErr / totRef).toFixed(3) : '—'} (${(totRef / perSession.length).toFixed(0)}w/session avg) | ${totRef} ref words |`);
 console.log(`| WER matched range/session | ${Math.min(...werPer).toFixed(3)}–${Math.max(...werPer).toFixed(3)} | ${perSession.length} |`);
+console.log(`| WER turn-level (pooled, VAD items merged per turn) | ${totRef ? (totTErr / totRef).toFixed(3) : '—'} | ${totRef} ref words |`);
 console.log(`| EOS→tool p50/p95 | ${agg.latency?.tool?.p50} / ${Math.round(agg.latency?.tool?.p95)} ms | ${agg.latency?.tool?.n} tool turns |`);
 console.log(`| Exact severity | ${ext.per_field?.severidad ? ext.per_field.severidad.correct + '/' + ext.per_field.severidad.n : '—'} | aggregate |`);
 console.log(`| Services P / R | ${pct(ext.servicios_afectados?.precision)} (TP ${ext.servicios_afectados?.tp}/FP ${ext.servicios_afectados?.fp}) / ${pct(ext.servicios_afectados?.recall)} (FN ${ext.servicios_afectados?.fn}) | aggregate |`);

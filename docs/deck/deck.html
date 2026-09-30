@@ -260,6 +260,7 @@
     <tr><th style="width:42%;">Metric</th><th>Value</th><th>N</th><th>Condition</th></tr>
     <tr><td>Turn completion (scripted turns transcribed)</td><td class="n">9–11 of 9–11 per session (100%)</td><td class="n">10 sessions</td><td>quiet dictation</td></tr>
     <tr><td>WER, matched pairs (pooled)</td><td class="n"><b>0.685</b> (0.440–0.845/session)</td><td class="n">2,443 ref words</td><td>quiet dictation</td></tr>
+    <tr><td>WER, turn-level (VAD items merged per turn)</td><td class="n"><b>0.137</b> (0.088–0.197/session)</td><td class="n">2,443 ref words</td><td>quiet dictation</td></tr>
     <tr><td>End-of-speech → tool call, p50 / p95</td><td class="n">3,031 ms / 3,479 ms</td><td class="n">73 tool turns</td><td>real API</td></tr>
     <tr><td>Severidad exacta</td><td class="n">9/10 sessions</td><td class="n">10</td><td>read-back loop</td></tr>
     <tr><td>Servicios afectados set precision</td><td class="n">100% (18 TP / 0 FP)</td><td class="n">10</td><td>catalog enum</td></tr>
@@ -304,7 +305,7 @@
   <h2>The limits, published with the numbers</h2>
   <p class="sub">Everything below is in the README and the submission text — the failures are part of the deliverable. The rig itself is rules-only: scripted operator at natural pace, seeded ground truth, no free-form human turns.</p>
   <ul class="plain" style="max-width:1120px;">
-    <li><b>WER 0.685, matched pairs (pooled)</b> — dominated by a VAD segmentation artifact, not hearing: word coverage 0.85–0.96× of ground truth with clean transcripts. Raising the VAD threshold (0.4, identical to the Spanish baseline) would improve the number and break protocol identity — declined as metric-gaming.</li>
+    <li><b>WER 0.685, matched pairs (pooled)</b> — dominated by a VAD segmentation artifact, not hearing: word coverage 0.85–0.96× of ground truth with clean transcripts. Turn-level WER — concatenating the turn's VAD fragments before scoring (monotone assignment, sclite/cpWER-style) — is 0.137; both granularities are published. Raising the VAD threshold (0.4, identical to the Spanish baseline) would improve the number and break protocol identity — declined as metric-gaming.</li>
     <li><b>N08's severity was never set</b> (ground truth: medium) despite a complete session — agent variance under 8 barge-ins; published as measured, no re-rolls: every completed run stands.</li>
     <li><b>Strict timeline (hour + event text sim ≥ 0.6) is 0 TP in every session</b> — verbatim agent phrasing vs clean ground-truth phrases; hour-exact, 28/35 (80.0%), is the reported signal (EOS→tool p50 3,031 ms: the English prompt's few-shots lengthen agent turns — documented).</li>
     <li><b>Spanish development set (N=10):</b> 2 of 10 sessions hit the 300 s driver watchdog; 0 of 10 reached <span style="font-family:DejaVu Sans Mono,monospace;font-size:19px;">send_report</span> (was <span style="font-family:DejaVu Sans Mono,monospace;font-size:19px;">enviar_reporte</span>) — a driver close-out race, not an agent refusal: fixed in the rig, and one post-audit session completed the send (<b>estado: enviada</b>, artifact committed). The English set: 0/10 watchdog, all ten executed the send.</li>

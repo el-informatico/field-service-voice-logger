@@ -86,6 +86,7 @@ After the visit, the technician opens the incident and starts a voice session �
 |---|---|---|---|
 | Turn completion (scripted turns transcribed) | 9–11 of 9–11 per session (100%) | 10 sessions | quiet dictation |
 | WER, matched pairs (pooled) | **0.685** (0.440–0.845/session) | 2,443 ref words | quiet dictation |
+| WER, turn-level (VAD items merged per turn) | **0.137** (0.088–0.197/session) | 2,443 ref words | quiet dictation |
 | End-of-speech → tool call, p50 / p95 | 3,031 ms / 3,479 ms | 73 tool turns | real API |
 | Severidad exacta | 9/10 sessions | 10 | read-back loop |
 | Servicios afectados set precision | 100% (18 TP / 0 FP) | 10 | catalog enum |
@@ -102,7 +103,7 @@ After the visit, the technician opens the incident and starts a voice session �
 
 **Honest notes (compressed; full list in README §Metrics):**
 
-- WER 0.685 is dominated by a VAD segmentation artifact, not hearing: the English operator wavs' intra-turn pauses split each turn into ~2 transcript hypotheses (17–23 transcript items per session for 9–11 scripted turns; the Spanish control runs ≈1:1), and the matcher pairs one item per turn — the unpaired half counts as deletions. Word coverage is 0.85–0.96× of ground truth with clean transcripts: the ASR hears nearly everything. Raising the VAD threshold would lift the number and break protocol identity with the Spanish baseline — declined as metric-gaming.
+- WER 0.685 is dominated by a VAD segmentation artifact, not hearing: the English operator wavs' intra-turn pauses split each turn into ~2 transcript hypotheses (17–23 transcript items per session for 9–11 scripted turns; the Spanish control runs ≈1:1), and the matcher pairs one item per turn — the unpaired half counts as deletions. Word coverage is 0.85–0.96× of ground truth with clean transcripts: the ASR hears nearly everything. Turn-level WER — concatenating the turn's VAD fragments before scoring (monotone assignment, sclite/cpWER-style) — is 0.137; both granularities are published. Raising the VAD threshold would lift the number and break protocol identity with the Spanish baseline — declined as metric-gaming.
 - Every prompt-controlled metric was green at freeze (turn completion 100%, severity 9/10, services 100/100, timeline hours 80.0%, confirm precision 71.0%) — prompt v4-en frozen with zero iterations; the WER row is measurement, not behavior (full rationale in STATUS.md, METRICS-N10-EN).
 - All 10 sessions execute the report-send tool call (`send_report` (was `enviar_reporte`); in three of them a final `set_summary` (was `set_resumen`) follows in the same closing turn) — the close-out race documented in the Spanish set was fixed before these runs — and 0 of 10 hit the 300 s watchdog (the Spanish set: 2 of 10).
 - N08's severity was never set (ground truth: medium) despite a complete session — agent variance under 8 barge-ins; published as measured, because re-running to fix it would bias the table.
