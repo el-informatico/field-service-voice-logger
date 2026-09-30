@@ -264,7 +264,8 @@ spoken in the video are the re-measured English-build table in the Metrics
 section; the development-evidence table above and the companion clip below
 are the original Spanish-language build. A 66-second
 companion clip of a **real live-API session** is submitted with it:
-`real-session-clip-v5.mp4` — the session replayed frame-by-frame from its own
+`real-session-clip-v5.mp4` — unlisted at
+https://www.youtube.com/watch?v=qCfxXeUPQbY — the session replayed frame-by-frame from its own
 JSON artifact, recorded on the original Spanish-language build. The operator
 side is **audible** — the scripted wav track, disclosed in the burned-in
 bands; the session itself stored no audio (`audio_retained: false`, and the
